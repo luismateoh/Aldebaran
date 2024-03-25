@@ -6,15 +6,15 @@ import { getCollection } from "astro:content";
 import EventCard from "@/components/cards/event-card.astro";
 
 export async function getStaticPaths() {
-  const allPosts = await getCollection("events");
+  const allEvents = await getCollection("events");
   const uniqueCategories = [
-    ...new Set(allPosts.map((post) => post.data.category).flat()),
+    ...new Set(allEvents.map((post) => post.data.category).flat()),
   ];
 
   return uniqueCategories.map((category) => {
-    const filteredPosts = allPosts
+    const filteredPosts = allEvents
       .filter((post) => post.data.category.includes(category))
-      .sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
+      .sort((b, a) => b.data.eventDate.valueOf() - a.data.eventDate.valueOf());
     return {
       params: { category },
       props: { posts: filteredPosts },
@@ -28,10 +28,10 @@ const { posts } = Astro.props;
 
 <MainLayout
   title={`${capitalizer(category)} | Event`}
-  description={`All posts for ${category} category`}
+  description={`Todos los eventos para la categoría: ${category}`}
 >
   <section class="container py-10">
-    <EventsHeader title={`Posts by ${category} category`} />
+    <EventsHeader title={`Eventos por la categoría: ${category}`} />
 
     <div
       class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-9 md:gap-y-16 lg:gap-x-8"

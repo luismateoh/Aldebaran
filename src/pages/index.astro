@@ -4,17 +4,21 @@ import MainLayout from "@/layouts/main-layout.astro";
 import EventCard from "../components/cards/event-card.astro";
 import EventsHeader from "../components/events-header.astro";
 
+
 const events = await getEvents();
+
+
 ---
 
 <MainLayout title="">
     <section class="container py-10">
-        <EventsHeader title="Carreras" />
+        <EventsHeader title="Eventos" />
 
         <div
                 class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-9 md:gap-y-11 lg:gap-y-16 lg:gap-x-8"
         >
             {events.map((post) => <EventCard {...post} />)}
+
         </div>
     </section>
 </MainLayout>

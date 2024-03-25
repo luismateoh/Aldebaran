@@ -1,5 +1,5 @@
 ---
-title: CORREMITIERRA MEDELLÍN MEDIA MARATÓN
+title: CORREMITIERRA MEDELLÍN 
 author: Luis Hincapie
 publishDate: 2024-03-25
 draft: false
@@ -19,7 +19,7 @@ distances:
   - 10k
   - 15k
   - 21k
-cover: "/images/blog/placeholder-3.jpg"
+cover: "https://corremitierra.com/wp-content/uploads/2023/06/IMG_2185-scaled.jpg"
 department: Antioquia
 municipality: Medellín
 ---
