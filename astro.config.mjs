@@ -18,7 +18,7 @@ export default defineConfig({
       },
       gfm: true,
     }),
-    icon(),
+    icon({iconDir: 'src/icons',}),
     sitemap(),
     react(),
     tailwind({
