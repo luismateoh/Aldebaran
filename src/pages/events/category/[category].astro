@@ -1,7 +1,7 @@
 ---
 import EventsHeader from "@/components/events-header.astro";
 import MainLayout from "@/layouts/main-layout.astro";
-import { capitalizer } from "@/lib/utils";
+import { capitalize } from "@/lib/utils";
 import { getCollection } from "astro:content";
 import EventCard from "@/components/cards/event-card.astro";
 
@@ -27,7 +27,7 @@ const { posts } = Astro.props;
 ---
 
 <MainLayout
-  title={`${capitalizer(category)} | Event`}
+  title={`${capitalize(category)} | Event`}
   description={`Todos los eventos para la categoría: ${category}`}
 >
   <section class="container py-10">

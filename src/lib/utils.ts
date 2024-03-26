@@ -20,6 +20,6 @@ export function extractSegmentURL(path: string) {
   return path.split("/")[1];
 }
 
-export function capitalizer(text: string) {
+export function capitalize(text: string) {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }

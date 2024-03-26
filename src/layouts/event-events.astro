@@ -6,6 +6,7 @@ import {Icon} from "astro-icon/components";
 import {Image} from "astro:assets";
 import type {CollectionEntry} from "astro:content";
 import MainLayout from "./main-layout.astro";
+import { capitalize } from "../lib/utils";
 
 type Props = CollectionEntry<"events">;
 
@@ -30,7 +31,7 @@ const {
     Astro.props.data;
 ---
 
-<MainLayout title={title} description={description}>
+<MainLayout title={title.toUpperCase()} description={description}>
     <div class="relative container max-w-screen-md py-10">
         <button
                 onclick="history.back()"
@@ -72,7 +73,7 @@ const {
                 </div>
             </div>
             <h1 class="font-heading text-4xl my-4" transition:name={`title-${slug}`}>
-                {title}
+                {capitalize(title.toUpperCase())}
             </h1>
             <p>{description}</p>
 
