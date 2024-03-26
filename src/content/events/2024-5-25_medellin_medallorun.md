@@ -4,7 +4,9 @@ author: Luis Hincapie
 publishDate: 2024-3-25
 draft: false
 category: Running
-
+tags:
+  - running
+  - medellin
 snippet: texto corto
 altitude: 1495m
 eventDate: 2024-may-25

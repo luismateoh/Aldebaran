@@ -4,7 +4,9 @@ author: Luis Hincapie
 publishDate: 2024-3-25
 draft: false
 category: Running
-
+tags:
+  - running
+  - san andres
 snippet: texto corto
 altitude: 0m
 eventDate: 2024-4-28
@@ -16,7 +18,7 @@ distances:
   - 5k
   - 10k
   - 21k
-  -32.5k
+  - 32.5k
 cover: https://i.ytimg.com/vi/Kpkk3qjASpc/maxresdefault.jpg
 department: San Andrés y Providencia
 municipality: San Andrés

@@ -4,10 +4,10 @@ author: Luis Hincapie
 publishDate: 2024-3-25
 draft: false
 category: Running
-
-snippet: La Carrera Verde Colombia es una iniciativa de Fundación Natura, que tiene como objetivo promover el cuidado de los bosques y el agua, a través de un evento deportivo en que se trabaja unidos por los bosques con muchas empresas, instituciones públicas y privadas, cuerpos diplomáticos, familias y corredores.
-
-Esta iniciativa inició en el 2015 en Bogotá,
+tags:
+  - running
+  - bogota
+snippet: La Carrera Verde Colombia es una iniciativa de Fundación Natura, que tiene como objetivo promover el cuidado de los bosques y el agua, a través de un evento deportivo en que se trabaja unidos por los bosques con muchas empresas, instituciones públicas y privadas, cuerpos diplomáticos, familias y corredores. Esta iniciativa inició en el 2015 en Bogotá,
 altitude: 2625m
 eventDate: 2024-apr-21
 organizer: Fundación Natura Colombia
@@ -17,7 +17,7 @@ website: https://carreraverdecolombia.com/
 distances:
   - 5k
   - 10k
-cover: https://carreraverdecolombia.com/wp-content/uploads/2023/09/carrera-verde-2024.jpg
+cover: https://i.ytimg.com/vi/lOPEhHRohCI/maxresdefault.jpg
 department: Cundinamarca
 municipality: Bogotá
 ---
