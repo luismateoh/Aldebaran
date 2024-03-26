@@ -11,8 +11,8 @@ altitude: 959m
 eventDate: 2024-oct-20
 organizer: Fundación Cardiovascular de Colombia FCV
 registrationDeadline: 2024-oct-20
-registrationFeed: $100.000
-website: https://www.fcv.org/co/prensa/noticias/la-media-maraton-de-bucaramanga-fcv-abre-inscripciones-con-descuento-por-pronto-pago
+registrationFeed: $70.000
+website: https://www.fcv.org/co/maraton-fcv
 distances:
   - 5K
   - 10.5k
@@ -21,6 +21,23 @@ cover: https://www.fcv.org/co/images/noticias/2024/enero/la-media-maraton-de-buc
 department: Santander
 municipality: Bucaramanga
 ---
+La Media Maratón de Bucaramanga, también conocida como Media Maratón FCV, es una carrera atlética de 21 kilómetros que se lleva a cabo anualmente en la ciudad de Bucaramanga, Colombia. Es un evento de gran importancia en el oriente colombiano, con más de 10.000 participantes cada año.
+
+La carrera se caracteriza por:
+
+Un recorrido atractivo que pasa por algunos de los lugares más emblemáticos de Bucaramanga.
+Un ambiente festivo y lleno de energía, con música, actividades y stands para los participantes.
+Una excelente organización y logística.
+La participación de corredores de élite de todo el mundo.
+Las distancias disponibles en la Media Maratón de Bucaramanga son:
+
+5K: Carrera recreativa para principiantes o para quienes buscan una distancia más corta.
+10K: Carrera competitiva para personas de todas las edades y niveles de experiencia.
+21K: Carrera competitiva para corredores experimentados y apasionados por los desafíos.
+La Media Maratón de Bucaramanga es una experiencia única que no te puedes perder. Es una oportunidad para desafiarte a ti mismo, disfrutar del paisaje urbano de Bucaramanga y vivir la emoción de una carrera de talla internacional.
+
+Aquí hay algunos datos adicionales sobre la carrera:
+
 
 Media Maratón de Bucaramanga FCV
 Fecha: Domingo 20 de octubre de 2024
@@ -29,11 +46,6 @@ Lugar: Bucaramanga, Santander, Colombia
 
 Recorrido: 21 kilómetros, con inicio y final en el Estadio Alfonso López.
 
-Costo de las inscripciones:
-
-Hasta el 29 de febrero: $100.000 COP
-Del 1 de marzo al 30 de septiembre: $120.000 COP
-Del 1 al 15 de octubre: $140.000 COP
 Categorías:
 
 General (18 a 39 años)
@@ -65,3 +77,7 @@ Hidratarse bien antes, durante y después de la carrera.
 Usar ropa y calzado adecuado para correr.
 Disfrutar del recorrido y del ambiente festivo de la carrera.
 Esperamos que esta información te sea útil. ¡Mucha suerte en la Media Maratón de Bucaramanga FCV 2024!
+
+Twitter: @MediamaratonBga
+Instagram: @mediamaratonbucaramanga
+¡Te esperamos en Bucaramanga para correr juntos!
