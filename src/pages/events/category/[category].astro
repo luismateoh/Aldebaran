@@ -6,20 +6,20 @@ import { getCollection } from "astro:content";
 import EventCard from "@/components/cards/event-card.astro";
 
 export async function getStaticPaths() {
-  const allEvents = await getCollection("events");
-  const uniqueCategories = [
-    ...new Set(allEvents.map((post) => post.data.category).flat()),
-  ];
+	const allEvents = (await getCollection("events")).filter((post) => !post.data.draft);
+	const uniqueCategories = [
+		...new Set(allEvents.map((post) => post.data.category).flat())
+	];
 
-  return uniqueCategories.map((category) => {
-    const filteredPosts = allEvents
-      .filter((post) => post.data.category.includes(category))
-      .sort((b, a) => b.data.eventDate.valueOf() - a.data.eventDate.valueOf());
-    return {
-      params: { category },
-      props: { posts: filteredPosts },
-    };
-  });
+	return uniqueCategories.map((category) => {
+		const filteredPosts = allEvents.filter((post) => !post.data.draft)
+			.filter((post) => post.data.category.includes(category))
+			.sort((b, a) => b.data.eventDate.valueOf() - a.data.eventDate.valueOf());
+		return {
+			params: { category },
+			props: { posts: filteredPosts }
+		};
+	});
 }
 
 const { category } = Astro.params;
@@ -27,16 +27,17 @@ const { posts } = Astro.props;
 ---
 
 <MainLayout
-  title={`${capitalize(category)} | Event`}
-  description={`Todos los eventos para la categoría: ${category}`}
+	title={`${capitalize(category)} | Event`}
+	description={`Todos los eventos para la categoría: ${category}`}
 >
-  <section class="container py-10">
-    <EventsHeader title={`Eventos por la categoría: ${category}`} />
+	<section class="container py-10">
+		<EventsHeader title={`Eventos por la categoría: ${category}`} />
 
-    <div
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-9 md:gap-y-16 lg:gap-x-8"
-    >
-      {posts.map((post) => <EventCard {...post} />)}
-    </div>
-  </section>
+		<div
+			class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-9 md:gap-y-16 lg:gap-x-8"
+		>
+			{posts.map((post) =>
+				<EventCard {...post} />)}
+		</div>
+	</section>
 </MainLayout>
