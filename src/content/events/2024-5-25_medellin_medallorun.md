@@ -19,8 +19,8 @@ distances:
   - 7k
   - 13k
 cover: https://lh3.googleusercontent.com/p/AF1QipMbHWVijUfyinN00CKMbY0D6ATGaHi1XTYSu6ig=s1360-w1360-h1020
-department: Bolívar
-municipality: Cartagena
+department: Antioquia
+municipality: Medellín
 ---
 
 Medallo Run 2024 es una carrera nocturna de atletismo que se celebra anualmente en la ciudad de Medellín, Colombia. En 2024, Medallo Run se celebrará el 25 de mayo. La carrera tendrá lugar en las calles de Medellín.

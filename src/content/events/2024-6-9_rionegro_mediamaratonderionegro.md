@@ -1,48 +1,47 @@
 ---
-title: MEDIA MARATÓN DEL MAR CARTAGENA
+title: MEDIA MARATÓN DE RIONEGRO
 author: Luis Hincapie
 publishDate: 2024-3-25
 draft: false
 category: Running
 tags:
   - Media maratón
-snippet: ¡Qué emocionante! Correr la Media Maratón del Mar en Cartagena de Indias es una experiencia increíble que combina el desafío deportivo con la belleza de la ciudad y sus paisajes marítimos.
-altitude: 2m
-eventDate: 2025-2-16
-organizer: MCM
-registrationDeadline: 2025-2-16
-registrationFeed: $215.000
-website: https://mediamaratondelmar.com/
+snippet: La **Media Maratón de Rionegro**, también conocida como **Media Maratón Ciudad Santiago de Arma**, es una carrera de atletismo que se celebra anualmente en la ciudad de Rionegro, Antioquia, Colombia. La carrera tiene una distancia de **21 kilómetros** y está abierta a participantes de todas las edades y niveles de experiencia.
+altitude: 2125m
+eventDate: 2024-jun-9
+organizer: IMER
+registrationDeadline: 2024-jun-9
+registrationFeed: $100.000
+website: https://imer.gov.co/
 distances:
-  - 10k
+  - 5k
+  - 11.5k
   - 21k
-cover: https://mediamaratondelmar.com/cdn/shop/files/generales_sd-84.jpg?v=1708527419
-department: Bolívar
-municipality: Cartagena
+cover: https://imer.gov.co/wp-content/uploads/2024/03/WhatsApp-Image-2024-03-20-at-11.47.58-AM.jpeg
+department: Antioquia
+municipality: Rionegro
 ---
 
-La Media Maratón del Mar es un evento de atletismo en Cartagena, Colombia, que se realiza en febrero. La próxima será el
-16 de febrero de 2025.
+La **Media Maratón de Rionegro**, también conocida como **Media Maratón Ciudad Santiago de Arma**, es una carrera de atletismo que se celebra anualmente en la ciudad de Rionegro, Antioquia, Colombia. La carrera tiene una distancia de **21 kilómetros** y está abierta a participantes de todas las edades y niveles de experiencia.
 
-La carrera es conocida por su hermoso recorrido, que lleva a los corredores a lo largo del Mar Caribe. Comienza y
-termina en el Muelle de la Sociedad Portuaria de Cartagena, y pasa por algunos de los lugares más emblemáticos de la
-ciudad, como el Castillo de San Felipe de Barajas y las playas de Bocagrande.
+**En 2023, la Media Maratón de Rionegro se celebró el 25 de junio.** La carrera contó con la participación de más de **2600 atletas** de todo el país. El ganador de la categoría masculina fue **Jhon Alexander Castro** con un tiempo de 1:05:32, mientras que la ganadora de la categoría femenina fue **Angie Orjuela** con un tiempo de 1:15:23.
 
-La Media Maratón del Mar es un acontecimiento popular que atrae a corredores de todo el mundo. En 2023, más de 6.000
-corredores participaron en la carrera.
+**La Media Maratón de Rionegro es un evento importante para la ciudad de Rionegro.** La carrera atrae a visitantes de todo el país y ayuda a promover el turismo y la actividad física en la ciudad.
 
-Si estás interesado en correr la Media Maratón del Mar, puedes encontrar más información en la web
-oficial: https://mediamaratondelmar.com/
+**Aquí hay algunos datos importantes sobre la Media Maratón de Rionegro:**
 
-Aquí tienes algunos detalles adicionales sobre la carrera:
+* **Distancia:** 21 kilómetros
+* **Lugar:** Rionegro, Antioquia, Colombia
+* **Sitio web:** https://imer.gov.co/
 
-Distancia: 21,1 kilómetros (13,1 millas)
-Hora de salida: 5:30 AM
-Tiempo límite: 3 horas
-Desnivel: 100 metros (328 pies)
-Avituallamientos: Cada 2 kilómetros (1,2 millas)
-Puntos de hidratación: Cada 1 kilómetro (0,6 millas)
-Avituallamientos: Agua, fruta y tentempiés
-Premios: Los primeros clasificados de cada grupo de edad recibirán premios
-La Media Maratón del Mar es una forma estupenda de disfrutar de la belleza de Cartagena y ponerse a prueba físicamente.
-Si buscas una experiencia única y memorable, te la recomiendo.
+* **Inscripciones:** Las inscripciones para la Media Maratón de Rionegro se abren en el mes de **mayo**.
+
+* **Kit de participación:** El kit de participación incluye:
+    * Número de competencia
+    * Camiseta oficial del evento
+    * Medalla de participación
+    * Hidratación durante la competencia
+    * Cronometraje electrónico con chip
+    * Póliza de accidentes
+
+**Si está interesado en participar en la Media Maratón de Rionegro, le recomiendo que visite el sitio web oficial de la carrera para obtener más información.**
