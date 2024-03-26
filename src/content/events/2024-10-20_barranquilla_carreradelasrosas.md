@@ -8,9 +8,9 @@ tags:
   - Media maratón
 snippet: Es un evento deportivo que nace en el 2016 con el propósito de llevar un mensaje de vida, de esperanza a miles de mujeres para que lleguen a tiempo.
 altitude: 18m
-eventDate: 2024-10-20
+eventDate: 2024-oct-20
 organizer: JAO
-registrationDeadline: 2024-10-20
+registrationDeadline: 2024-oct-20
 registrationFeed: $157.000
 website: https://carreradelasrosas.com
 distances:
