@@ -8,9 +8,9 @@ tags:
   - Media maratón
 snippet: Es un evento deportivo que nace en el 2016 con el propósito de llevar un mensaje de vida, de esperanza a miles de mujeres para que lleguen a tiempo.
 altitude: 2625m
-eventDate: 2024-5-19
+eventDate: 2024-may-19
 organizer: JAO
-registrationDeadline: 2024-5-19
+registrationDeadline: 2024-may-19
 registrationFeed: $157.000
 website: https://carreradelasrosas.com/bogota/
 distances:

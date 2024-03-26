@@ -8,9 +8,9 @@ tags:
   - Media maratón
 snippet: ¡Qué emocionante! Correr la Media Maratón del Mar en Cartagena de Indias es una experiencia increíble que combina el desafío deportivo con la belleza de la ciudad y sus paisajes marítimos.
 altitude: 2m
-eventDate: 2025-2-16
+eventDate: 2025-feb-16
 organizer: MCM
-registrationDeadline: 2025-2-16
+registrationDeadline: 2025-feb-16
 registrationFeed: $215.000
 website: https://mediamaratondelmar.com/
 distances:

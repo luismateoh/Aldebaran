@@ -9,9 +9,9 @@ tags:
   - Medellín
 snippet: "¡Únete a nuestra #CarreraCorrePorlaVida y desafía tus límites corriendo o caminando!"
 altitude: 1495m
-eventDate: 2024-6-16
+eventDate: 2024-jun-16
 organizer: MCM
-registrationDeadline: 2024-6-16
+registrationDeadline: 2024-jun-16
 registrationFeed: $100.000
 website: https://mcmeventos.com/eventos/cardiovid/
 distances:

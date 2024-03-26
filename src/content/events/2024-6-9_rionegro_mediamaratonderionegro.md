@@ -11,7 +11,7 @@ altitude: 2125m
 eventDate: 2024-jun-9
 organizer: IMER
 registrationDeadline: 2024-jun-9
-registrationFeed: $100.000
+registrationFeed: $99.900
 website: https://imer.gov.co/
 distances:
   - 5k

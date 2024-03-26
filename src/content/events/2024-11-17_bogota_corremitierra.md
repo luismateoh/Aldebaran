@@ -8,9 +8,9 @@ tags:
   - Media maratón
 snippet: Corre Mi Tierra llegó a Bogotá para quedarse en el corazón de la gente. CorreMiTierra es Mucho más que una carrera. Gracias por haber recibido a CORREMITIERRA con los brazos abiertos. Haber vivido momentos únicos junto a todos ustedes fue lo máximo.
 altitude: 2625m
-eventDate: 2024-11-17
+eventDate: 2024-nov-17
 organizer: JAO
-registrationDeadline: 2024-11-17
+registrationDeadline: 2024-nov-17
 registrationFeed: $187.000
 website: https://corremitierra.com/bogota/
 distances:

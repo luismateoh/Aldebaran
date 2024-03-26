@@ -12,7 +12,7 @@ altitude: 1495m
 eventDate: 2024-may-25
 organizer: Diaz & Co.
 registrationDeadline: 2024-may-25
-registrationFeed: $69.900
+registrationFeed: $148.900
 website: https://medallorun.com/
 distances:
   - 3k

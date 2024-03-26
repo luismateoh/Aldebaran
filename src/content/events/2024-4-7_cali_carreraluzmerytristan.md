@@ -9,9 +9,9 @@ tags:
   - 10k
 snippet: Homenaje a la excampeona mundial de patinaje Luz Mery Tristán.
 altitude: 1018m
-eventDate: 2024-4-7
+eventDate: 2024-apr-7
 organizer: Grupo Monte / Centro Deportivo Luz Mery Tristán
-registrationDeadline: 2024-4-7
+registrationDeadline: 2024-apr-7
 registrationFeed: $102.500
 website: https://grupomonte.com/eventos/carrera-luz-mery-tristan/
 distances:
