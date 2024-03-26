@@ -38,7 +38,7 @@ const event = Astro.props;
 			class="font-medium text-muted-foreground"
 			transition:name={"date-" + event.slug}
 		>
-      {formatDate(event.data.eventDate)}
+      {capitalize(formatDate(event.data.eventDate))}
     </span>
 	</div>
 

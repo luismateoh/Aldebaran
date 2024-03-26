@@ -9,7 +9,7 @@ tags:
 snippet: El Maratón de Medellín es una prueba atlética de renombre en Colombia, conocida por su alto nivel técnico y
   organizativo. Considerada pionera de las carreras en ruta en el país, atrae a corredores de todo el mundo.
 altitude: 1495m
-eventDate: 2025-sep-1
+eventDate: 2024-sep-1
 organizer: MCM
 registrationDeadline: 2025-sep-1
 registrationFeed: $210.000

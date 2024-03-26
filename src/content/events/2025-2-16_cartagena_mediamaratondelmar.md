@@ -2,7 +2,7 @@
 title: MEDIA MARATÓN DEL MAR CARTAGENA
 author: Luis Hincapie
 publishDate: 2024-3-25
-draft: false
+draft: false 
 category: Running
 tags:
   - Media maratón

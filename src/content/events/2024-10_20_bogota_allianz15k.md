@@ -2,7 +2,7 @@
 title: CARRERA ALLIANZ 15K BOGOTÁ
 author: Luis Hincapie
 publishDate: 2024-3-25
-draft: false
+draft: false 
 category: Running
 tags:
   - 15k
@@ -18,7 +18,9 @@ distances:
 cover: https://files.winsports.co/assets/public/styles/large/public/2023-07/allianz%20h.jpg.webp?itok=EZ37cwIu
 department: Cundinamarca
 municipality: Bogotá
+//TODO: Add content
 ---
+
 
 Allianz 15K Bogotá es una carrera popular de 15 kilómetros que se celebra anualmente en Bogotá, Colombia. Es una buena
 manera de poner a prueba tu resistencia y desafiarte a ti mismo mientras disfrutas de las vistas de la ciudad.
