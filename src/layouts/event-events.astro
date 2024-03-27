@@ -1,126 +1,137 @@
 ---
-import {Badge} from "@/components/ui/badge";
-import {buttonVariants} from "@/components/ui/button";
-import {cn, formatDate} from "@/lib/utils";
-import {Icon} from "astro-icon/components";
-import {Image} from "astro:assets";
-import type {CollectionEntry} from "astro:content";
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+import { cn, formatDate } from "@/lib/utils";
+import { Icon } from "astro-icon/components";
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
 import MainLayout from "./main-layout.astro";
 import { capitalize } from "../lib/utils";
+import AddToCalendar from "@/components/add-to-calendar";
 
 type Props = CollectionEntry<"events">;
 
 const slug = Astro.props.slug;
 const {
-    title,
-    description,
-    publishDate,
-    cover,
-    category,
-    tags,
-    municipality,
-    department,
-    altitude,
-    eventDate,
-    organizer,
-    registrationDeadline,
-    registrationFeed,
-    website,
-    distances
+	title,
+	description,
+	publishDate,
+	cover,
+	category,
+	tags,
+	snippet,
+	municipality,
+	department,
+	altitude,
+	eventDate,
+	organizer,
+	registrationDeadline,
+	registrationFeed,
+	website,
+	distances
 } =
-    Astro.props.data;
+	Astro.props.data;
 ---
 
-<MainLayout title={title.toUpperCase()} description={description}>
-    <div class="relative container max-w-screen-md py-10">
-        <button
-                onclick="history.back()"
-                class={cn(
-                    buttonVariants({variant: "ghost"}),
-                    "absolute left-[-200px] top-10 hidden xl:inline-flex text-muted-foreground"
-                )}
-                transition:animate="slide"
-        >
-            <Icon name="lucide:chevron-left" class="mr-2 size-4"/>
-            {" "}Back
-        </button>
 
-        <article class="prose dark:prose-invert max-w-none">
-            <a
-                    href={`/events/category/${category}`}
-                    transition:name={`badge-cat-${slug}`}
-            >
-                <Badge radius="md" className="capitalize">
-                    {category}
-                </Badge>
-            </a>
-            <Image
-                    class="rounded-xl overflow-hidden my-6"
-                    width={720}
-                    height={360}
-                    src={cover}
-                    alt={title}
-                    transition:name={`img-${slug}`}
-            />
-            <div class="flex items-center justify-between">
-                <div class=" flex w-full justify-end">
+<MainLayout title={title.toUpperCase()} description={snippet}>
+	<div class="relative container max-w-screen-md py-10">
+		<button
+			onclick="history.back();"
+			class={cn(
+				buttonVariants({ variant: "ghost" }),
+				"absolute left-[-200px] top-10 hidden xl:inline-flex text-muted-foreground"
+			)}
+			transition:animate="slide"
+		>
+			<Icon name="lucide:chevron-left" class="mr-2 size-4" />
+			{" "}Back
+		</button>
+
+		<article class="prose dark:prose-invert max-w-none">
+			<a
+				href={`/events/category/${category}`}
+				transition:name={`badge-cat-${slug}`}
+			>
+				<Badge radius="md" className="capitalize">
+					{category}
+				</Badge>
+			</a>
+			<Image
+				class="rounded-xl overflow-hidden my-6"
+				width={720}
+				height={360}
+				src={cover}
+				alt={title}
+				transition:name={`img-${slug}`}
+			/>
+
+
+			<h1 class="font-heading text-4xl my-4" transition:name={`title-${slug}`}>
+				{capitalize(title.toUpperCase())}
+			</h1>
+			<div class="flex items-center justify-between">
+
                     <span
-                            class="font-medium text-accent-foreground text-3xl"
-                            transition:name={`date-${slug}`}
-                    >
+						class="font-medium text-accent-foreground text-3xl"
+						transition:name={`date-${slug}`}
+					>
                     {capitalize(formatDate(eventDate))}
                     </span>
-                </div>
-            </div>
-            <h1 class="font-heading text-4xl my-4" transition:name={`title-${slug}`}>
-                {capitalize(title.toUpperCase())}
-            </h1>
-            <p>{description}</p>
+				<AddToCalendar client:load
+							   title={title}
+							   description={snippet}
+							   location={`${municipality}, ${department}`}
+							   evenDate={eventDate}
+							   organizer={organizer}
+							   website={website}
+				/>
+			</div>
 
-            <div class="my-6">
-                <h2 class="font-heading text-2xl">Details</h2>
-                <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <dt>Location</dt>
-                        <dd>{municipality}, {department}</dd>
-                    </div>
-                    <div>
-                        <dt>Altitude</dt>
-                        <dd>{altitude}</dd>
-                    </div>
-                    <div>
-                        <dt>Organizer</dt>
-                        <dd>{organizer}</dd>
-                    </div>
-                    <div>
-                        <dt>Website</dt>
-                        <dd>
-                            <a href={website} target="_blank" rel="noopener noreferrer">
-                                {website}
-                            </a>
-                        </dd>
-                    </div>
-                    <div>
-                        <dt>Registration feed</dt>
-                        <dd>
-                            Desde: {registrationFeed}
-                        </dd>
-                    </div>
-                    <div>
-                        <dt>Distances</dt>
-                        <dd>
-                            <ul>
-                                {distances.map((distance) => (
-                                        <li key={distance}>{distance}</li>
-                                ))}
-                            </ul>
-                        </dd>
-                    </div>
-                </dl>
-            </div>
+			<div class="my-6">
+				<h2 class="font-heading text-2xl">Details</h2>
+				<dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+					<div>
+						<dt>Location</dt>
+						<dd>{municipality}, {department}</dd>
+					</div>
+					<div>
+						<dt>Altitude</dt>
+						<dd>{altitude}</dd>
+					</div>
+					<div>
+						<dt>Organizer</dt>
+						<dd>{organizer}</dd>
+					</div>
+					<div>
+						<dt>Website</dt>
+						<dd>
+							<a href={website} target="_blank" rel="noopener noreferrer">
+								{website}
+							</a>
+						</dd>
+					</div>
+					<div>
+						<dt>Registration feed</dt>
+						<dd>
+							Desde: {registrationFeed}
+						</dd>
+					</div>
+					<div>
+						<dt>Distances</dt>
+						<dd>
+							<ul>
+								{distances.map((distance) => (
+									<li key={distance}>{distance}</li>
+								))}
+							</ul>
+						</dd>
+					</div>
+				</dl>
+			</div>
 
-            <hr class="my-6"/>
-            <slot/>
-        </article>
-    </div>
+			<hr class="my-6" />
+			<slot />
+		</article>
+	</div>
 </MainLayout>
