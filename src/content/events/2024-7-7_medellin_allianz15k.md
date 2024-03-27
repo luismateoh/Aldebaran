@@ -8,9 +8,9 @@ tags:
   - 15k
 snippet: Allianz, la aseguradora más antigua del país, trae a la ciudad de la ‘eterna primavera’ la carrera de 15 kilómetros más importante del calendario nacional, para que vibres con la máxima fiesta del deporte y la vida saludable. ¡Porque cuando se trata de tu salud física y mental, como desde hace 150 años, #SeguroEstamos!
 altitude: 1495m
-eventDate: 2024-7-7
+eventDate: 2024-jul-7
 organizer: Allianz / MCM
-registrationDeadline: 2024-7-7
+registrationDeadline: 2024-jul-7
 registrationFeed: $100.000
 website: https://allianz15kmedellin.com/
 distances:

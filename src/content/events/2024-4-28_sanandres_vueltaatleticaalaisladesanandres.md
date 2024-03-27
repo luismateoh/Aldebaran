@@ -9,9 +9,9 @@ tags:
   - san andres
 snippet: texto corto
 altitude: 0m
-eventDate: 2024-4-28
+eventDate: 2024-apr-28
 organizer: Club Olimpus
-registrationDeadline: 2024-4-28
+registrationDeadline: 2024-apr-28
 registrationFeed: $137.000 
 website: https://sanandres32k.co/
 distances:

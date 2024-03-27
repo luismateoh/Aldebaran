@@ -8,9 +8,9 @@ tags:
   - Media maratón
 snippet: La pasión nos mueve a entregar lo mejor de todo a pesar de las circunstancia que nos traiga el camino en el día a día. Cuando nada ni nadie puede parar tu pasión por correr, te enfrentas a lo que tienes por dentro.
 altitude: 18m
-eventDate: 2024-6-16
+eventDate: 2024-jun-16
 organizer: JAO
-registrationDeadline: 2024-6-16
+registrationDeadline: 2024-jun-16
 registrationFeed: $187.000
 website: https://corremitierra.com/barranquilla/
 distances:

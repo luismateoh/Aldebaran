@@ -9,9 +9,9 @@ tags:
 snippet: Corre Mi Tierra es un evento deportivo y cultural que se celebra en Medellín. Es una carrera recreativa que ofrece
   diversión, esparcimiento, deporte y vida saludable.
 altitude: 1495m
-eventDate: 2024-4-21
+eventDate: 2024-apr-21
 organizer: JAO
-registrationDeadline: 20-04-2024
+registrationDeadline: 2024-apr-21
 registrationFeed: $207.000
 website: https://corremitierra.com/medellin/
 distances:
