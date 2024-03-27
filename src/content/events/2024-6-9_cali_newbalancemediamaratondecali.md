@@ -18,7 +18,7 @@ distances:
   - 10k
   - 21k
 cover: https://mediamaratoncali.com/wp-content/uploads/Imagen-home-grupoempresarial.jpg
-department: Valle del cauca
+department: Valle del Cauca
 municipality: Cali
 ---
 

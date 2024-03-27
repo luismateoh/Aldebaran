@@ -56,7 +56,6 @@
     "@tailwindcss/typography": "^0.5.10",
     "mdast-util-toc": "^7.0.0",
     "remark": "^15.0.1",
-    "unist-util-visit": "^5.0.0",
-    "unplugin-icons": "^0.18.5"
+    "unist-util-visit": "^5.0.0"
   }
 }

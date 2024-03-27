@@ -14,7 +14,7 @@ const events = await getEvents();
     <div
       class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-9 md:gap-y-11 lg:gap-y-16 lg:gap-x-8"
     >
-      {events.map((post) => <EventCard {...post} />)}
+      {events.map((event) => <EventCard {...event} />)}
     </div>
   </section>
 </MainLayout>

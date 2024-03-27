@@ -17,7 +17,7 @@ website: https://www.lacarreradelpacifico.com/index.php
 distances:
   - 10k
 cover: https://s3-us-west-2.amazonaws.com/eventrid-global-co/eventos/mptcf_lcdp2/42f9ddb7936b3ef5851ef4f6952f537f.jpg
-department: Valle del cauca
+department: Valle del Cauca
 municipality: Cali
 ---
 La Carrera del Pacífico 2024, también conocida como Cal10K, es una carrera atlética de 10 kilómetros que se llevará a cabo el domingo 18 de agosto de 2024 en la ciudad de Cali, Colombia. Es un evento de gran importancia en el suroccidente colombiano, con más de 5.000 participantes cada año.

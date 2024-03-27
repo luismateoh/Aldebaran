@@ -1,8 +1,9 @@
 ---
 import { Badge } from "@/components/ui/badge";
-import { formatDate,capitalize } from "@/lib/utils";
+import { formatDate, capitalize } from "@/lib/utils";
 import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
+import { Icon } from "astro-icon/components";
 
 type Props = CollectionEntry<"events">;
 
@@ -43,15 +44,17 @@ const event = Astro.props;
 	</div>
 
 	<div class="flex items-center justify-between flex-wrap">
-		<div class="flex gap-1">
-			<p class="font-medium text-accent-foreground  line-clamp-1"
-
+		<div class="flex items-center gap-1">
+			<a
+				href={`/events/location/${event.data.municipality}`}
+				transition:name={"badge-loc-" + event.slug}
 			>
-				{event.data.municipality}
-			</p>
-
-			<p class=" text-muted-foreground">
-				/ {event.data.altitude}
+				<Badge radius="md" variant="outline" className="capitalize">
+					{event.data.municipality}
+				</Badge>
+			</a>
+			<p class="flex items-center text-muted-foreground gap-1 align-middle justify-center">
+				<Icon name="lucide:mountain" /> {event.data.altitude}
 			</p>
 		</div>
 
