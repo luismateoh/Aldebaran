@@ -1,0 +1,67 @@
+import React from "react"
+import Image from "next/image"
+
+import type { EventData } from "@/lib/types"
+import { capitalize, formatDate } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
+
+import { Icons } from "../icons"
+
+export default function EventCard({ event: event }: { event: EventData }) {
+  return (
+    <article className="group space-y-3">
+      <a
+        href={`/events/${event.id}/`}
+        className="flex h-52 rounded-2xl bg-background transition duration-300 group-hover:-translate-y-2 group-hover:shadow-xl"
+      >
+        <Image
+          priority
+          className="size-full overflow-hidden rounded-xl object-cover"
+          width={720}
+          height={360}
+          src={event.cover}
+          alt={"Imagen de " + event.title}
+        />
+      </a>
+
+      <div className="flex items-center justify-between">
+        <Badge className="rounded-md capitalize">{event.category}</Badge>
+        <span className="font-medium text-muted-foreground">
+          {capitalize(formatDate(new Date(event.eventDate)))}
+        </span>
+      </div>
+
+      <div className="text-sm flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-1">
+          <Badge variant="outline" className="text-sm rounded-md capitalize">
+            {event.municipality}
+          </Badge>
+          <p className="flex items-center justify-center gap-1 align-middle text-muted-foreground">
+            <Icons.mountain className="size-4" />
+            {event.altitude}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-1">
+          {event.distances.map((distance: string) => (
+            <Badge
+              className="text-sm rounded-md capitalize"
+              variant="secondary"
+              key={distance}
+            >
+              {distance}
+            </Badge>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <a href={`/events/${event.id}/`} className="group-hover:underline">
+          <h2 className="line-clamp-3 font-heading text-2xl leading-snug">
+            {capitalize(event.title.toUpperCase())}
+          </h2>
+        </a>
+      </div>
+    </article>
+  )
+}
