@@ -2,6 +2,9 @@ import {
   Calendar,
   Check,
   ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
   Circle,
   LucideProps,
   MapPin,
@@ -21,9 +24,13 @@ export const Icons = {
   marker: MapPin,
   calendar: Calendar,
   chevronLeft: ChevronLeft,
+  chevronRight: ChevronRight,
+  chevronsLeft: ChevronsLeft,
+  chevronsRight: ChevronsRight,
   check: Check,
   squarePlus: SquarePlus,
   cross: X,
+
   logo: (props: LucideProps) => (
     <svg viewBox="0 0 375 375" height="1em" {...props}>
       <defs>
