@@ -7,6 +7,41 @@ import html from "remark-html"
 
 const eventsDirectory = path.join(process.cwd(), "events")
 
+// Helper function to read and parse a markdown file
+function readAndParseMarkdownFile(fileName: string) {
+  // Read markdown file as string
+  const fullPath = path.join(eventsDirectory, fileName)
+  const fileContents = fs.readFileSync(fullPath, "utf8")
+
+  // Use gray-matter to parse the post metadata section
+  const matterResult = matter(fileContents)
+
+  // Combine the data with the id
+  return {
+    id: fileName.replace(/\.md$/, ""),
+    contentHtml: "",
+    ...(matterResult.data as {
+      title: string
+      author: string
+      publishDate: string
+      draft: false
+      category: string
+      tags: string[]
+      snippet: string
+      altitude: string
+      eventDate: string
+      organizer: string
+      registrationDeadline: string
+      registrationFeed: string
+      website: string
+      distances: string[]
+      cover: string
+      department: string
+      municipality: string
+    }),
+  }
+}
+
 // -------------------------------------------------
 // GET THE DATA OF ALL EVENTS IN SORTED ORDER BY DATE
 /*
@@ -54,65 +89,10 @@ const eventsDirectory = path.join(process.cwd(), "events")
   },
   ]
 */
-export function getSortedEventsData(): {
-  snippet: string
-  altitude: string
-  distances: string[]
-  website: string
-  author: string
-  publishDate: string
-  municipality: string
-  contentHtml: string
-  title: string
-  tags: string[]
-  cover: string
-  organizer: string
-  draft: false
-  registrationFeed: string
-  id: string
-  category: string
-  department: string
-  registrationDeadline: string
-  eventDate: string
-}[] {
+export function getSortedEventsData() {
   // Get file names under /posts
   const fileNames = fs.readdirSync(eventsDirectory)
-  const allPostsData = fileNames.map((fileName) => {
-    // Remove ".md" from file name to get id
-    const id = fileName.replace(/\.md$/, "")
-
-    // Read markdown file as string
-    const fullPath = path.join(eventsDirectory, fileName)
-    const fileContents = fs.readFileSync(fullPath, "utf8")
-
-    // Use gray-matter to parse the post metadata section
-    const matterResult = matter(fileContents)
-
-    // Combine the data with the id
-    return {
-      id,
-      contentHtml: "",
-      ...(matterResult.data as {
-        title: string
-        author: string
-        publishDate: string
-        draft: false
-        category: string
-        tags: string[]
-        snippet: string
-        altitude: string
-        eventDate: string
-        organizer: string
-        registrationDeadline: string
-        registrationFeed: string
-        website: string
-        distances: string[]
-        cover: string
-        department: string
-        municipality: string
-      }),
-    }
-  })
+  const allPostsData = fileNames.map(readAndParseMarkdownFile)
   //filter out drafts and events that have already happened
   const publishedEvents = allPostsData
     .filter((event) => !event.draft)
@@ -124,6 +104,17 @@ export function getSortedEventsData(): {
   )
 }
 
+export function getAllEventsData() {
+  const fileNames = fs.readdirSync(eventsDirectory)
+  const allPostsData = fileNames.map(readAndParseMarkdownFile)
+  //filter out drafts and events that have already happened
+  const publishedEvents = allPostsData.filter((event) => !event.draft)
+
+  // Sort posts by date
+  return publishedEvents.sort(
+    (b, a) => new Date(b.eventDate).valueOf() - new Date(a.eventDate).valueOf()
+  )
+}
 // ------------------------------------------------
 // GET THE IDs OF ALL EVENTS FOR THE DYNAMIC ROUTING
 /*
@@ -197,22 +188,34 @@ export async function getEventData(id: string) {
   }
 }
 
-// -------------------------------------------------
-// GET THE SET OF MUNICIPALITIES OF ALL EVENTS IN ALPHABETICAL ORDER
+// ------------------------------------------------
+// GET NUMBERS OF EVENTS BY MONTH
 /*
   Returns an array that looks like this:
   [
     {
-      label: "Cali",
-      value: "Cali" },
-    {
-      label: "Bogotá",
-      value: "Bogotá" },
-  ]
+      month: Enero,
+      number: 3
 
- */
-export function getMunicipalities(): string[] {
-  const eventsData = getSortedEventsData()
-  const municipalities = eventsData.map((event) => event.municipality)
-  return Array.from(new Set(municipalities)).sort()
+    },
+    {
+      month: Febrero,
+      number: 3
+    }
+  ]
+  */
+
+export function getAllEventsByMonth() {
+  const events = getAllEventsData()
+  const months = events.map((event) => {
+    const date = new Date(event.eventDate)
+    return date.toLocaleString("es-ES", { month: "long" })
+  })
+  const uniqueMonths = Array.from(new Set(months))
+  return uniqueMonths.map((month) => {
+    return {
+      month,
+      number: months.filter((m) => m === month).length,
+    }
+  })
 }

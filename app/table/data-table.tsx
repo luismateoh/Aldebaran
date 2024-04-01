@@ -35,6 +35,7 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     department: false,
+    id: false,
   })
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
@@ -83,7 +84,7 @@ export function DataTable<TData, TValue>({
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="py-1.5">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -98,7 +99,7 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Sin resultados.
                 </TableCell>
               </TableRow>
             )}

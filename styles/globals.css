@@ -84,6 +84,7 @@
   * {
     @apply border-border;
   }
+
   html {
     /* scroll-padding-top: 4rem; */
     @apply scroll-pt-16 lg:scroll-pt-0;

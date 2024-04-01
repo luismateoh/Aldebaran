@@ -3,16 +3,15 @@ import {
   Check,
   ChevronLeft,
   Circle,
-  SquarePlus,
   LucideProps,
   MapPin,
   Moon,
   Mountain,
+  SquarePlus,
   SunMedium,
   Twitter,
   X,
 } from "lucide-react"
-
 
 export const Icons = {
   sun: SunMedium,
@@ -29,13 +28,13 @@ export const Icons = {
     <svg viewBox="0 0 375 375" height="1em" {...props}>
       <defs>
         <clipPath id="a">
-          <path fill="currentColor" d="M67 162.48h80.1v21H67Zm0 0"/>
+          <path fill="currentColor" d="M67 162.48h80.1v21H67Zm0 0" />
         </clipPath>
         <clipPath id="b">
-          <path fill="currentColor" d="M35.13 193.84h111.96v21H35.12Zm0 0"/>
+          <path fill="currentColor" d="M35.13 193.84h111.96v21H35.12Zm0 0" />
         </clipPath>
         <clipPath id="c">
-          <path fill="currentColor" d="M4.9 225.28h142.2v21H4.9Zm0 0"/>
+          <path fill="currentColor" d="M4.9 225.28h142.2v21H4.9Zm0 0" />
         </clipPath>
       </defs>
       <path
@@ -47,13 +46,13 @@ export const Icons = {
         d="M246.47 203.74c0-10.72 2.52-20.32 7.56-28.8 5.04-8.49 12.16-15.17 21.36-20.05 9.2-4.88 19.64-7.33 31.33-7.33 11.68 0 21.95 2.45 30.83 7.33a51.52 51.52 0 0 1 20.53 20.05c4.8 8.48 7.2 18.08 7.2 28.8 0 10.71-2.4 20.4-7.2 29.04a51.18 51.18 0 0 1-20.53 20.28c-8.88 4.88-19.31 7.32-31.31 7.32-11.7 0-22.06-2.28-31.1-6.83a50.46 50.46 0 0 1-21.1-19.56c-5.05-8.5-7.57-18.57-7.57-30.25Zm33.84.23c0 8.32 2.4 15.25 7.2 20.77a23.11 23.11 0 0 0 18.24 8.28c7.69 0 13.9-2.72 18.61-8.16 4.72-5.44 7.08-12.4 7.08-20.89 0-8.48-2.36-15.44-7.08-20.87-4.72-5.45-10.92-8.18-18.6-8.18a23.12 23.12 0 0 0-18.24 8.28c-4.8 5.53-7.2 12.45-7.2 20.77Zm0 0"
       />
       <g clipPath="url(#a)">
-        <path fill="currentColor" d="M67 162.48h80.07v21H66.99Zm0 0"/>
+        <path fill="currentColor" d="M67 162.48h80.07v21H66.99Zm0 0" />
       </g>
       <g clipPath="url(#b)">
-        <path fill="currentColor" d="M35.13 193.84h112v21h-112Zm0 0"/>
+        <path fill="currentColor" d="M35.13 193.84h112v21h-112Zm0 0" />
       </g>
       <g clipPath="url(#c)">
-        <path fill="currentColor" d="M4.9 225.28h142.19v21H4.89Zm0 0"/>
+        <path fill="currentColor" d="M4.9 225.28h142.19v21H4.89Zm0 0" />
       </g>
     </svg>
   ),
@@ -203,8 +202,8 @@ export const Icons = {
         gradientUnits="userSpaceOnUse"
         r="800.8"
       >
-        <stop offset=".064" stopColor="#ae7fe2"/>
-        <stop offset="1" stopColor="#0078d4"/>
+        <stop offset=".064" stopColor="#ae7fe2" />
+        <stop offset="1" stopColor="#0078d4" />
       </radialGradient>
       <linearGradient
         id="b"
@@ -214,8 +213,8 @@ export const Icons = {
         y1="860.8"
         y2="663.2"
       >
-        <stop offset="0" stopColor="#114a8b"/>
-        <stop offset="1" stopColor="#0078d4" stopOpacity="0"/>
+        <stop offset="0" stopColor="#114a8b" />
+        <stop offset="1" stopColor="#0078d4" stopOpacity="0" />
       </linearGradient>
       <radialGradient
         id="c"
@@ -224,8 +223,8 @@ export const Icons = {
         gradientUnits="userSpaceOnUse"
         r="745.2"
       >
-        <stop offset=".134" stopColor="#d59dff"/>
-        <stop offset="1" stopColor="#5e438f"/>
+        <stop offset=".134" stopColor="#d59dff" />
+        <stop offset="1" stopColor="#5e438f" />
       </radialGradient>
       <linearGradient
         id="d"
@@ -235,8 +234,8 @@ export const Icons = {
         y1="561"
         y2="736.6"
       >
-        <stop offset="0" stopColor="#493474"/>
-        <stop offset="1" stopColor="#8c66ba" stopOpacity="0"/>
+        <stop offset="0" stopColor="#493474" />
+        <stop offset="1" stopColor="#8c66ba" stopOpacity="0" />
       </linearGradient>
       <radialGradient
         id="e"
@@ -245,8 +244,8 @@ export const Icons = {
         gradientUnits="userSpaceOnUse"
         r="598.1"
       >
-        <stop offset=".058" stopColor="#50e6ff"/>
-        <stop offset="1" stopColor="#436dcd"/>
+        <stop offset=".058" stopColor="#50e6ff" />
+        <stop offset="1" stopColor="#436dcd" />
       </radialGradient>
       <linearGradient
         id="f"
@@ -256,8 +255,8 @@ export const Icons = {
         y1="25.4"
         y2="25.4"
       >
-        <stop offset="0" stopColor="#2d3f80"/>
-        <stop offset="1" stopColor="#436dcd" stopOpacity="0"/>
+        <stop offset="0" stopColor="#2d3f80" />
+        <stop offset="1" stopColor="#436dcd" stopOpacity="0" />
       </linearGradient>
       <path
         d="M386 24.6l-5.4 3.3c-8.5 5.2-16.6 11-24.2 17.3L372 34.3h132L528 216 408 336l-120 83.4v96.2c0 67.2 35.1 129.5 92.6 164.2l126.3 76.5L240 912h-51.5l-95.9-58.1C35.1 819.1 0 756.9 0 689.7V366.3C0 299.1 35.1 236.7 92.6 202l288-174.2q2.7-1.7 5.4-3.2z"

@@ -28,7 +28,7 @@ distances:
   - 5k
   - 10k
 cover: https://i.ytimg.com/vi/1trjdzHhU3M/maxresdefault.jpg
-department: Valle del cauca
+department: Valle del Cauca
 municipality: Cali
 ---
 La Carrera del Zoo TASK es una carrera atlética y recreativa que se realiza dentro del Zoológico de Cali, Colombia Evento del Zoo TASK 2024: Evento del Zoo TASK 2024.

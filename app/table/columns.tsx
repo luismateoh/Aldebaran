@@ -1,8 +1,11 @@
 "use client"
 
+import Link from "next/link"
 import { ColumnDef } from "@tanstack/react-table"
 
 import { EventData } from "@/lib/types"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 
 export const columns: ColumnDef<EventData>[] = [
   {
@@ -14,7 +17,16 @@ export const columns: ColumnDef<EventData>[] = [
     header: "Nombre",
     cell: ({ row }) => {
       const title = String(row.getValue("title")).toUpperCase()
-      return <>{title}</>
+      return (
+        <Button variant="link" asChild>
+          <Link
+            className="font-semibold px-0"
+            href={`/events/${row.getValue("id")}`}
+          >
+            {title}
+          </Link>
+        </Button>
+      )
     },
   },
   {
@@ -23,23 +35,63 @@ export const columns: ColumnDef<EventData>[] = [
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id))
     },
-    /* cell: ({row}) => {
-       const municipality = String(row.getValue("municipality"))
-       const department = String(row.getValue("department"))
-       return <>{municipality}, {department}</>
-     }*/
+    cell: ({ row }) => {
+      const municipality = String(row.getValue("municipality"))
+      const department = String(row.getValue("department"))
+      return (
+        <div>
+          <div className="font-medium">{municipality}</div>
+          <div>{department}</div>
+        </div>
+      )
+    },
   },
 
   {
     accessorKey: "distances",
     header: "Distancias",
-    //distances are an array of strings
+    filterFn: (row, id, value) => {
+      const rowDistances = row.getValue(id) as string[]
+      return value.some((selectedDistance: string) =>
+        rowDistances.includes(selectedDistance)
+      )
+    },
+    cell: ({ row }) => {
+      const distances = row.getValue("distances") as string[]
+      return (
+        <div className="flex flex-wrap gap-1">
+          {distances.map((distance) => (
+            <Badge
+              variant="small"
+              className="font-bold rounded-md"
+              key={distance}
+            >
+              {distance}
+            </Badge>
+          ))}
+        </div>
+      )
+    },
+    getUniqueValues: ({ distances }) => {
+      const allDistances = distances
+        .flat()
+        .map((distance) => distance.toLowerCase())
+      const uniqueDistancesSet = new Set(allDistances)
+      return Array.from(uniqueDistancesSet)
+    },
+
     enableGlobalFilter: false,
   },
   {
     accessorKey: "department",
     header: "Departamento",
     //hidden
+    enableHiding: true,
+  },
+  {
+    accessorKey: "id",
+    header: "ID",
+    enableGlobalFilter: false,
     enableHiding: true,
   },
 ]
