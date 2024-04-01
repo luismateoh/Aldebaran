@@ -4,7 +4,7 @@ import { Icons } from "./icons"
 
 export default function Footer() {
   return (
-    <footer className="bg-secondary mt-16">
+    <footer className="mt-16 bg-secondary">
       <div className="relative mx-auto max-w-screen-xl px-4 pt-8 pb-2 sm:px-6 lg:px-8 lg:pt-10">
         <div className="lg:flex lg:items-end lg:justify-between">
           <div>
@@ -34,7 +34,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <div className="bg-blue-900 align-middle py-1 mx-1 hover:animate-spin w-5 rounded-sm text-[9px] text-white w-3">
+                <div className="bg-blue-900 align-middle py-1 mx-1 hover:animate-spin w-5 rounded-sm text-[9px] text-white">
                   <p className="-m-1 align-middle">LM</p>
                 </div>
               </Link>
