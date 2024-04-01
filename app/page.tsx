@@ -1,5 +1,5 @@
-import {siteConfig} from "@/config/site"
-import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
+import { siteConfig } from "@/config/site"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import CardsView from "@/components/cards/cards-view"
 import TableView from "@/components/table/table-view"
 
@@ -24,7 +24,8 @@ export default function IndexPage() {
             atletismo.
           </p>
           <p className="max-w-[800px] text-lg text-accent-foreground">
-            ¡Prepárate para correr, superarte y vivir experiencias inolvidables con Aldebaran!
+            ¡Prepárate para correr, superarte y vivir experiencias inolvidables
+            con Aldebaran!
           </p>
         </div>
       </section>
@@ -35,10 +36,10 @@ export default function IndexPage() {
             <TabsTrigger value="table">Tabla</TabsTrigger>
           </TabsList>
           <TabsContent value="cards">
-            <CardsView/>
+            <CardsView />
           </TabsContent>
           <TabsContent value="table">
-            <TableView/>
+            <TableView />
           </TabsContent>
         </Tabs>
       </section>

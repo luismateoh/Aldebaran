@@ -20,14 +20,12 @@ department: Antioquia
 municipality: La Ceja
 ---
 
-
 NB Race Series: La Ceja 15K 2024
 Tercera Edición
 
 Con la NB Race Series LA CEJA 15K 2024 decidimos reflejar nuestra independencia y ofrecer una competencia fuera de la
 ciudad, invitando a vivir una experiencia diferente, que rompe los esquemas y desafía los límites
 Eso es independencia en movimiento, cambiando el juego y haciendo las cosas de otra manera.
-
 
 La NB Race Series La Ceja 15K es una carrera atlética que se lleva a cabo en la ciudad de La Ceja, Antioquia, Colombia.
 Es un evento de gran importancia en el Oriente Antioqueño, con más de 5.000 participantes cada año.

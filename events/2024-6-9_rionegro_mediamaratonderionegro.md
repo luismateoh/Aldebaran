@@ -30,18 +30,18 @@ La **Media Maratón de Rionegro**, también conocida como **Media Maratón Ciuda
 
 **Aquí hay algunos datos importantes sobre la Media Maratón de Rionegro:**
 
-* **Distancia:** 21 kilómetros
-* **Lugar:** Rionegro, Antioquia, Colombia
-* **Sitio web:** https://imer.gov.co/
+- **Distancia:** 21 kilómetros
+- **Lugar:** Rionegro, Antioquia, Colombia
+- **Sitio web:** https://imer.gov.co/
 
-* **Inscripciones:** Las inscripciones para la Media Maratón de Rionegro se abren en el mes de **mayo**.
+- **Inscripciones:** Las inscripciones para la Media Maratón de Rionegro se abren en el mes de **mayo**.
 
-* **Kit de participación:** El kit de participación incluye:
-    * Número de competencia
-    * Camiseta oficial del evento
-    * Medalla de participación
-    * Hidratación durante la competencia
-    * Cronometraje electrónico con chip
-    * Póliza de accidentes
+- **Kit de participación:** El kit de participación incluye:
+  - Número de competencia
+  - Camiseta oficial del evento
+  - Medalla de participación
+  - Hidratación durante la competencia
+  - Cronometraje electrónico con chip
+  - Póliza de accidentes
 
 **Si está interesado en participar en la Media Maratón de Rionegro, le recomiendo que visite el sitio web oficial de la carrera para obtener más información.**

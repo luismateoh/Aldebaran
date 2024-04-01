@@ -1,5 +1,5 @@
 ---
-title: CORREMITIERRA BOGOTÁ 
+title: CORREMITIERRA BOGOTÁ
 author: Luis Hincapie
 publishDate: 2024-03-25
 draft: false

@@ -1,5 +1,5 @@
 ---
-title: CORREMITIERRA BARRANQUILLA 
+title: CORREMITIERRA BARRANQUILLA
 author: Luis Hincapie
 publishDate: 2024-03-25
 draft: false

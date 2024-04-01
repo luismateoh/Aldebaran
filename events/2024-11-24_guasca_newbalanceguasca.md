@@ -24,7 +24,6 @@ NB RACE SERIES GUASCA 15K 2024
 
 QUINTA EDICIÓN
 
-
 Con la NB RACE SERIES GUASCA decidimos reflejar nuestra independencia y ofrecer una competencia fuera de la ciudad, invitado a vivir una experiencia diferente, que rompe los esquemas y desafía los límites
 
 Eso es independencia en movimiento, cambiando el juego y haciendo las cosas de otra manera.

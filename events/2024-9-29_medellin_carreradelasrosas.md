@@ -35,4 +35,3 @@ temprana del cáncer de mama.
 
 Por eso Carrera de Las Rosas es una actividad deportiva que nos ayuda a seguir llevando este mensaje de vida y
 prevención a miles de personas para que las mujeres lleguen a tiempo!
-

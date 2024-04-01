@@ -28,7 +28,6 @@ convertido en la competencia más importante del Running en Valledupar. Nuestro 
 participen este evento especial.
 La competencia tendrá distancias de 5km, 10 kms y 21 kms, según tus capacidades podrás seleccionar la de tú mayor agrado
 
-
 La Media Maratón Valledupar 2024 se llevará a cabo el domingo 13 de octubre en Valledupar, Cesar, Colombia.
 
 Recorrido:
@@ -70,4 +69,3 @@ Redes sociales:
 Facebook: https://www.facebook.com/mediamaratonvalledeupar/
 Instagram: https://www.instagram.com/comfacesaroficial/p/C3JL_6VxJFf/
 Twitter: https://twitter.com/MediaValledupar/status/1330257631215296515
-

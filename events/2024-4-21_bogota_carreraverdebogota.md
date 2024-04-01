@@ -26,38 +26,39 @@ La Carrera Verde de Bogotá 2024 es una carrera atlética que se celebra anualme
 
 **En 2024, la Carrera Verde de Bogotá se celebrará el 22 de abril.** La carrera tendrá diferentes distancias para que puedan participar personas de todas las edades y niveles de condición física:
 
-* **3K:** Carrera recreativa familiar
-* **5K:** Carrera competitiva
-* **10K:** Carrera competitiva
+- **3K:** Carrera recreativa familiar
+- **5K:** Carrera competitiva
+- **10K:** Carrera competitiva
 
 **La Carrera Verde de Bogotá es un evento importante para la ciudad de Bogotá.** La carrera atrae a miles de participantes cada año y ayuda a promover la importancia de proteger el medio ambiente.
 
 **Aquí hay algunos datos importantes sobre la Carrera Verde de Bogotá 2024:**
 
-* **Fecha:** 21 de abril de 2024
-* **Lugar:** Bogotá, Colombia
-* **Sitio web:** [https://carreraverdecolombia.com/](https://carreraverdecolombia.com/)
-* **Categorías:**
+- **Fecha:** 21 de abril de 2024
+- **Lugar:** Bogotá, Colombia
+- **Sitio web:** [https://carreraverdecolombia.com/](https://carreraverdecolombia.com/)
+- **Categorías:**
 
-    * **5K:** Competitiva
-    * **10K:** Competitiva
-* **Inscripciones:** Las inscripciones para la Carrera Verde de Bogotá se abren en el mes de **febrero**.
+  - **5K:** Competitiva
+  - **10K:** Competitiva
 
-* **Kit de participación:** El kit de participación incluye:
-    * Número de competencia
-    * Camiseta oficial del evento
-    * Medalla de participación
-    * Hidratación durante la competencia
-    * Cronometraje electrónico con chip
-    * Póliza de accidentes
+- **Inscripciones:** Las inscripciones para la Carrera Verde de Bogotá se abren en el mes de **febrero**.
+
+- **Kit de participación:** El kit de participación incluye:
+  - Número de competencia
+  - Camiseta oficial del evento
+  - Medalla de participación
+  - Hidratación durante la competencia
+  - Cronometraje electrónico con chip
+  - Póliza de accidentes
 
 **Si está interesado en participar en la Carrera Verde de Bogotá 2024, le recomiendo que visite el sitio web oficial de la carrera para obtener más información.**
 
 **Además de la carrera, la Carrera Verde de Bogotá también ofrece otras actividades para los participantes y visitantes, como:**
 
-* Exposiciones sobre el medio ambiente
-* Talleres sobre sostenibilidad
-* Presentaciones musicales
-* Zona de juegos para niños
+- Exposiciones sobre el medio ambiente
+- Talleres sobre sostenibilidad
+- Presentaciones musicales
+- Zona de juegos para niños
 
 **La Carrera Verde de Bogotá es una excelente oportunidad para disfrutar de un día al aire libre en familia, mientras se apoya una causa importante.**

@@ -38,4 +38,3 @@ oficial: https://www.instagram.com/luzmerytristan/p/C22nlyCgRD2/
 Los primeros clasificados de cada grupo de edad recibirán premios
 La Carrera Luz Mery Tristán es una buena manera de recordar a Luz Mery Tristán, apoyar la lucha contra la violencia
 hacia las mujeres y desafiarte físicamente. Si buscas una experiencia única y memorable, te la recomiendo.
-

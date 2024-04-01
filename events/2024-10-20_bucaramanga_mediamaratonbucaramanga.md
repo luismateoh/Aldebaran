@@ -21,6 +21,7 @@ cover: https://www.bucaramanga.gov.co/wp-content/uploads/2023/10/WhatsApp-Image-
 department: Santander
 municipality: Bucaramanga
 ---
+
 La Media Maratón de Bucaramanga, también conocida como Media Maratón FCV, es una carrera atlética de 21 kilómetros que se lleva a cabo anualmente en la ciudad de Bucaramanga, Colombia. Es un evento de gran importancia en el oriente colombiano, con más de 10.000 participantes cada año.
 
 La carrera se caracteriza por:
@@ -37,7 +38,6 @@ Las distancias disponibles en la Media Maratón de Bucaramanga son:
 La Media Maratón de Bucaramanga es una experiencia única que no te puedes perder. Es una oportunidad para desafiarte a ti mismo, disfrutar del paisaje urbano de Bucaramanga y vivir la emoción de una carrera de talla internacional.
 
 Aquí hay algunos datos adicionales sobre la carrera:
-
 
 Media Maratón de Bucaramanga FCV
 Fecha: Domingo 20 de octubre de 2024
@@ -62,7 +62,6 @@ Más información:
 
 Página web oficial: https://www.fcv.org/co/maraton-fcv/
 Instagram: https://www.instagram.com/maratonfcv/
-
 
 **Novedades en 2024:**
 

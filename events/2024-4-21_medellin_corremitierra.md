@@ -1,12 +1,13 @@
 ---
-title: CORREMITIERRA MEDELLÍN 
+title: CORREMITIERRA MEDELLÍN
 author: Luis Hincapie
 publishDate: 2024-03-25
 draft: false
 category: Running
 tags:
   - Media maratón
-snippet: Corre Mi Tierra es un evento deportivo y cultural que se celebra en Medellín. Es una carrera recreativa que ofrece
+snippet:
+  Corre Mi Tierra es un evento deportivo y cultural que se celebra en Medellín. Es una carrera recreativa que ofrece
   diversión, esparcimiento, deporte y vida saludable.
 altitude: 1495m
 eventDate: 2024-apr-21

@@ -29,7 +29,6 @@ department: Santander
 municipality: Floridablanca
 ---
 
-
 La Media Maratón de Floridablanca es una carrera atlética de 21 kilómetros que se celebra anualmente en la ciudad de Floridablanca, Santander, Colombia. La carrera se caracteriza por su recorrido plano y rápido, lo que la convierte en una excelente opción para corredores de todos los niveles que buscan mejorar su marca personal.
 
 En 2024, la Media Maratón de Floridablanca se llevará a cabo el 30 de junio. La carrera contó con la participación de más de 5.000 corredores de Colombia y otros países. Los ganadores de la carrera general fueron Diego Colorado en la categoría masculina y Angie Orjuela en la categoría femenina.

@@ -30,7 +30,6 @@ distances:
 cover: https://2george.com.co/public_site/images/historia/rio-mmm/2021/rio-mmm-2021-2.webp
 department: Córdoba
 municipality: Montería
-
 ---
 
 La Media Maratón de Montería 2024, también conocida como Río Media Maratón Montería, es una carrera atlética de 21 kilómetros que se celebrará el domingo 10 de noviembre de 2024 en la ciudad de Montería, Colombia.

@@ -28,7 +28,6 @@ distances:
 cover: https://mediamaratoncafe.com.co/wp-content/uploads/2023/12/BANNER-MMCAFE-2024-scaled.jpg
 department: Risaralda
 municipality: Pereira
-
 ---
 
 La Media Maratón del Café Pereira 2024 es una carrera atlética de 21 kilómetros que se celebrará el domingo 3 de noviembre de 2024 en la ciudad de Pereira, Colombia. La carrera se caracteriza por su recorrido plano y rápido, lo que la convierte en una excelente opción para corredores de todos los niveles que buscan mejorar su marca personal o simplemente disfrutar de un evento deportivo único en el corazón del Eje Cafetero.
@@ -62,5 +61,3 @@ Facebook:
 Twitter:
 Instagram: Instagram Media Maratón del Café: https://www.instagram.com/mediamaratondelcafe/
 ¡Te esperamos en la Media Maratón del Café Pereira 2024!
-
-

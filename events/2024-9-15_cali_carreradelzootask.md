@@ -31,6 +31,7 @@ cover: https://i.ytimg.com/vi/1trjdzHhU3M/maxresdefault.jpg
 department: Valle del Cauca
 municipality: Cali
 ---
+
 La Carrera del Zoo TASK es una carrera atlética y recreativa que se realiza dentro del Zoológico de Cali, Colombia Evento del Zoo TASK 2024: Evento del Zoo TASK 2024.
 
 La próxima edición será el domingo 15 de septiembre de 2024 a las 6:00 a.m. Evento del Zoo TASK 2024: Evento del Zoo TASK 2024.
@@ -39,4 +40,4 @@ Reúne cerca de 3.800 personas que corren, trotan o caminan disfrutando del ento
 
 Además de ser una carrera, también es un evento familiar para pasar un rato agradable en contacto con la naturaleza.
 
-Si te interesa participar, puedes estar atento a las inscripciones que suelen abrirse con anticipación.  También puedes revisar las redes sociales del organizador, Juancho Correlón [Juancho Correlon Carrera del Zoo TASK 2023].
+Si te interesa participar, puedes estar atento a las inscripciones que suelen abrirse con anticipación. También puedes revisar las redes sociales del organizador, Juancho Correlón [Juancho Correlon Carrera del Zoo TASK 2023].

@@ -6,7 +6,8 @@ draft: false
 category: Running
 tags:
   - Media maratón
-snippet: El Maratón de Medellín es una prueba atlética de renombre en Colombia, conocida por su alto nivel técnico y
+snippet:
+  El Maratón de Medellín es una prueba atlética de renombre en Colombia, conocida por su alto nivel técnico y
   organizativo. Considerada pionera de las carreras en ruta en el país, atrae a corredores de todo el mundo.
 altitude: 1495m
 eventDate: 2024-sep-1
@@ -69,4 +70,3 @@ Centro de Convenciones y Exposiciones Plaza Mayor Pabellón Amarillo
 CAMBIOS DE TALLAS DE CAMISETAS Y PERSONALIZACIÓN NÚMERO
 Hasta el lunes 24 de junio de 2024. A partir de esta fecha no se aceptan cambios.
 No se aceptarán cambios de distancia.
-

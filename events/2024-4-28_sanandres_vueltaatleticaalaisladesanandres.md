@@ -12,7 +12,7 @@ altitude: 0m
 eventDate: 2024-apr-28
 organizer: Club Olimpus
 registrationDeadline: 2024-apr-28
-registrationFeed: $137.000 
+registrationFeed: $137.000
 website: https://sanandres32k.co/
 distances:
   - 5k
@@ -23,7 +23,6 @@ cover: https://i.ytimg.com/vi/Kpkk3qjASpc/maxresdefault.jpg
 department: San Andrés y Providencia
 municipality: San Andrés
 ---
-
 
 La Vuelta Atlética a la Isla de San Andrés es una carrera de atletismo que se celebra anualmente en la isla de San Andrés, Colombia. La carrera tiene una distancia de 32 kilómetros y está abierta a participantes de todas las edades y niveles de experiencia.
 
