@@ -3,7 +3,7 @@ import { Table } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Icons } from "@/components/icons"
-import { DataTableFacetedFilterLocations } from "@/app/table/data-table-faceted-filter-locations"
+import { DataTableFacetedFilterLocations } from "@/components/table/data-table-faceted-filter-locations"
 
 import { DataTableFacetedFilter } from "./data-table-faceted-filter"
 

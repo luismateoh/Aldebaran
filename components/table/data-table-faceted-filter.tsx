@@ -25,12 +25,12 @@ interface DataTableFacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>
   title?: string
   options: {
-    department: string
-    municipalities: string[]
+    value: string
+    icon?: React.ComponentType<{ className?: string }>
   }[]
 }
 
-export function DataTableFacetedFilterLocations<TData, TValue>({
+export function DataTableFacetedFilter<TData, TValue>({
   column,
   title,
   options,
@@ -54,7 +54,7 @@ export function DataTableFacetedFilterLocations<TData, TValue>({
                 {selectedValues.size}
               </Badge>
               <div className="hidden space-x-1 lg:flex">
-                {selectedValues.size > 2 ? (
+                {selectedValues.size > 5 ? (
                   <Badge
                     variant="secondary"
                     className="rounded-sm px-1 font-normal"
@@ -63,15 +63,14 @@ export function DataTableFacetedFilterLocations<TData, TValue>({
                   </Badge>
                 ) : (
                   options
-                    .flatMap((option) => option.municipalities)
-                    .filter((municipality) => selectedValues.has(municipality))
-                    .map((municipality) => (
+                    .filter((option) => selectedValues.has(option.value))
+                    .map((option) => (
                       <Badge
                         variant="secondary"
-                        key={municipality}
+                        key={option.value}
                         className="rounded-sm px-1 font-normal"
                       >
-                        {municipality}
+                        {option.value}
                       </Badge>
                     ))
                 )}
@@ -80,57 +79,52 @@ export function DataTableFacetedFilterLocations<TData, TValue>({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0 z-20" align="start">
+      <PopoverContent className="z-20 w-[200px] p-0" align="start">
         <Command>
           <CommandInput placeholder={title} />
           <CommandList>
-            <CommandEmpty>Sin resultados.</CommandEmpty>
-            {options.map((option) => {
-              return (
-                <CommandGroup
-                  heading={option.department}
-                  key={option.department}
-                >
-                  {option.municipalities.map((municipality) => {
-                    const isSelected = selectedValues.has(municipality)
-                    return (
-                      <CommandItem
-                        key={municipality}
-                        onSelect={() => {
-                          if (isSelected) {
-                            selectedValues.delete(municipality)
-                          } else {
-                            selectedValues.add(municipality)
-                          }
-                          const filterValues = Array.from(selectedValues)
-                          column?.setFilterValue(
-                            filterValues.length ? filterValues : undefined
-                          )
-                        }}
-                      >
-                        <div
-                          className={cn(
-                            "mr-2 flex size-4 items-center justify-center rounded-sm border border-primary",
-                            isSelected
-                              ? "bg-primary text-primary-foreground"
-                              : "opacity-50 [&_svg]:invisible"
-                          )}
-                        >
-                          <Icons.check className={cn("size-4")} />
-                        </div>
-
-                        <span>{municipality}</span>
-                        {facets?.get(municipality) && (
-                          <span className="ml-auto flex size-4 items-center justify-center font-mono text-xs">
-                            {facets.get(municipality)}
-                          </span>
-                        )}
-                      </CommandItem>
-                    )
-                  })}
-                </CommandGroup>
-              )
-            })}
+            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandGroup>
+              {options.map((option) => {
+                const isSelected = selectedValues.has(option.value)
+                return (
+                  <CommandItem
+                    key={option.value}
+                    onSelect={() => {
+                      if (isSelected) {
+                        selectedValues.delete(option.value)
+                      } else {
+                        selectedValues.add(option.value)
+                      }
+                      const filterValues = Array.from(selectedValues)
+                      column?.setFilterValue(
+                        filterValues.length ? filterValues : undefined
+                      )
+                    }}
+                  >
+                    <div
+                      className={cn(
+                        "mr-2 flex size-4 items-center justify-center rounded-sm border border-primary",
+                        isSelected
+                          ? "bg-primary text-primary-foreground"
+                          : "opacity-50 [&_svg]:invisible"
+                      )}
+                    >
+                      <Icons.check className={cn("size-4")} />
+                    </div>
+                    {option.icon && (
+                      <option.icon className="mr-2 size-4 text-muted-foreground" />
+                    )}
+                    <span>{option.value}</span>
+                    {facets?.get(option.value) && (
+                      <span className="ml-auto flex size-4 items-center justify-center font-mono text-xs">
+                        {facets.get(option.value)}
+                      </span>
+                    )}
+                  </CommandItem>
+                )
+              })}
+            </CommandGroup>
             {selectedValues.size > 0 && (
               <>
                 <CommandSeparator />

@@ -14,7 +14,7 @@ registrationDeadline: 2024-oct-13
 registrationFeed: $112.000
 website: https://mediamaratonvalledeupar.com/
 distances:
-  - 5K
+  - 5k
   - 10k
   - 21k
 cover: https://s3-us-west-2.amazonaws.com/eventrid-global-co/eventos/med_mmvdu/aea20416fc68f52eac6ab18f7f1847e1.jpg

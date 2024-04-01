@@ -5,11 +5,11 @@ import { getSortedEventsData } from "@/lib/events"
 import { columns } from "./columns"
 import { DataTable } from "./data-table"
 
-export default async function DemoPage() {
+export default async function TableView() {
   const eventsData = getSortedEventsData()
 
   return (
-    <div className="container mx-auto py-10">
+    <div>
       <DataTable columns={columns} data={eventsData} />
     </div>
   )

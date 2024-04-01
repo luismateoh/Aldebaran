@@ -14,7 +14,7 @@ registrationDeadline: 2024-nov-24
 registrationFeed: $100.000
 website: https://www.fcv.org/co/prensa/noticias/la-media-maraton-de-bucaramanga-fcv-abre-inscripciones-con-descuento-por-pronto-pago
 distances:
-  - 5K
+  - 5k
   - 10.5k
   - 21k
 cover: https://a

@@ -20,7 +20,7 @@ export const columns: ColumnDef<EventData>[] = [
       return (
         <Button variant="link" asChild>
           <Link
-            className="font-semibold px-0"
+            className="px-0 font-semibold"
             href={`/events/${row.getValue("id")}`}
           >
             {title}
@@ -63,7 +63,7 @@ export const columns: ColumnDef<EventData>[] = [
           {distances.map((distance) => (
             <Badge
               variant="small"
-              className="font-bold rounded-md"
+              className="rounded-md font-bold"
               key={distance}
             >
               {distance}

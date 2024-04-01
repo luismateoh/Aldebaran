@@ -14,7 +14,7 @@ registrationDeadline: 2024-oct-20
 registrationFeed: $70.000
 website: https://www.fcv.org/co/maraton-fcv
 distances:
-  - 5K
+  - 5k
   - 10.5k
   - 21k
 cover: https://www.bucaramanga.gov.co/wp-content/uploads/2023/10/WhatsApp-Image-2023-10-03-at-10.13.35-980x736.jpeg
