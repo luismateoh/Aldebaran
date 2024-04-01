@@ -16,11 +16,18 @@ export const metadata: Metadata = {
     template: `%s - ${siteConfig.name}`,
   },
   description: siteConfig.description,
-  icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon-16x16.png",
-    apple: "/apple-touch-icon.png",
-  },
+  icons: [
+    {
+      media: "(prefers-color-scheme: light)",
+      url: "/favicon-light.svg",
+      href: "/favicon-light.svg",
+    },
+    {
+      media: "(prefers-color-scheme: dark)",
+      url: "/favicon-dark.svg",
+      href: "/favicon-dark.svg",
+    },
+  ],
 }
 export const viewport: Viewport = {
   themeColor: [

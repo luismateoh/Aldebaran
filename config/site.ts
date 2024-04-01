@@ -6,14 +6,13 @@ export const siteConfig = {
   description:
     "¡Bienvenido a Aldebaran: Tu Guía de Carreras de Atletismo en Colombia!",
   mainNav: [
-    /*{
-      title: "Home",
-      href: "/",
-    },*/
+    {
+      title: "Tabla",
+      href: "/table",
+    },
   ],
   links: {
-    twitter: "https://twitter.com/shadcn",
-    github: "https://github.com/shadcn/ui",
-    docs: "https://ui.shadcn.com",
+    twitter: "https://twitter.com/luismateoh",
+    github: "https://github.com/luismateoh",
   },
 }

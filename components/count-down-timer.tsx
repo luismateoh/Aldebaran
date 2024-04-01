@@ -1,16 +1,21 @@
-"use client";
+"use client"
 
-import React from 'react';
-import {useCountdown} from '@/hooks/useCountdown';
+import React from "react"
 
-export default function CountDownTimer({targetDate}: { targetDate: string | number | Date }) {
-  const [days, hours, minutes, seconds] = useCountdown(targetDate);
+import { useCountdown } from "@/hooks/useCountdown"
+
+export default function CountDownTimer({
+  targetDate,
+}: {
+  targetDate: string | number | Date
+}) {
+  const [days, hours, minutes, seconds] = useCountdown(targetDate)
 
   if (days + hours + minutes + seconds == 0) {
-    return <span className="text-2xl font-medium">¡El evento es Hoy!</span>;
+    return <span className="text-2xl font-medium">¡El evento es Hoy!</span>
   }
   if (days + hours + minutes + seconds < 0) {
-    return (<span className="text-2xl font-medium">¡El evento ya pasó!</span>);
+    return <span className="text-2xl font-medium">¡El evento ya pasó!</span>
   }
   return (
     <div className="grid grid-cols-4 items-center justify-center gap-2">
@@ -31,5 +36,5 @@ export default function CountDownTimer({targetDate}: { targetDate: string | numb
         <div className="opacity-70">Segs</div>
       </div>
     </div>
-  );
-};
+  )
+}

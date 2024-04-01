@@ -31,9 +31,9 @@ export default function EventCard({ event: event }: { event: EventData }) {
         </span>
       </div>
 
-      <div className="text-sm flex flex-wrap items-center justify-between gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
         <div className="flex items-center gap-1">
-          <Badge variant="outline" className="text-sm rounded-md capitalize">
+          <Badge variant="outline" className="rounded-md text-sm capitalize">
             {event.municipality}
           </Badge>
           <p className="flex items-center justify-center gap-1 align-middle text-muted-foreground">
@@ -45,7 +45,7 @@ export default function EventCard({ event: event }: { event: EventData }) {
         <div className="flex items-center gap-1">
           {event.distances.map((distance: string) => (
             <Badge
-              className="text-sm rounded-md capitalize"
+              className="rounded-md text-sm capitalize"
               variant="secondary"
               key={distance}
             >

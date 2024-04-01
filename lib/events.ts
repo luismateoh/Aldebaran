@@ -54,8 +54,27 @@ const eventsDirectory = path.join(process.cwd(), "events")
   },
   ]
 */
-
-export function getSortedEventsData() {
+export function getSortedEventsData(): {
+  snippet: string
+  altitude: string
+  distances: string[]
+  website: string
+  author: string
+  publishDate: string
+  municipality: string
+  contentHtml: string
+  title: string
+  tags: string[]
+  cover: string
+  organizer: string
+  draft: false
+  registrationFeed: string
+  id: string
+  category: string
+  department: string
+  registrationDeadline: string
+  eventDate: string
+}[] {
   // Get file names under /posts
   const fileNames = fs.readdirSync(eventsDirectory)
   const allPostsData = fileNames.map((fileName) => {
@@ -176,4 +195,24 @@ export async function getEventData(id: string) {
       municipality: string
     }),
   }
+}
+
+// -------------------------------------------------
+// GET THE SET OF MUNICIPALITIES OF ALL EVENTS IN ALPHABETICAL ORDER
+/*
+  Returns an array that looks like this:
+  [
+    {
+      label: "Cali",
+      value: "Cali" },
+    {
+      label: "Bogotá",
+      value: "Bogotá" },
+  ]
+
+ */
+export function getMunicipalities(): string[] {
+  const eventsData = getSortedEventsData()
+  const municipalities = eventsData.map((event) => event.municipality)
+  return Array.from(new Set(municipalities)).sort()
 }

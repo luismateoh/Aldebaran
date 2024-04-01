@@ -1,13 +1,16 @@
 import {
   Calendar,
+  Check,
   ChevronLeft,
+  Circle,
+  LucideIcon,
   LucideProps,
   MapPin,
   Moon,
   Mountain,
   SunMedium,
   Twitter,
-  type Icon as LucideIcon,
+  X,
 } from "lucide-react"
 
 export type Icon = LucideIcon
@@ -20,7 +23,9 @@ export const Icons = {
   marker: MapPin,
   calendar: Calendar,
   chevronLeft: ChevronLeft,
-
+  check: Check,
+  circlePlus: Circle,
+  cross: X,
   logo: (props: LucideProps) => (
     <svg viewBox="0 0 375 375" height="1em" {...props}>
       <defs>

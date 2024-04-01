@@ -1,9 +1,14 @@
 import Link from "next/link"
 
-import {Button} from "@/components/ui/button"
-import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from "@/components/ui/dropdown-menu"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
-import {Icons} from "./icons"
+import { Icons } from "./icons"
 
 interface AddToCalendarProps {
   title: string
@@ -158,7 +163,10 @@ export default function AddToCalendar({
     <div className="sm:w-full">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="flex items-center gap-2 text-ellipsis sm:min-w-full">
+          <Button
+            variant="outline"
+            className="flex items-center gap-2 text-ellipsis sm:min-w-full"
+          >
             <Icons.calendar className="size-4" />
             Añadir al calendario
           </Button>
