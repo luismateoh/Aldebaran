@@ -28,33 +28,38 @@ export default function AddToCalendar({
   website,
 }: AddToCalendarProps) {
   /*
-  Link generator
+    Link generator
 
-  Google Calendar
-  https://calendar.google.com/calendar/render?action=TEMPLATE&dates=20240330T050000Z%2F20240330T050000Z&details=Event%20description&location=Location%2C%20example&text=event%20title
-  Yahoo Calendar
-  https://calendar.yahoo.com/?desc=Event%20description&dur=false&et=20240330T050000Z&in_loc=Location%2C%20example&st=20240330T050000Z&title=event%20title&v=60
-  Outlook Calendar
-  https://outlook.live.com/calendar/0/action/compose?allday=false&body=Event%20description&enddt=2024-03-30T00%3A00%3A00&location=Location%2C%20example&path=%2Fcalendar%2Faction%2Fcompose&rru=addevent&startdt=2024-03-30T00%3A00%3A00&subject=event%20title
-  AOL Calendar
-  https://calendar.aol.com/?desc=Event%20description&dur=false&et=20240330T050000Z&in_loc=Location%2C%20example&st=20240330T050000Z&title=event%20title&v=60
-  ICS File
-  data:text/calendar;charset=utf8,BEGIN:VCALENDAR%0AVERSION:2.0%0ABEGIN:VEVENT%0AURL:https://calendar.google.com/calendar/render%0ADTSTART:20240330T050000Z%0ADTEND:20240330T050000Z%0ASUMMARY:event%20title%0ADESCRIPTION:Event%20description%0ALOCATION:Location%2C%20example%0AEND:VEVENT%0AEND:VCALENDAR
+    Google Calendar
+    https://calendar.google.com/calendar/render?action=TEMPLATE&dates=20240330T050000Z%2F20240330T050000Z&details=Event%20description&location=Location%2C%20example&text=event%20title
+    Yahoo Calendar
+    https://calendar.yahoo.com/?desc=Event%20description&dur=false&et=20240330T050000Z&in_loc=Location%2C%20example&st=20240330T050000Z&title=event%20title&v=60
+    Outlook Calendar
+    https://outlook.live.com/calendar/0/action/compose?allday=false&body=Event%20description&enddt=2024-03-30T00%3A00%3A00&location=Location%2C%20example&path=%2Fcalendar%2Faction%2Fcompose&rru=addevent&startdt=2024-03-30T00%3A00%3A00&subject=event%20title
+    AOL Calendar
+    https://calendar.aol.com/?desc=Event%20description&dur=false&et=20240330T050000Z&in_loc=Location%2C%20example&st=20240330T050000Z&title=event%20title&v=60
+    ICS File
+    data:text/calendar;charset=utf8,BEGIN:VCALENDAR%0AVERSION:2.0%0ABEGIN:VEVENT%0AURL:https://calendar.google.com/calendar/render%0ADTSTART:20240330T050000Z%0ADTEND:20240330T050000Z%0ASUMMARY:event%20title%0ADESCRIPTION:Event%20description%0ALOCATION:Location%2C%20example%0AEND:VEVENT%0AEND:VCALENDAR
 
-   */
+     */
   const MINUTE_IN_MS = 60 * 1000
 
   function formatDateForCalendarUrl(date: Date) {
     return date.toISOString().replace(/-|:|\.\d+/g, "")
   }
 
+  // Formate date as 20240402
+  function formatDateSimple(date: Date) {
+    return date.toISOString().slice(0, 10).replace(/-/g, "")
+  }
+
   function generateGoogleCalendarUrl() {
-    const date = formatDateForCalendarUrl(new Date(evenDate))
+    const date = formatDateSimple(new Date(evenDate))
     return encodeURI(
       [
         "https://calendar.google.com/calendar/render",
         "?action=TEMPLATE",
-        `&dates=${date}%2F${date}`,
+        `&dates=${date}/${date}`,
         `&details=${description}`,
         `&location=${location}`,
         `&text=${title}`,
@@ -63,6 +68,19 @@ export default function AddToCalendar({
   }
 
   // Generates ICS for Apple and Outlook calendars
+  /*
+    BEGIN:VCALENDAR
+    VERSION:2.0
+    BEGIN:VEVENT
+    CLASS:PUBLIC
+    DESCRIPTION:Subject\nDate - Apr 2\, 2024\nVenue - location\nDetalles\n
+    DTSTART:20240402
+    DTEND:20240403
+    LOCATION:location
+    SUMMARY;LANGUAGE=en-us:Subject
+    END:VEVENT
+    END:VCALENDAR
+     */
   function generateIcsCalendarFile() {
     const date = formatDateForCalendarUrl(new Date(evenDate))
 
@@ -71,15 +89,16 @@ export default function AddToCalendar({
         "data:text/calendar;charset=utf8,BEGIN:VCALENDAR",
         "VERSION:2.0",
         "BEGIN:VEVENT",
+        "CLASS:PUBLIC",
         `URL:${website}`,
         `DTSTART:${date}`,
         `DTEND:${date}`,
-        `SUMMARY:${title}`,
+        `SUMMARY;LANGUAGE=es-co:${title}`,
         `DESCRIPTION:${description}`,
         `LOCATION:${location}`,
         "END:VEVENT",
         "END:VCALENDAR",
-      ].join("%0A")
+      ].join("\n")
     )
   }
 
@@ -134,7 +153,7 @@ export default function AddToCalendar({
     return encodeURI(
       [
         "https://outlook.live.com/calendar/0/action/compose",
-        "?allday=false",
+        "?allday=true",
         "&body=" + description,
         "&enddt=" + date,
         "&location=" + location,

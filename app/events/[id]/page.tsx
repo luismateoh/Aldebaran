@@ -85,8 +85,12 @@ export default async function Event({ params }: Props) {
                     ))}
                 </span>
                 <AddToCalendar
-                  title={eventData.title}
-                  description={eventData.snippet}
+                  title={eventData.title.toUpperCase()}
+                  description={
+                    eventData.website
+                      ? `Más información en ${eventData.website}`
+                      : ""
+                  }
                   location={`${eventData.municipality}, ${eventData.department}`}
                   evenDate={eventData.eventDate}
                   organizer={eventData.organizer}
