@@ -18,7 +18,10 @@ export const metadata: Metadata = {
     default: siteConfig.name,
     template: `%s - ${siteConfig.name}`,
   },
+  generator: "Next.js",
+  manifest: "/manifest.json",
   description: siteConfig.description,
+  themeColor: [{ media: "(prefers-color-scheme: light)", color: "#fff" }],
   icons: [
     {
       media: "(prefers-color-scheme: light)",
