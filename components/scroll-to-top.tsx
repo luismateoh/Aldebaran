@@ -1,8 +1,9 @@
 "use client"
 
-import {useEffect, useState} from "react"
-import {ChevronUp} from "lucide-react"
-import {Button} from "@/components/ui/button";
+import { useEffect, useState } from "react"
+import { ChevronUp } from "lucide-react"
+
+import { Button } from "@/components/ui/button"
 
 export default function ScrollToTopButton() {
   const [isVisible, setIsVisible] = useState(false)
@@ -24,10 +25,10 @@ export default function ScrollToTopButton() {
   // handles the animation when scrolling to the top
   const scrollToTop = () => {
     isVisible &&
-    window.scrollTo({
-      top: 0,
-      behavior: "auto",
-    })
+      window.scrollTo({
+        top: 0,
+        behavior: "auto",
+      })
   }
 
   return (
@@ -38,8 +39,7 @@ export default function ScrollToTopButton() {
       }`}
       onClick={scrollToTop}
     >
-      <ChevronUp/>
+      <ChevronUp />
     </Button>
   )
 }
-

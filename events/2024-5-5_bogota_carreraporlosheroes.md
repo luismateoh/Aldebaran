@@ -35,9 +35,9 @@ tags:
 
 snippet: La Carrera por los Héroes es un evento deportivo de atletismo de carácter competitivo y recreativo que organiza la Corporación Matamoros. Su finalidad principal es recaudar fondos para programas de educación básica, media y superior a hombres y mujeres de las Fuerzas Militares o de la Policía que han resultado heridos, con discapacidad, así como a sus familias y las familias de los funcionarios que han perdido la vida en el ejercicio de su deber.
 altitude: 2625m
-eventDate: 2024-may-4
+eventDate: 2024-may-5
 organizer: Corporación matamoros por los heroes
-registrationDeadline: 2024-may-4
+registrationDeadline: 2024-may-5
 registrationFeed: $120.000
 website: https://www.carreraporlosheroes.org/2024/
 distances:
@@ -82,7 +82,7 @@ En 2023, la carrera contó con la participación de más de 10.000 personas.
 La carrera ha recaudado más de $10.000 millones de pesos para la Corporación Matamoros.
 Si quieres saber más sobre la Carrera por los Héroes, puedes visitar el sitio web oficial de la carrera o seguir sus redes sociales:
 
+Entrega de kits: viernes 3 y sábado 4 de mayo en la Terraza de la plazoleta de comidas del CC Gran Estación- Bogotá.
+
 Sitio web: http://carreraporlosheroes.org/
-Facebook: Facebook Carrera por los Héroes: [se quitó una URL no válida]
-Twitter: Twitter Carrera por los Héroes: [se quitó una URL no válida]
 Instagram: Instagram Carrera por los Héroes: https://www.instagram.com/carreraporlosheroes/
