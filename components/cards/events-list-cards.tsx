@@ -26,7 +26,7 @@ export default function EventsListCards({ eventsData }: AllEvents) {
       </div>
       {limit < eventsData.length && (
         <div className="mt-8 flex justify-center">
-          <Button variant="secondary" size="sm" onClick={onLoadMore}>
+          <Button className="shadow" variant="secondary" size="sm" onClick={onLoadMore}>
             Mostrar más
           </Button>
         </div>

@@ -11,6 +11,7 @@ import Footer from "@/components/footer"
 import { SiteHeader } from "@/components/site-header"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
 import { ThemeProvider } from "@/components/theme-provider"
+import ScrollToTop from "@/components/scroll-to-top";
 
 export const metadata: Metadata = {
   title: {
@@ -59,6 +60,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             </div>
             <TailwindIndicator />
             <Footer />
+            <ScrollToTop />
           </ThemeProvider>
           <Analytics />
           <SpeedInsights />

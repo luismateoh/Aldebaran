@@ -26,7 +26,7 @@ export default function Footer() {
         </div>
         <div className="border-t border-gray-300 mt-6 md:mb-1 sm:pb-4">
           <div className="text-center md:flex md:justify-between md:text-left">
-            <p className="flex mt-3 text-center text-sm text-gray-500 lg:text-right dark:text-gray-400">
+            <div className="flex mt-3 text-center text-sm text-gray-500 lg:text-right dark:text-gray-400">
               Aldebaran · Site by{" "}
               <Link
                 href="https://www.linkedin.com/in/luismateoh/"
@@ -34,11 +34,11 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <div className="bg-blue-900 align-middle py-1 mx-1 hover:animate-spin w-5 rounded-sm text-[9px] text-white">
+                <div className="mx-1 w-5 rounded-sm bg-blue-900 py-1 align-middle text-[9px] text-white hover:animate-spin">
                   <p className="-m-1 align-middle">LM</p>
                 </div>
               </Link>
-            </p>
+            </div>
           </div>
         </div>
       </div>

@@ -6,11 +6,21 @@ import { ColumnDef } from "@tanstack/react-table"
 import { EventData } from "@/lib/types"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import {format} from "date-fns";
+import {es} from "date-fns/locale";
 
 export const columns: ColumnDef<EventData>[] = [
   {
     accessorKey: "eventDate",
     header: "Fecha",
+    //format date to "DD MMM YYYY"
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("eventDate"))
+      const formattedDate = format(date, 'dd MMM yyyy', { locale: es });
+      const dateParts = formattedDate.split(' ');
+      dateParts[1] = dateParts[1].toUpperCase();
+      return dateParts.join(' ');
+    }
   },
   {
     accessorKey: "title",
@@ -18,7 +28,9 @@ export const columns: ColumnDef<EventData>[] = [
     cell: ({ row }) => {
       const title = String(row.getValue("title")).toUpperCase()
       return (
-        <Button variant="link" asChild>
+        <Button
+          className="px-0"
+          variant="link" asChild>
           <Link
             className="px-0 font-semibold"
             href={`/events/${row.getValue("id")}`}
