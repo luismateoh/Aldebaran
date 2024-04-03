@@ -48,39 +48,45 @@ department: Cundinamarca
 municipality: Bogotá
 ---
 
-La Carrera por los Héroes es un evento deportivo de atletismo de carácter competitivo y recreativo que organiza la Corporación Matamoros. Su finalidad principal es recaudar fondos para programas de educación básica, media y superior a hombres y mujeres de las Fuerzas Militares o de la Policía que han resultado heridos, con discapacidad, así como a sus familias y las familias de los funcionarios que han perdido la vida en el ejercicio de su deber.
+La Carrera por los Héroes es un evento deportivo de atletismo de carácter competitivo y recreativo que organiza la
+Corporación Matamoros. Su finalidad principal es recaudar fondos para programas de educación básica, media y superior a
+hombres y mujeres de las Fuerzas Militares o de la Policía que han resultado heridos, con discapacidad, así como a sus
+familias y las familias de los funcionarios que han perdido la vida en el ejercicio de su deber.
 
-La próxima edición de la Carrera por los Héroes se llevará a cabo el 5 de mayo de 2024. Se podrá participar de forma presencial en Bogotá y de forma virtual a nivel nacional.
+La próxima edición de la Carrera por los Héroes se llevará a cabo el 5 de mayo de 2024. Se podrá participar de forma
+presencial en Bogotá y de forma virtual a nivel nacional.
 
 Las categorías en las que puedes participar son:
 
-10K Individual
-5K Individual
-10K por equipos (4 personas)
-5K por equipos (4 personas)
-Carrera Virtual 10K
-Carrera Virtual 5K
-Para inscribirte en la Carrera por los Héroes, puedes hacerlo en el siguiente enlace:
+- 10K Individual
+- 5K Individual
+- 10K por equipos (4 personas)
+- 5K por equipos (4 personas)
+- Carrera Virtual 10K
+- Carrera Virtual 5K
 
-http://carreraporlosheroes.org/
+Para inscribirte en la Carrera por los Héroes, puedes hacerlo en el siguiente enlace: <http://carreraporlosheroes.org/>
 
 Aquí hay algunos consejos para prepararte para la Carrera por los Héroes:
 
-Entrena con regularidad.
-Sigue un plan de entrenamiento adecuado para tu nivel de condición física.
-Descansa lo suficiente antes de la carrera.
-Hidrátate adecuadamente antes, durante y después de la carrera.
-Come una dieta saludable.
-Usa ropa y zapatos cómodos para correr.
-¡Diviértete!
-Al participar en la Carrera por los Héroes, no solo estás haciendo ejercicio y disfrutando de un evento deportivo, sino que también estás apoyando una noble causa.
+- Entrena con regularidad.
+- Sigue un plan de entrenamiento adecuado para tu nivel de condición física.
+- Descansa lo suficiente antes de la carrera.
+- Hidrátate adecuadamente antes, durante y después de la carrera.
+- Come una dieta saludable.
+- Usa ropa y zapatos cómodos para correr.
+- ¡Diviértete!
+
+Al participar en la Carrera por los Héroes, no solo estás haciendo ejercicio y disfrutando de un evento deportivo, sino
+que también estás apoyando una noble causa.
 
 Aquí hay algunos datos adicionales sobre la Carrera por los Héroes:
 
 La carrera se realiza desde el año 2009.
 En 2023, la carrera contó con la participación de más de 10.000 personas.
 La carrera ha recaudado más de $10.000 millones de pesos para la Corporación Matamoros.
-Si quieres saber más sobre la Carrera por los Héroes, puedes visitar el sitio web oficial de la carrera o seguir sus redes sociales:
+Si quieres saber más sobre la Carrera por los Héroes, puedes visitar el sitio web oficial de la carrera o seguir sus
+redes sociales:
 
 Entrega de kits: viernes 3 y sábado 4 de mayo en la Terraza de la plazoleta de comidas del CC Gran Estación- Bogotá.
 

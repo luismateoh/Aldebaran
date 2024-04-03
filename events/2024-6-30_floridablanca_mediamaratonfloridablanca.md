@@ -38,17 +38,21 @@ La próxima edición de la Media Maratón de Floridablanca está programada para
 Aquí hay algunos datos adicionales sobre la Media Maratón de Floridablanca:
 
 La carrera está organizada por la Liga Santandereana de Atletismo.
+
 La carrera tiene un recorrido certificado por la World Athletics.
+
 La carrera ofrece premios en efectivo para los mejores corredores.
+
 La carrera también ofrece una serie de actividades para los participantes, como una feria de salud y una expo de running.
+
 Si estás interesado en participar en la Media Maratón de Floridablanca, puedes encontrar más información en el sitio web oficial de la carrera: https://runningbucaramanga.com/media-maraton-floridablanca/
 
 Aquí hay algunos consejos para prepararte para la Media Maratón de Floridablanca:
 
-Entrena con regularidad.
-Sigue un plan de entrenamiento adecuado para tu nivel de condición física.
-Descansa lo suficiente antes de la carrera.
-Hidrátate adecuadamente antes, durante y después de la carrera.
-Come una dieta saludable.
-Usa ropa y zapatos cómodos para correr.
-¡Diviértete!
+* Entrena con regularidad.
+* Sigue un plan de entrenamiento adecuado para tu nivel de condición física.
+* Descansa lo suficiente antes de la carrera.
+* Hidrátate adecuadamente antes, durante y después de la carrera.
+* Come una dieta saludable.
+* Usa ropa y zapatos cómodos para correr.
+* ¡Diviértete!

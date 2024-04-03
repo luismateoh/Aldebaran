@@ -79,4 +79,5 @@ Esperamos que esta información te sea útil. ¡Mucha suerte en la Media Marató
 
 Twitter: @MediamaratonBga
 Instagram: @mediamaratonbucaramanga
-¡Te esperamos en Bucaramanga para correr juntos!
+
+**¡Te esperamos en Bucaramanga para correr juntos!**

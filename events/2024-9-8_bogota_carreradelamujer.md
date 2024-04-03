@@ -28,26 +28,36 @@ La Carrera de la Mujer de Bogotá es un evento deportivo y social que se lleva a
 
 La carrera se caracteriza por:
 
-Un recorrido atractivo que pasa por algunos de los lugares más emblemáticos de Bogotá.
-Un ambiente festivo y lleno de energía, con música, actividades y stands para las participantes.
-Una excelente organización y logística.
-La participación de miles de mujeres de todas las edades y procedencias.
-Las distancias disponibles en la Carrera de la Mujer de Bogotá son:
+* Un recorrido atractivo que pasa por algunos de los lugares más emblemáticos de Bogotá.
+* Un ambiente festivo y lleno de energía, con música, actividades y stands para las participantes.
+* Una excelente organización y logística.
+* La participación de miles de mujeres de todas las edades y procedencias.
+* Las distancias disponibles en la Carrera de la Mujer de Bogotá son:
 
-5K: Carrera recreativa para principiantes o para quienes buscan una distancia más corta.
-10K: Carrera competitiva para mujeres de todas las edades y niveles de experiencia.
-21K: Carrera competitiva para mujeres con experiencia en carreras de larga distancia.
+**5K:** Carrera recreativa para principiantes o para quienes buscan una distancia más corta.
+
+**10K:** Carrera competitiva para mujeres de todas las edades y niveles de experiencia.
+
+**21K:** Carrera competitiva para mujeres con experiencia en carreras de larga distancia.
+
 La Carrera de la Mujer de Bogotá es una experiencia única que no te puedes perder. Es una oportunidad para celebrar la fuerza y la determinación de las mujeres, compartir con otras mujeres y disfrutar de un día lleno de deporte, alegría y empoderamiento.
 
 Aquí hay algunos datos adicionales sobre la carrera:
 
 Fecha: Domingo 8 de septiembre de 2024
+
 Hora de salida: 7:00 a.m.
+
 Lugar de salida y llegada: Parque Simón Bolívar
+
 Sitio web oficial: Carrera de la Mujer Bogotá: https://www.carreradelamujercolombia.com/2024/web/info/quienes_somos
+
 También puedes encontrar más información en las siguientes plataformas:
 
 Facebook: Carrera de la Mujer Bogotá
+
 Twitter: @CarreraMujerBog
+
 Instagram: @carreradelamujerbogota
-¡Te esperamos en Bogotá para correr juntas!
+
+**¡Te esperamos en Bogotá para correr juntos!**

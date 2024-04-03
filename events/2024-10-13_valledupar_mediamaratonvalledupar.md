@@ -30,42 +30,48 @@ La competencia tendrá distancias de 5km, 10 kms y 21 kms, según tus capacidade
 
 La Media Maratón Valledupar 2024 se llevará a cabo el domingo 13 de octubre en Valledupar, Cesar, Colombia.
 
-Recorrido:
+### Recorrido:
 
-La carrera comenzará en la Plaza Alfonso López y recorrerá las principales calles de la ciudad, incluyendo la Avenida Simón Bolívar, la Avenida Los Cortijos y la Avenida Guatapurí. El recorrido finalizará en el Parque de la Leyenda Vallenata.
+La carrera comenzará en la Plaza Alfonso López y recorrerá las principales calles de la ciudad, incluyendo la Avenida
+Simón Bolívar, la Avenida Los Cortijos y la Avenida Guatapurí. El recorrido finalizará en el Parque de la Leyenda
+Vallenata.
 
-Distancias:
+### Distancias:
 
 Se ofrecen dos distancias: 21 kilómetros y 10 kilómetros.
 
-Inscripciones:
+### Inscripciones:
 
 Las inscripciones están abiertas en la página web oficial de la carrera: https://mediamaratonvalledeupar.com/
 
-Costo de las inscripciones:
+### Costo de las inscripciones:
 
-21 kilómetros: $132.000 COP
-10 Kilómetros: $132.000 COP
-5 kilómetros: $112.000 COP
-Categorías:
+* **21 kilómetros:** $132.000 COP
+* **10 Kilómetros:** $132.000 COP
+* **5 kilómetros:** $112.000 COP
 
-Las categorías para ambas distancias son:
+### Categorías:
 
-General: 18 a 39 años
-Senior: 40 a 49 años
-Máster: 50 a 59 años
-Veteranos: 60 a 69 años
-Súper Veteranos: 70 años y más
-Premiación:
+Las **categorías** para ambas distancias son:
+
+* General: 18 a 39 años
+* Senior: 40 a 49 años
+* Máster: 50 a 59 años
+* Veteranos: 60 a 69 años
+* Súper Veteranos: 70 años y más
+
+**Premiación:**
 
 Se premiarán a los primeros tres lugares de cada categoría en ambas distancias.
 
-Más información:
+**Más información:**
 
 Para más información, consulte la página web oficial de la carrera: https://mediamaratonvalledeupar.com/
 
-Redes sociales:
+**Redes sociales:**
 
 Facebook: https://www.facebook.com/mediamaratonvalledeupar/
+
 Instagram: https://www.instagram.com/comfacesaroficial/p/C3JL_6VxJFf/
+
 Twitter: https://twitter.com/MediaValledupar/status/1330257631215296515

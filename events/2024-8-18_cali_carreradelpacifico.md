@@ -25,28 +25,35 @@ La Carrera del Pacífico 2024, también conocida como Cal10K, es una carrera atl
 
 La carrera se caracteriza por:
 
-Un recorrido plano y rápido, perfecto para lograr tu mejor marca personal.
-Un ambiente festivo y lleno de energía, con música del Pacífico a lo largo del recorrido.
-Una excelente organización y logística.
-La participación de corredores de élite de todo el mundo.
-Si te apasiona el running, la Carrera del Pacífico 2024 es una carrera que no puedes perderte.
+* Un recorrido plano y rápido, perfecto para lograr tu mejor marca personal.
+* Un ambiente festivo y lleno de energía, con música del Pacífico a lo largo del recorrido.
+* Una excelente organización y logística.
+* La participación de corredores de élite de todo el mundo.
+* Si te apasiona el running, la Carrera del Pacífico 2024 es una carrera que no puedes perderte.
 
 Aquí hay algunos datos adicionales sobre la carrera:
 
 Fecha: Domingo 18 de agosto de 2024
+
 Hora de salida: 7:00 a.m.
+
 Lugar de salida y llegada: a Avenida 2N con calle 9N, entre el CAM y la Plazoleta Jairo Varela
+
 Sitio web oficial: La Carrera del Pacífico: https://www.lacarreradelpacifico.com/
+
 También puedes encontrar más información en las siguientes plataformas:
 
 Facebook: La Carrera del Pacífico:
 Instagram: @lacarreradelpacifico
+
 ¡Te esperamos en Cali para correr juntos!
 
 Aquí hay algunos consejos para prepararte para la Carrera del Pacífico 2024:
 
-Empieza a entrenar con anticipación. Un plan de entrenamiento adecuado te ayudará a evitar lesiones y llegar a la carrera en óptimas condiciones.
-Hidrátate bien y come una dieta saludable. La alimentación es fundamental para rendir al máximo en la carrera.
-Descansa lo suficiente. El descanso es tan importante como el entrenamiento para que tu cuerpo se recupere y esté listo para la carrera.
-Disfruta del proceso de entrenamiento y de la carrera. La Carrera del Pacífico 2024 es una experiencia única que nunca olvidarás.
-¡Buena suerte en tu entrenamiento!
+* Empieza a entrenar con anticipación. Un plan de entrenamiento adecuado te ayudará a evitar lesiones y llegar a la carrera en óptimas condiciones.
+* Hidrátate bien y come una dieta saludable. La alimentación es fundamental para rendir al máximo en la carrera.
+* Descansa lo suficiente. El descanso es tan importante como el entrenamiento para que tu cuerpo se recupere y esté listo para la carrera.
+* Disfruta del proceso de entrenamiento y de la carrera.
+
+La Carrera del Pacífico 2024 es una experiencia única que nunca olvidarás.
+**¡Buena suerte en tu entrenamiento!**

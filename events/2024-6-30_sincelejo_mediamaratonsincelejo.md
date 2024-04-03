@@ -34,7 +34,7 @@ La Media Maratón de Sincelejo, también conocida como Media Maratón Mariscal S
 
 La carrera se caracteriza por su recorrido plano y rápido, lo que la convierte en una excelente opción para corredores de todos los niveles que buscan mejorar su marca personal o simplemente disfrutar de un evento deportivo único en la región Caribe colombiana.
 
-\*\*La próxima edición de la Media Maratón de Sincelejo se llevará a cabo el domingo 30 de junio de 2024.
+La próxima edición de la Media Maratón de Sincelejo se llevará a cabo el domingo 30 de junio de 2024.
 
 La Media Maratón de Sincelejo 2024 contará con las siguientes categorías:
 

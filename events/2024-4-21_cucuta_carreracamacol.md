@@ -37,15 +37,17 @@ Invitan a todos a participar y sumar kilómetros que contribuyan a construir una
 
 Se ofrece la oportunidad de participar en dos distancias:
 
-15 kilómetros: Con premiación para Elites, Máster A y B, tanto para hombres como para mujeres.
-8 kilómetros: Una carrera recreativa, abierta a todos los interesados en correr.
+- 15 kilómetros: Con premiación para Elites, Máster A y B, tanto para hombres como para mujeres.
+- 8 kilómetros: Una carrera recreativa, abierta a todos los interesados en correr.
+
 Los costos de inscripción son los siguientes:
 
-Empleados de empresas afiliadas: $110.000 cada uno.
-Público en general: $120.000 cada uno.
-Estudiantes: $100.000.
-Grupos de al menos 10 corredores: $100.000 cada uno (se requiere un único pago para todo el equipo).
-Clientes del Centro Comercial Unicentro: $100.000 cada uno.
+- Empleados de empresas afiliadas: $110.000 cada uno.
+- Público en general: $120.000 cada uno.
+- Estudiantes: $100.000.
+- Grupos de al menos 10 corredores: $100.000 cada uno (se requiere un único pago para todo el equipo).
+- Clientes del Centro Comercial Unicentro: $100.000 cada uno.
+
 Estas tarifas son válidas desde el 22 de marzo hasta el 7 de abril e incluyen un kit con camiseta, tula, número y
 medalla, así como puntos de hidratación, frutas y obsequios de los patrocinadores (sujeto a disponibilidad de cada
 patrocinador).

@@ -32,30 +32,37 @@ La Vuelta Atlética a la Isla de San Andrés es un evento importante para la isl
 
 Aquí hay algunos datos importantes sobre la Vuelta Atlética a la Isla de San Andrés:
 
-Distancia: 32 kilómetros
+### Distancias
+
 Fecha: 28 de abril de 2024
+
 Lugar: Isla de San Andrés, Colombia
+
 Sitio web: https://sanandres32k.co/
+
 Categorías:
-32K: Elite, Veteranos A, Veteranos B, Discapacidad (silla de ruedas)
-21K: Única
-10K: Única
-5K: Única
+- 32K: Elite, Veteranos A, Veteranos B, Discapacidad (silla de ruedas)
+- 21K: Única
+- 10K: Única
+- 5K: Única
+
 Inscripciones: Las inscripciones para la Vuelta Atlética a la Isla de San Andrés se abren en el mes de diciembre.
 
-Kit de participación: El kit de participación incluye:
-Número de competencia
-Camiseta oficial del evento
-Medalla de participación
-Hidratación durante la competencia
-Cronometraje electrónico con chip
-Póliza de accidentes
+### Kit de participación:
+El kit de participación incluye:
+- Número de competencia
+- Camiseta oficial del evento
+- Medalla de participación
+- Hidratación durante la competencia
+- Cronometraje electrónico con chip
+- Póliza de accidentes
+
 Si está interesado en participar en la Vuelta Atlética a la Isla de San Andrés, le recomiendo que visite el sitio web oficial de la carrera para obtener más información.
 
 Además de la carrera, la Vuelta Atlética a la Isla de San Andrés también ofrece otras actividades para los participantes y visitantes, como:
+- Exposiciones sobre el medio ambiente
+- Talleres sobre actividad física
+- Presentaciones musicales
+- Zona de juegos para niños
 
-Exposiciones sobre el medio ambiente
-Talleres sobre actividad física
-Presentaciones musicales
-Zona de juegos para niños
 La Vuelta Atlética a la Isla de San Andrés es una excelente oportunidad para disfrutar de un día al aire libre en familia, mientras se participa en un evento deportivo único.
