@@ -9,7 +9,13 @@ import { Icons } from "../icons"
 
 export default function EventCard({ event: event }: { event: EventData }) {
   return (
-    <article id={event.id} className="group space-y-3">
+    <article
+      id={event.id}
+      className="group space-y-3"
+      onCopy={(e) => {
+        e.preventDefault()
+      }}
+    >
       <a
         href={`/events/${event.id}/`}
         className="flex h-52 rounded-2xl bg-background transition duration-300 group-hover:-translate-y-2 group-hover:shadow-xl"

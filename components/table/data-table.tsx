@@ -83,6 +83,9 @@ export function DataTable<TData, TValue>({
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
+                  onCopy={(e) => {
+                    e.preventDefault()
+                  }}
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
