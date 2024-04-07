@@ -2,7 +2,7 @@ import fs from "fs"
 import path from "path"
 import matter from "gray-matter"
 // Import 'remark', library for rendering markdown
-import { remark } from "remark"
+import {remark} from "remark"
 import html from "remark-html"
 
 const eventsDirectory = path.join(process.cwd(), "events")
@@ -94,9 +94,19 @@ export function getSortedEventsData() {
   const fileNames = fs.readdirSync(eventsDirectory)
   const allPostsData = fileNames.map(readAndParseMarkdownFile)
   //filter out drafts and events that have already happened
+  console.log(new Date())
   const publishedEvents = allPostsData
     .filter((event) => !event.draft)
-    .filter((event) => new Date(event.eventDate) >= new Date())
+    .filter((event) => {
+      const eventDate = new Date(event.eventDate);
+      eventDate.setHours(0, 0, 0, 0);
+
+      const currentDate = new Date();
+      currentDate.setHours(0, 0, 0, 0);
+
+      return eventDate >= currentDate;
+    })
+
 
   // Sort posts by date
   return publishedEvents.sort(
@@ -115,6 +125,7 @@ export function getAllEventsData() {
     (b, a) => new Date(b.eventDate).valueOf() - new Date(a.eventDate).valueOf()
   )
 }
+
 // ------------------------------------------------
 // GET THE IDs OF ALL EVENTS FOR THE DYNAMIC ROUTING
 /*
@@ -209,7 +220,7 @@ export function getAllEventsByMonth() {
   const events = getAllEventsData()
   const months = events.map((event) => {
     const date = new Date(event.eventDate)
-    return date.toLocaleString("es-ES", { month: "long" })
+    return date.toLocaleString("es-ES", {month: "long"})
   })
   const uniqueMonths = Array.from(new Set(months))
   return uniqueMonths.map((month) => {

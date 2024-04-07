@@ -1,15 +1,22 @@
 import { useEffect, useState } from "react"
 
 const useCountdown = (targetDate: string | number | Date) => {
+
   const countDownDate = new Date(targetDate).getTime()
 
+  // Get current date and adjust to Colombia, Bogota timezone (GMT-5)
+  const currentDate = new Date();
+  currentDate.setHours(currentDate.getHours() - 5);
+
   const [countDown, setCountDown] = useState(
-    countDownDate - new Date().getTime()
+    countDownDate - currentDate.getTime()
   )
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCountDown(countDownDate - new Date().getTime())
+      const currentDate = new Date();
+      currentDate.setHours(currentDate.getHours() - 5);
+      setCountDown(countDownDate - currentDate.getTime())
     }, 1000)
 
     return () => clearInterval(interval)

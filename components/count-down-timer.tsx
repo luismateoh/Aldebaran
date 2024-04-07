@@ -11,7 +11,7 @@ export default function CountDownTimer({
 }) {
   const [days, hours, minutes, seconds] = useCountdown(targetDate)
 
-  if (days + hours + minutes + seconds == 0) {
+  if (days == -1) {
     return <span className="text-2xl font-medium">¡El evento es Hoy!</span>
   }
   if (days + hours + minutes + seconds < 0) {
