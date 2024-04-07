@@ -26,13 +26,13 @@ La Media Maratón de Bogotá 2024, también conocida como mmB, es la carrera atl
 
 La carrera ofrece dos distancias:
 
-* 21 kilómetros (21.097 metros): Distancia oficial de la media maratón.
-* 10 kilómetros: Carrera recreativa para personas de todas las edades y niveles de experiencia.
+- 21 kilómetros (21.097 metros): Distancia oficial de la media maratón.
+- 10 kilómetros: Carrera recreativa para personas de todas las edades y niveles de experiencia.
 
 El recorrido de la media maratón de Bogotá 2024:
 
-* 21K: Comienza en la Autopista Norte con Calle 100 y termina en el Parque Simón Bolívar.
-* 10K: Comienza en la Calle 72 con Carrera 11 y termina en el Parque Simón Bolívar.
+- 21K: Comienza en la Autopista Norte con Calle 100 y termina en el Parque Simón Bolívar.
+- 10K: Comienza en la Calle 72 con Carrera 11 y termina en el Parque Simón Bolívar.
 
 Las inscripciones para la mmB 2024 ya están abiertas. Puedes inscribirte en el sitio web oficial de la carrera: https://www.mediamaratonbogota.com/
 

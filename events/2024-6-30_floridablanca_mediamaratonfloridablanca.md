@@ -49,10 +49,10 @@ Si estás interesado en participar en la Media Maratón de Floridablanca, puedes
 
 Aquí hay algunos consejos para prepararte para la Media Maratón de Floridablanca:
 
-* Entrena con regularidad.
-* Sigue un plan de entrenamiento adecuado para tu nivel de condición física.
-* Descansa lo suficiente antes de la carrera.
-* Hidrátate adecuadamente antes, durante y después de la carrera.
-* Come una dieta saludable.
-* Usa ropa y zapatos cómodos para correr.
-* ¡Diviértete!
+- Entrena con regularidad.
+- Sigue un plan de entrenamiento adecuado para tu nivel de condición física.
+- Descansa lo suficiente antes de la carrera.
+- Hidrátate adecuadamente antes, durante y después de la carrera.
+- Come una dieta saludable.
+- Usa ropa y zapatos cómodos para correr.
+- ¡Diviértete!

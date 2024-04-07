@@ -96,7 +96,7 @@ export function getSortedEventsData() {
   //filter out drafts and events that have already happened
   const publishedEvents = allPostsData
     .filter((event) => !event.draft)
-    .filter((event) => new Date(event.eventDate) > new Date())
+    .filter((event) => new Date(event.eventDate) >= new Date())
 
   // Sort posts by date
   return publishedEvents.sort(

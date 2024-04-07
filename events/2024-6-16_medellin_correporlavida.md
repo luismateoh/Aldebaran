@@ -39,26 +39,26 @@ Punto Salida y llegada: Avenida las Vegas al frente de Ciudad del Río
 
 **10K**
 
-* Hora de convocatoria atletas: 5:30 a.m
-* Hora de inicio de calentamiento: 6:00 a.m
-* Hora de salida de la carrera: 6:30 a.m
-* Hora máxima de recorrido: 2 horas
-* Hora de finalización del evento: 11:00 a.m
+- Hora de convocatoria atletas: 5:30 a.m
+- Hora de inicio de calentamiento: 6:00 a.m
+- Hora de salida de la carrera: 6:30 a.m
+- Hora máxima de recorrido: 2 horas
+- Hora de finalización del evento: 11:00 a.m
 
 **3K y 5K**
 
-* Hora de convocatoria atletas: 7:30 a.m
-* Hora de inicio de calentamiento: 8:00 a.m
-* Hora de salida de la carrera 3k: 8:30 a.m
-* Hora de salida de la carrera 5k: 8:45 a.m
-* Hora máxima de recorrido: 1 hora
-* Hora de finalización del evento: 10:30 a.m
+- Hora de convocatoria atletas: 7:30 a.m
+- Hora de inicio de calentamiento: 8:00 a.m
+- Hora de salida de la carrera 3k: 8:30 a.m
+- Hora de salida de la carrera 5k: 8:45 a.m
+- Hora máxima de recorrido: 1 hora
+- Hora de finalización del evento: 10:30 a.m
 
 #### **Entrega de Kits**
 
-* Lugar: Proyecto Distrito Vera B2 | sector ciudad del Río | Carrera 44 # 20 – 40 | Local 11
-* Fecha: 14 y 15 de junio de 2024
-* Hora: 9:00am a 5:00pm
+- Lugar: Proyecto Distrito Vera B2 | sector ciudad del Río | Carrera 44 # 20 – 40 | Local 11
+- Fecha: 14 y 15 de junio de 2024
+- Hora: 9:00am a 5:00pm
 
 Se deberá reclamar el kit únicamente en los días y lugar mencionado, no se realizará entrega el día de la carrera.
 

@@ -5,7 +5,7 @@ import { Icons } from "./icons"
 export default function Footer() {
   return (
     <footer className="mt-16 bg-secondary">
-      <div className="relative mx-auto max-w-screen-xl px-4 pt-8 pb-2 sm:px-6 lg:px-8 lg:pt-10">
+      <div className="relative mx-auto max-w-screen-xl px-4 pb-2 pt-8 sm:px-6 lg:px-8 lg:pt-10">
         <div className="lg:flex lg:items-end lg:justify-between">
           <div>
             <div className="flex justify-center lg:justify-start">
@@ -24,13 +24,13 @@ export default function Footer() {
             </p>
           </div>
         </div>
-        <div className="border-t border-gray-300 mt-6 md:mb-1 sm:pb-4">
+        <div className="mt-6 border-t border-gray-300 sm:pb-4 md:mb-1">
           <div className="text-center md:flex md:justify-between md:text-left">
-            <div className="flex mt-3 text-center text-sm text-gray-500 lg:text-right dark:text-gray-400">
+            <div className="mt-3 flex text-center text-sm text-gray-500 dark:text-gray-400 lg:text-right">
               Aldebaran · Site by{" "}
               <Link
                 href="https://www.linkedin.com/in/luismateoh/"
-                className="items-center flex justify-center text-center"
+                className="flex items-center justify-center text-center"
                 target="_blank"
                 rel="noopener noreferrer"
               >

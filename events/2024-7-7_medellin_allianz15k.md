@@ -1,4 +1,3 @@
-
 ---
 title: CARRERA ALLIANZ 15K MEDELLÍN
 author: Luis Hincapie
@@ -67,10 +66,10 @@ durante el día de carrera.
 
 Para retirar el kit, por favor, ten en cuenta las siguientes instrucciones:
 
-* Kit retirado por atleta titular: Documento de identidad
+- Kit retirado por atleta titular: Documento de identidad
 
-* Kit retirado por un tercero: Fotocopia del documento de identidad y carta de autorización por parte del atleta titular
-de la inscripción
+- Kit retirado por un tercero: Fotocopia del documento de identidad y carta de autorización por parte del atleta titular
+  de la inscripción
 
 Si el atleta no toma la partida o no recoge el kit en los días señalados, la organización de carrera no le hará entrega
 de su kit fuera del plazo establecido.

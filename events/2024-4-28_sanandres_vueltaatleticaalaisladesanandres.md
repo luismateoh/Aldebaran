@@ -41,6 +41,7 @@ Lugar: Isla de San Andrés, Colombia
 Sitio web: https://sanandres32k.co/
 
 Categorías:
+
 - 32K: Elite, Veteranos A, Veteranos B, Discapacidad (silla de ruedas)
 - 21K: Única
 - 10K: Única
@@ -49,7 +50,9 @@ Categorías:
 Inscripciones: Las inscripciones para la Vuelta Atlética a la Isla de San Andrés se abren en el mes de diciembre.
 
 ### Kit de participación:
+
 El kit de participación incluye:
+
 - Número de competencia
 - Camiseta oficial del evento
 - Medalla de participación
@@ -60,6 +63,7 @@ El kit de participación incluye:
 Si está interesado en participar en la Vuelta Atlética a la Isla de San Andrés, le recomiendo que visite el sitio web oficial de la carrera para obtener más información.
 
 Además de la carrera, la Vuelta Atlética a la Isla de San Andrés también ofrece otras actividades para los participantes y visitantes, como:
+
 - Exposiciones sobre el medio ambiente
 - Talleres sobre actividad física
 - Presentaciones musicales

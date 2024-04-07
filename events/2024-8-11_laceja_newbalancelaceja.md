@@ -36,11 +36,11 @@ La distancia disponible es:
 
 La carrera se caracteriza por:
 
-* Un recorrido atractivo que pasa por algunos de los lugares más emblemáticos de La Ceja.
-* Un ambiente festivo y lleno de energía.
-* Una excelente organización y logística.
-* La participación de corredores de élite de Colombia y el extranjero.
-* Si te apasiona el running, la NB Race Series La Ceja 15K es una carrera que no puedes perderte.
+- Un recorrido atractivo que pasa por algunos de los lugares más emblemáticos de La Ceja.
+- Un ambiente festivo y lleno de energía.
+- Una excelente organización y logística.
+- La participación de corredores de élite de Colombia y el extranjero.
+- Si te apasiona el running, la NB Race Series La Ceja 15K es una carrera que no puedes perderte.
 
 Facebook: NB Race Series La Ceja 15K
 Instagram: @nbraceserieslacej
@@ -49,12 +49,12 @@ Instagram: @nbraceserieslacej
 
 Aquí hay algunos consejos para prepararte para la NB Race Series La Ceja 15K:
 
-* Empieza a entrenar con anticipación. Un plan de entrenamiento adecuado te ayudará a evitar lesiones y llegar a la
+- Empieza a entrenar con anticipación. Un plan de entrenamiento adecuado te ayudará a evitar lesiones y llegar a la
   carrera en óptimas condiciones.
-* Hidrátate bien y come una dieta saludable. La alimentación es fundamental para rendir al máximo en la carrera.
-* Descansa lo suficiente. El descanso es tan importante como el entrenamiento para que tu cuerpo se recupere y esté
+- Hidrátate bien y come una dieta saludable. La alimentación es fundamental para rendir al máximo en la carrera.
+- Descansa lo suficiente. El descanso es tan importante como el entrenamiento para que tu cuerpo se recupere y esté
   listo para la carrera.
-* Disfruta del proceso de entrenamiento y de la carrera. La NB Race Series La Ceja 15K es una experiencia única que
+- Disfruta del proceso de entrenamiento y de la carrera. La NB Race Series La Ceja 15K es una experiencia única que
   nunca olvidarás.
 
 **¡Buena suerte en tu entrenamiento!**

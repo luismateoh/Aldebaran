@@ -21,7 +21,6 @@ export const metadata: Metadata = {
   generator: "Next.js",
   manifest: "/manifest.json",
   description: siteConfig.description,
-  themeColor: [{ media: "(prefers-color-scheme: light)", color: "#fff" }],
   icons: [
     {
       media: "(prefers-color-scheme: light)",
@@ -56,7 +55,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             fontSans.variable
           )}
         >
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
             <div className="relative flex min-h-screen flex-col">
               <SiteHeader />
               <div className="flex-1">{children}</div>

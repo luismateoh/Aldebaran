@@ -28,11 +28,11 @@ La Carrera de la Mujer de Bogotá es un evento deportivo y social que se lleva a
 
 La carrera se caracteriza por:
 
-* Un recorrido atractivo que pasa por algunos de los lugares más emblemáticos de Bogotá.
-* Un ambiente festivo y lleno de energía, con música, actividades y stands para las participantes.
-* Una excelente organización y logística.
-* La participación de miles de mujeres de todas las edades y procedencias.
-* Las distancias disponibles en la Carrera de la Mujer de Bogotá son:
+- Un recorrido atractivo que pasa por algunos de los lugares más emblemáticos de Bogotá.
+- Un ambiente festivo y lleno de energía, con música, actividades y stands para las participantes.
+- Una excelente organización y logística.
+- La participación de miles de mujeres de todas las edades y procedencias.
+- Las distancias disponibles en la Carrera de la Mujer de Bogotá son:
 
 **5K:** Carrera recreativa para principiantes o para quienes buscan una distancia más corta.
 

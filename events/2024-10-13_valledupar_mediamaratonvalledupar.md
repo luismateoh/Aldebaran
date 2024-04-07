@@ -46,19 +46,19 @@ Las inscripciones están abiertas en la página web oficial de la carrera: https
 
 ### Costo de las inscripciones:
 
-* **21 kilómetros:** $132.000 COP
-* **10 Kilómetros:** $132.000 COP
-* **5 kilómetros:** $112.000 COP
+- **21 kilómetros:** $132.000 COP
+- **10 Kilómetros:** $132.000 COP
+- **5 kilómetros:** $112.000 COP
 
 ### Categorías:
 
 Las **categorías** para ambas distancias son:
 
-* General: 18 a 39 años
-* Senior: 40 a 49 años
-* Máster: 50 a 59 años
-* Veteranos: 60 a 69 años
-* Súper Veteranos: 70 años y más
+- General: 18 a 39 años
+- Senior: 40 a 49 años
+- Máster: 50 a 59 años
+- Veteranos: 60 a 69 años
+- Súper Veteranos: 70 años y más
 
 **Premiación:**
 
