@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://aldebaran.run
+Host: https://www.aldebaran.run
 
 # Sitemaps
-
+Sitemap: https://www.aldebaran.run/sitemap.xml
