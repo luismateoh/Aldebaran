@@ -98,15 +98,14 @@ export function getSortedEventsData() {
   const publishedEvents = allPostsData
     .filter((event) => !event.draft)
     .filter((event) => {
-      const eventDate = new Date(event.eventDate);
-      eventDate.setHours(0, 0, 0, 0);
+      const eventDate = new Date(event.eventDate)
+      eventDate.setHours(0, 0, 0, 0)
 
-      const currentDate = new Date();
-      currentDate.setHours(0, 0, 0, 0);
+      const currentDate = new Date()
+      currentDate.setHours(0, 0, 0, 0)
 
-      return eventDate >= currentDate;
+      return eventDate >= currentDate
     })
-
 
   // Sort posts by date
   return publishedEvents.sort(
@@ -146,13 +145,11 @@ export function getAllEventsData() {
 
 export function getAllEventsIds() {
   const fileNames = fs.readdirSync(eventsDirectory)
-
-  return fileNames.map((fileName) => {
+  const nonDraftFileNames = fileNames.filter((fileName) => !isDraft(fileName))
+  return nonDraftFileNames.map((fileName) => {
     return {
-      params: {
         id: fileName.replace(/\.md$/, ""),
-      },
-    }
+    };
   })
 }
 
@@ -229,4 +226,11 @@ export function getAllEventsByMonth() {
       number: months.filter((m) => m === month).length,
     }
   })
+}
+
+function isDraft(fileName: string) {
+  const fullPath = path.join(eventsDirectory, fileName)
+  const fileContents = fs.readFileSync(fullPath, "utf8")
+  const matterResult = matter(fileContents)
+  return matterResult.data.draft
 }
