@@ -1,4 +1,4 @@
-import {getAllEventsIds, getSortedEventsData} from "@/lib/events"
+import { getAllEventsIds, getSortedEventsData } from "@/lib/events"
 import EventsListCards from "@/components/cards/events-list-cards"
 
 export default async function CardsView() {
@@ -7,7 +7,7 @@ export default async function CardsView() {
 
   return (
     <div>
-      <EventsListCards eventsData={eventsData}/>
+      <EventsListCards eventsData={eventsData} />
     </div>
   )
 }
