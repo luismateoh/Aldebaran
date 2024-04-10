@@ -2,11 +2,11 @@ import { MetadataRoute } from "next"
 
 import { getAllEventsIds } from "@/lib/events"
 
-const EXTERNAL_DATA_URL = "https://www.aldebaran.run/events"
+const EXTERNAL_DATA_URL = "https://aldebaran.run/events"
 
 function generateSiteMap(posts: any) {
   const mainUrl = {
-    url: "https://www.aldebaran.run",
+    url: "https://aldebaran.run",
     lastModified: new Date(),
     changeFrequency: "yearly",
     priority: 1,
