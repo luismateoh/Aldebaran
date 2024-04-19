@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props) {
   const eventData: EventData = await getEventData(params.id)
 
   return {
-    title: eventData.title,
+    title: eventData.title.toUpperCase(),
   }
 }
 
@@ -60,14 +60,19 @@ export default async function Event({ params }: Props) {
                 <h2 className="m-0 pr-2 font-light">Distancias</h2>
 
                 <div className="flex flex-wrap gap-2">
-                  {eventData.distances.map((distance) => (
-                    <Badge
-                      className="rounded-md text-xl sm:text-2xl"
-                      key={distance}
-                    >
-                      {distance}
-                    </Badge>
-                  ))}
+                  {eventData.distances
+                    .sort(
+                      (a: any, b: any) =>
+                        parseFloat(a.value) - parseFloat(b.value)
+                    )
+                    .map((distance) => (
+                      <Badge
+                        className="rounded-md text-xl sm:text-2xl"
+                        key={distance}
+                      >
+                        {distance}
+                      </Badge>
+                    ))}
                 </div>
               </div>
               {/* Event Date */}

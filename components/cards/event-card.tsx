@@ -49,15 +49,17 @@ export default function EventCard({ event: event }: { event: EventData }) {
         </div>
 
         <div className="flex items-center gap-1">
-          {event.distances.map((distance: string) => (
-            <Badge
-              className="rounded-md text-sm capitalize"
-              variant="secondary"
-              key={distance}
-            >
-              {distance}
-            </Badge>
-          ))}
+          {event.distances
+            .sort((a: any, b: any) => parseFloat(a.value) - parseFloat(b.value))
+            .map((distance: string) => (
+              <Badge
+                className="rounded-md text-sm capitalize"
+                variant="secondary"
+                key={distance}
+              >
+                {distance}
+              </Badge>
+            ))}
         </div>
       </div>
 

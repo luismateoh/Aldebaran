@@ -1,12 +1,12 @@
 ---
-title: Media Maratón de Ibague
+title: Media Maratón Músical de Ibague
 author: Luis Hincapie
 publishDate: 2024-03-25
 draft: false
 category: Running
 tags:
   - maraton
-snippet: Estamos #FIRMESASILLUEVA con la mejor energía y todo preparado porque en 2024 #TERMINAELAGUACERO
+snippet: "Estamos #FIRMESASILLUEVA con la mejor energía y todo preparado porque en 2024 #TERMINAELAGUACERO"
 altitude: 1285m
 eventDate: 2024-sep-22
 organizer: Media Maratón Musical
