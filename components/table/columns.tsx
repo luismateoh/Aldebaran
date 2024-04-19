@@ -70,15 +70,17 @@ export const columns: ColumnDef<EventData>[] = [
       const distances = row.getValue("distances") as string[]
       return (
         <div className="flex flex-wrap gap-1">
-          {distances.map((distance) => (
-            <Badge
-              variant="small"
-              className="rounded-md font-bold"
-              key={distance}
-            >
-              {distance}
-            </Badge>
-          ))}
+          {distances
+            .sort((a: any, b: any) => parseFloat(a.value) - parseFloat(b.value))
+            .map((distance) => (
+              <Badge
+                variant="small"
+                className="rounded-md font-bold"
+                key={distance}
+              >
+                {distance}
+              </Badge>
+            ))}
         </div>
       )
     },

@@ -7,7 +7,7 @@ category: Running
 tags:
   - maraton
 snippet:
-altitude: 1654m
+altitude: 960m
 eventDate: 2024-jul-14
 organizer: Fenalco Tuluá
 registrationDeadline: 2024-jul-14
