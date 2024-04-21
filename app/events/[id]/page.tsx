@@ -11,6 +11,7 @@ import AddToCalendar from "@/components/add-to-calendar"
 import { BackButton } from "@/components/back-button"
 import CountDownTimer from "@/components/count-down-timer"
 import InteractiveSection from "@/components/interactive-section"
+import SeeAllEventsCta from "@/components/see-all-events-cta"
 
 type Params = {
   id: string
@@ -164,6 +165,7 @@ export default async function Event({ params }: Props) {
               dangerouslySetInnerHTML={{ __html: eventData.contentHtml }}
             />
           </article>
+          <SeeAllEventsCta />
         </div>
       </InteractiveSection>
     </section>
