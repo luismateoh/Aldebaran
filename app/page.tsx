@@ -5,6 +5,7 @@ import TableView from "@/components/table/table-view"
 
 export const metadata = {
   title: siteConfig.title,
+  keywords: siteConfig.keywords,
 }
 
 export default function IndexPage() {

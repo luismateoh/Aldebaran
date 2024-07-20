@@ -15,4 +15,7 @@ export const siteConfig = {
     twitter: "https://twitter.com/luismateoh",
     github: "https://github.com/luismateoh",
   },
+  keywords:
+    "atletismo, carreras, maratones, Colombia, eventos, competencias, correr, corredores, corredoras, deporte, calendario maratones 2024 colombia, calendario maratones 2025 colombia",
+
 }
