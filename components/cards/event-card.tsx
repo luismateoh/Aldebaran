@@ -1,9 +1,9 @@
 import React from "react"
-import Image from "next/image"
 
 import type { EventData } from "@/lib/types"
 import { capitalize, formatDate } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
+import SmartImage from "@/components/smart-image"
 
 import { Icons } from "../icons"
 
@@ -20,13 +20,16 @@ export default function EventCard({ event: event }: { event: EventData }) {
         href={`/events/${event.id}/`}
         className="flex h-52 rounded-2xl bg-background transition duration-300 group-hover:-translate-y-2 group-hover:shadow-xl"
       >
-        <Image
-          priority
-          className="size-full overflow-hidden rounded-xl object-cover"
-          width={720}
-          height={360}
+        <SmartImage
           src={event.cover}
           alt={"Imagen de " + event.title}
+          width={720}
+          height={360}
+          className="size-full overflow-hidden rounded-xl object-cover"
+          eventId={event.id}
+          fallbackType={event.category?.includes('marathon') ? 'marathon' : 
+                      event.category?.includes('trail') ? 'trail' : 'running'}
+          priority
         />
       </a>
 
@@ -49,15 +52,17 @@ export default function EventCard({ event: event }: { event: EventData }) {
         </div>
 
         <div className="flex items-center gap-1">
-          {event.distances.map((distance: string) => (
-            <Badge
-              className="rounded-md text-sm capitalize"
-              variant="secondary"
-              key={distance}
-            >
-              {distance}
-            </Badge>
-          ))}
+          {event.distances
+            .sort((a: any, b: any) => parseFloat(a.value) - parseFloat(b.value))
+            .map((distance: string) => (
+              <Badge
+                className="rounded-md text-sm capitalize"
+                variant="secondary"
+                key={distance}
+              >
+                {distance}
+              </Badge>
+            ))}
         </div>
       </div>
 

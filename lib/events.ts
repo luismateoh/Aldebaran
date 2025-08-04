@@ -2,7 +2,7 @@ import fs from "fs"
 import path from "path"
 import matter from "gray-matter"
 // Import 'remark', library for rendering markdown
-import {remark} from "remark"
+import { remark } from "remark"
 import html from "remark-html"
 
 const eventsDirectory = path.join(process.cwd(), "events")
@@ -148,8 +148,8 @@ export function getAllEventsIds() {
   const nonDraftFileNames = fileNames.filter((fileName) => !isDraft(fileName))
   return nonDraftFileNames.map((fileName) => {
     return {
-        id: fileName.replace(/\.md$/, ""),
-    };
+      id: fileName.replace(/\.md$/, ""),
+    }
   })
 }
 
@@ -217,7 +217,7 @@ export function getAllEventsByMonth() {
   const events = getAllEventsData()
   const months = events.map((event) => {
     const date = new Date(event.eventDate)
-    return date.toLocaleString("es-ES", {month: "long"})
+    return date.toLocaleString("es-ES", { month: "long" })
   })
   const uniqueMonths = Array.from(new Set(months))
   return uniqueMonths.map((month) => {

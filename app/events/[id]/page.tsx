@@ -1,4 +1,3 @@
-import Image from "next/image"
 import Link from "next/link"
 import { formatDate } from "date-fns"
 import { es } from "date-fns/locale"
@@ -10,7 +9,10 @@ import { Badge } from "@/components/ui/badge"
 import AddToCalendar from "@/components/add-to-calendar"
 import { BackButton } from "@/components/back-button"
 import CountDownTimer from "@/components/count-down-timer"
+import EventComments from "@/components/event-comments"
 import InteractiveSection from "@/components/interactive-section"
+import SeeAllEventsCta from "@/components/see-all-events-cta"
+import SmartImage from "@/components/smart-image"
 
 type Params = {
   id: string
@@ -24,7 +26,7 @@ export async function generateMetadata({ params }: Props) {
   const eventData: EventData = await getEventData(params.id)
 
   return {
-    title: eventData.title,
+    title: eventData.title.toUpperCase(),
   }
 }
 
@@ -40,12 +42,16 @@ export default async function Event({ params }: Props) {
             <Badge className="rounded-md capitalize">
               {eventData.category}
             </Badge>
-            <Image
-              className="my-6 w-full overflow-hidden rounded-xl"
-              width={800}
-              height={360}
+            <SmartImage
               src={eventData.cover}
               alt={eventData.title}
+              width={800}
+              height={360}
+              className="my-6 w-full overflow-hidden rounded-xl"
+              eventId={eventData.id}
+              fallbackType={eventData.category?.includes('marathon') ? 'marathon' : 
+                          eventData.category?.includes('trail') ? 'trail' : 'running'}
+              priority
             />
             {/* Event Title */}
             <h1 className="my-4 font-heading text-3xl md:text-4xl">
@@ -60,14 +66,19 @@ export default async function Event({ params }: Props) {
                 <h2 className="m-0 pr-2 font-light">Distancias</h2>
 
                 <div className="flex flex-wrap gap-2">
-                  {eventData.distances.map((distance) => (
-                    <Badge
-                      className="rounded-md text-xl sm:text-2xl"
-                      key={distance}
-                    >
-                      {distance}
-                    </Badge>
-                  ))}
+                  {eventData.distances
+                    .sort(
+                      (a: any, b: any) =>
+                        parseFloat(a.value) - parseFloat(b.value)
+                    )
+                    .map((distance) => (
+                      <Badge
+                        className="rounded-md text-xl sm:text-2xl"
+                        key={distance}
+                      >
+                        {distance}
+                      </Badge>
+                    ))}
                 </div>
               </div>
               {/* Event Date */}
@@ -159,7 +170,11 @@ export default async function Event({ params }: Props) {
               dangerouslySetInnerHTML={{ __html: eventData.contentHtml }}
             />
           </article>
+          <SeeAllEventsCta />
         </div>
+        
+        {/* Comentarios de la comunidad */}
+        <EventComments eventId={params.id} />
       </InteractiveSection>
     </section>
   )
