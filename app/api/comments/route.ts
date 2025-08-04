@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import fs from 'fs'
 import path from 'path'
 
-// Ruta donde se guardan los comentarios (en desarrollo)
+// Ruta donde se guardan los comentarios (solo desarrollo)
 const COMMENTS_DIR = path.join(process.cwd(), 'data', 'comments')
 
-// Asegurar que existe el directorio
-if (!fs.existsSync(COMMENTS_DIR)) {
+// Asegurar que existe el directorio (solo en desarrollo)
+if (process.env.NODE_ENV !== 'production' && !fs.existsSync(COMMENTS_DIR)) {
   fs.mkdirSync(COMMENTS_DIR, { recursive: true })
 }
 
@@ -16,6 +16,37 @@ interface Comment {
   content: string
   timestamp: string
   eventId: string
+}
+
+// Simulación de base de datos en memoria para producción (temporal)
+// En una implementación real, usarías Vercel KV, Supabase, o Firebase
+const PRODUCTION_COMMENTS: Map<string, Comment[]> = new Map()
+
+// Comentarios iniciales de demo
+const DEMO_COMMENTS: Record<string, Comment[]> = {
+  "2025-sep-8_bogota_carreradelamujer": [
+    {
+      id: "demo1",
+      author: "Ana Corredora",
+      content: "¡Excelente carrera! Gran organización y ambiente increíble. Ya estoy entrenando para el próximo año.",
+      timestamp: "2024-08-03T10:30:00Z",
+      eventId: "2025-sep-8_bogota_carreradelamujer"
+    },
+    {
+      id: "demo2", 
+      author: "Carlos Fitness",
+      content: "Mi primera carrera de 5K y quedé súper motivado. El recorrido por Bogotá fue hermoso.",
+      timestamp: "2024-08-03T09:15:00Z",
+      eventId: "2025-sep-8_bogota_carreradelamujer"
+    }
+  ]
+}
+
+// Inicializar comentarios de demo en producción
+if (process.env.NODE_ENV === 'production') {
+  Object.entries(DEMO_COMMENTS).forEach(([eventId, comments]) => {
+    PRODUCTION_COMMENTS.set(eventId, [...comments])
+  })
 }
 
 // GET - Obtener comentarios de un evento
@@ -28,14 +59,20 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'EventId requerido' }, { status: 400 })
     }
 
-    const commentsFile = path.join(COMMENTS_DIR, `${eventId}.json`)
-    
-    if (!fs.existsSync(commentsFile)) {
-      return NextResponse.json({ comments: [] })
-    }
+    let comments: Comment[] = []
 
-    const commentsData = fs.readFileSync(commentsFile, 'utf8')
-    const comments: Comment[] = JSON.parse(commentsData)
+    // En producción, usar almacenamiento en memoria (temporal)
+    if (process.env.NODE_ENV === 'production') {
+      comments = PRODUCTION_COMMENTS.get(eventId) || []
+    } else {
+      // En desarrollo, usar sistema de archivos
+      const commentsFile = path.join(COMMENTS_DIR, `${eventId}.json`)
+      
+      if (fs.existsSync(commentsFile)) {
+        const commentsData = fs.readFileSync(commentsFile, 'utf8')
+        comments = JSON.parse(commentsData)
+      }
+    }
     
     // Ordenar por fecha (más recientes primero)
     comments.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
@@ -65,20 +102,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'El comentario debe tener al menos 5 caracteres' }, { status: 400 })
     }
 
-    // Filtro básico de contenido (opcional)
+    // Filtro básico de contenido
     const badWords = ['spam', 'fake', 'scam']
     const contentLower = content.toLowerCase()
     if (badWords.some(word => contentLower.includes(word))) {
       return NextResponse.json({ error: 'Contenido no permitido' }, { status: 400 })
-    }
-
-    const commentsFile = path.join(COMMENTS_DIR, `${eventId}.json`)
-    
-    // Cargar comentarios existentes
-    let comments: Comment[] = []
-    if (fs.existsSync(commentsFile)) {
-      const commentsData = fs.readFileSync(commentsFile, 'utf8')
-      comments = JSON.parse(commentsData)
     }
 
     // Crear nuevo comentario
@@ -90,16 +118,35 @@ export async function POST(request: NextRequest) {
       eventId
     }
 
-    // Agregar al inicio (más reciente primero)
-    comments.unshift(newComment)
-    
-    // Limitar a 100 comentarios por evento (opcional)
-    if (comments.length > 100) {
-      comments = comments.slice(0, 100)
-    }
+    if (process.env.NODE_ENV === 'production') {
+      // En producción, usar almacenamiento en memoria (temporal)
+      const existingComments = PRODUCTION_COMMENTS.get(eventId) || []
+      const updatedComments = [newComment, ...existingComments]
+      
+      // Limitar a 50 comentarios por evento
+      if (updatedComments.length > 50) {
+        updatedComments.splice(50)
+      }
+      
+      PRODUCTION_COMMENTS.set(eventId, updatedComments)
+    } else {
+      // En desarrollo, usar sistema de archivos
+      const commentsFile = path.join(COMMENTS_DIR, `${eventId}.json`)
+      
+      let comments: Comment[] = []
+      if (fs.existsSync(commentsFile)) {
+        const commentsData = fs.readFileSync(commentsFile, 'utf8')
+        comments = JSON.parse(commentsData)
+      }
 
-    // Guardar comentarios
-    fs.writeFileSync(commentsFile, JSON.stringify(comments, null, 2))
+      comments.unshift(newComment)
+      
+      if (comments.length > 100) {
+        comments = comments.slice(0, 100)
+      }
+
+      fs.writeFileSync(commentsFile, JSON.stringify(comments, null, 2))
+    }
     
     return NextResponse.json({ 
       success: true, 
@@ -112,9 +159,17 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// DELETE - Eliminar comentario (opcional, para moderación)
+// DELETE - Eliminar comentario (solo desarrollo)
 export async function DELETE(request: NextRequest) {
   try {
+    // En producción, retornar error
+    if (process.env.NODE_ENV === 'production') {
+      return NextResponse.json({ 
+        error: 'Funcionalidad no disponible en producción',
+        demo: true
+      }, { status: 403 })
+    }
+
     const { searchParams } = new URL(request.url)
     const eventId = searchParams.get('eventId')
     const commentId = searchParams.get('commentId')
