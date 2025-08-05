@@ -2,16 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
 
 export function middleware(request: NextRequest) {
-  // Solo proteger rutas /admin en producción
+  // Proteger rutas /admin
   if (request.nextUrl.pathname.startsWith('/admin')) {
     
-    // En desarrollo, permitir acceso para debugging
-    if (process.env.NODE_ENV === 'development') {
-      console.log('🔧 Middleware: Permitiendo acceso en desarrollo')
-      return NextResponse.next()
-    }
-    
-    // En producción, verificar autenticación
+    // Verificar autenticación
     const token = request.headers.get('authorization')?.replace('Bearer ', '') ||
                   request.cookies.get('admin_token')?.value
 
@@ -20,7 +14,7 @@ export function middleware(request: NextRequest) {
     }
 
     try {
-      jwt.verify(token, process.env.ADMIN_PASSWORD || 'fallback-secret')
+      jwt.verify(token, process.env.ADMIN_PASSWORD || 'default-secret')
       return NextResponse.next()
     } catch (error) {
       return NextResponse.redirect(new URL('/login', request.url))
