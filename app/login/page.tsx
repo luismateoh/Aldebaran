@@ -123,27 +123,6 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          {/* Debug temporal para diagnosticar el problema */}
-          <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 rounded-lg">
-            <p className="text-xs text-yellow-800 dark:text-yellow-200 mb-2">Debug temporal:</p>
-            <Button 
-              onClick={() => {
-                console.log('🔍 Verificando estado de autenticación...')
-                console.log('localStorage admin_token:', localStorage.getItem('admin_token'))
-                console.log('sessionStorage:', sessionStorage.getItem('admin_authenticated'))
-                console.log('document.cookie:', document.cookie)
-                
-                // Intentar ir directo al admin
-                window.location.href = '/admin'
-              }}
-              variant="outline"
-              size="sm"
-              className="w-full"
-            >
-              🔍 Debug: Ir a Admin
-            </Button>
-          </div>
-
           <div className="mt-6 text-center text-sm text-muted-foreground">
             <p>Panel de gestión para Aldebaran</p>
             <p className="text-xs mt-1">Acceso solo para administradores autorizados</p>
