@@ -65,9 +65,13 @@ export default function EventComments({ eventId }: CommentsProps) {
       if (response.ok) {
         setNewComment({ author: '', content: '' })
         loadComments() // Recargar comentarios
+      } else {
+        const errorData = await response.json()
+        alert(`Error: ${errorData.error}`)
       }
     } catch (error) {
       console.error('Error submitting comment:', error)
+      alert('Error al enviar comentario. Por favor intenta de nuevo.')
     } finally {
       setIsSubmitting(false)
     }

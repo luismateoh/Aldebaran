@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Calendar, MapPin, Clock, DollarSign, Globe, Users } from 'lucide-react'
+import { Calendar, MapPin, Clock, DollarSign, Globe, Users, Image as ImageIcon, Download, CheckCircle, AlertCircle } from 'lucide-react'
 
 interface EventFormData {
   title: string
@@ -22,9 +22,24 @@ interface EventFormData {
   distances: string[]
   registrationFeed: string
   category: string
+  coverImage: string // Nueva propiedad para imagen
 }
 
-export default function NewEventForm() {
+interface ImageOptimizationResult {
+  success: boolean
+  originalUrl: string
+  optimizedUrl?: string
+  originalSize?: number
+  optimizedSize?: number
+  compressionRatio?: number
+  error?: string
+}
+
+interface NewEventFormProps {
+  isPublic?: boolean
+}
+
+export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
   const [formData, setFormData] = useState<EventFormData>({
     title: '',
     eventDate: '',
@@ -35,13 +50,21 @@ export default function NewEventForm() {
     description: '',
     distances: [],
     registrationFeed: '',
-    category: 'Running'
+    category: 'Running',
+    coverImage: '' // Inicializar nueva propiedad
   })
   
-  const [isGenerating, setIsGenerating] = useState(false)
-  const [generatedEvent, setGeneratedEvent] = useState<string>('')
   const [isSending, setIsSending] = useState(false)
   const [emailSent, setEmailSent] = useState(false)
+  const [isCommitting, setIsCommitting] = useState(false)
+  const [commitResult, setCommitResult] = useState<any>(null)
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [generatedEvent, setGeneratedEvent] = useState<string>('')
+  
+  // Estados para optimización de imágenes
+  const [isOptimizingImage, setIsOptimizingImage] = useState(false)
+  const [imageOptimizationResult, setImageOptimizationResult] = useState<ImageOptimizationResult | null>(null)
+  const [optimizedImageUrl, setOptimizedImageUrl] = useState<string>('')
   
   // Detectar si estamos en desarrollo o producción
   const isDevelopment = process.env.NODE_ENV === 'development'
@@ -65,46 +88,123 @@ export default function NewEventForm() {
     }))
   }
   
-  const enhanceWithAI = async () => {
-    setIsGenerating(true)
-    try {
-      const response = await fetch('/api/enhance-event', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+  // Función para optimizar imagen automáticamente
+  const optimizeImage = async (imageUrl: string) => {
+    if (!imageUrl || !imageUrl.startsWith('http')) {
+      setImageOptimizationResult({
+        success: false,
+        originalUrl: imageUrl,
+        error: 'URL de imagen inválida'
       })
-      
+      return
+    }
+
+    setIsOptimizingImage(true)
+    setImageOptimizationResult(null)
+
+    try {
+      // Generar eventId temporal basado en los datos actuales
+      const eventId = `${formData.eventDate || 'temp'}_${formData.municipality?.toLowerCase() || 'unknown'}_${formData.title?.toLowerCase().replace(/[^a-z0-9]/g, '') || 'event'}`
+
+      const response = await fetch('/api/optimize-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          imageUrl,
+          eventId
+        })
+      })
+
       const result = await response.json()
-      setGeneratedEvent(result.markdown)
+
+      if (result.success) {
+        setImageOptimizationResult({
+          success: true,
+          originalUrl: imageUrl,
+          optimizedUrl: result.optimizedUrl,
+          originalSize: result.originalSize,
+          optimizedSize: result.optimizedSize,
+          compressionRatio: result.compressionRatio
+        })
+        setOptimizedImageUrl(result.optimizedUrl)
+        console.log('✅ Imagen optimizada correctamente:', result)
+      } else {
+        setImageOptimizationResult({
+          success: false,
+          originalUrl: imageUrl,
+          error: result.error || 'Error desconocido'
+        })
+      }
     } catch (error) {
-      console.error('Error enhancing event:', error)
+      console.error('❌ Error optimizando imagen:', error)
+      setImageOptimizationResult({
+        success: false,
+        originalUrl: imageUrl,
+        error: error instanceof Error ? error.message : 'Error de conexión'
+      })
     } finally {
-      setIsGenerating(false)
+      setIsOptimizingImage(false)
     }
   }
-  
+
+  // Función para manejar cambio en URL de imagen
+  const handleImageUrlChange = (url: string) => {
+    setFormData(prev => ({ ...prev, coverImage: url }))
+    
+    // Reset estados de optimización
+    setImageOptimizationResult(null)
+    setOptimizedImageUrl('')
+    
+    // Si la URL es válida, optimizar automáticamente después de 1 segundo
+    if (url && url.startsWith('http')) {
+      setTimeout(() => {
+        optimizeImage(url)
+      }, 1000)
+    }
+  }
+
   const sendEventByEmail = async () => {
     setIsSending(true)
     try {
-      if (isDevelopment) {
-        // En desarrollo, simular envío
-        console.log('📧 Simulando envío de email:', formData)
-        await new Promise(resolve => setTimeout(resolve, 1500)) // Simular delay
-        setEmailSent(true)
-        setFormData({
-          title: '',
-          eventDate: '',
-          municipality: '',
-          department: '',
-          organizer: '',
-          website: '',
-          description: '',
-          distances: [],
-          registrationFeed: '',
-          category: 'Running'
+      if (isPublic) {
+        // Versión pública: guardar propuesta en Postgres
+        const response = await fetch('/api/hybrid-storage', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer public-form-token'
+          },
+          body: JSON.stringify({
+            action: 'create_proposal',
+            proposal: {
+              ...formData,
+              // Usar imagen optimizada si está disponible
+              coverImage: optimizedImageUrl || formData.coverImage,
+              submittedBy: 'public_form',
+              userAgent: navigator.userAgent
+            }
+          })
         })
+
+        if (response.ok) {
+          const result = await response.json()
+          console.log('✅ Propuesta guardada en Postgres:', result.proposalId)
+          setEmailSent(true)
+        } else {
+          throw new Error('Error al guardar propuesta')
+        }
+      } else if (isDevelopment) {
+        // En desarrollo, simular envío
+        console.log('📧 Simulando envío de email:', {
+          ...formData,
+          coverImage: optimizedImageUrl || formData.coverImage
+        })
+        await new Promise(resolve => setTimeout(resolve, 1500))
+        setEmailSent(true)
       } else {
-        // En producción, usar EmailJS
+        // En producción admin, usar EmailJS como fallback
         const templateParams = {
           event_title: formData.title,
           event_date: formData.eventDate,
@@ -116,10 +216,10 @@ export default function NewEventForm() {
           distances: formData.distances.join(', ') || 'No especificadas',
           registration_fee: formData.registrationFeed || 'No especificado',
           category: formData.category,
+          cover_image: optimizedImageUrl || formData.coverImage || 'Sin imagen',
           submitted_at: new Date().toLocaleString('es-CO')
         }
 
-        // Configurar EmailJS (las keys van en variables de entorno)
         await emailjs.send(
           process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_default',
           process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || 'template_default',
@@ -128,6 +228,57 @@ export default function NewEventForm() {
         )
         
         setEmailSent(true)
+      }
+      
+      // Limpiar formulario después del envío exitoso
+      setFormData({
+        title: '',
+        eventDate: '',
+        municipality: '',
+        department: '',
+        organizer: '',
+        website: '',
+        description: '',
+        distances: [],
+        registrationFeed: '',
+        category: 'Running',
+        coverImage: ''
+      })
+      setImageOptimizationResult(null)
+      setOptimizedImageUrl('')
+    } catch (error) {
+      console.error('Error sending proposal:', error)
+      alert('Error al enviar la propuesta. Por favor intenta de nuevo.')
+    } finally {
+      setIsSending(false)
+    }
+  }
+  
+  const commitToGitHub = async () => {
+    setIsCommitting(true)
+    setCommitResult(null)
+
+    try {
+      const { markdown } = generateMarkdown()
+      const token = localStorage.getItem('admin_token') || 'bypass-token'
+      
+      const response = await fetch('/api/github/create-event', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          eventData: formData,
+          markdown: markdown
+        })
+      })
+
+      const result = await response.json()
+      setCommitResult(result)
+
+      if (result.success) {
+        // Limpiar formulario después del commit exitoso
         setFormData({
           title: '',
           eventDate: '',
@@ -138,17 +289,151 @@ export default function NewEventForm() {
           description: '',
           distances: [],
           registrationFeed: '',
-          category: 'Running'
+          category: 'Running',
+          coverImage: ''
         })
       }
     } catch (error) {
-      console.error('Error sending email:', error)
-      alert('Error al enviar el evento. Por favor intenta de nuevo.')
+      setCommitResult({
+        error: 'Error al crear evento en GitHub',
+        details: error instanceof Error ? error.message : 'Error desconocido'
+      })
     } finally {
-      setIsSending(false)
+      setIsCommitting(false)
     }
   }
-  
+
+  // Nueva función para crear evento con sistema híbrido
+  const createEventHybrid = async () => {
+    setIsCommitting(true)
+    setCommitResult(null)
+
+    try {
+      const { markdown } = generateMarkdown()
+      const token = localStorage.getItem('admin_token') || 'bypass-token'
+      
+      const response = await fetch('/api/hybrid-storage', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          action: 'create_event',
+          eventData: {
+            eventId: `${formData.eventDate}_${formData.municipality.toLowerCase()}_${formData.title.toLowerCase().replace(/[^a-z0-9]/g, '')}`,
+            title: formData.title.toUpperCase(),
+            slug: formData.title.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+            category: formData.category,
+            snippet: formData.description,
+            eventDate: new Date(formData.eventDate),
+            municipality: formData.municipality,
+            department: formData.department,
+            organizer: formData.organizer,
+            website: formData.website,
+            registrationFee: formData.registrationFeed,
+            distances: formData.distances,
+            tags: [formData.category.toLowerCase()],
+          },
+          markdownContent: markdown
+        })
+      })
+
+      const result = await response.json()
+      setCommitResult(result)
+
+      if (result.success) {
+        // Limpiar formulario después del commit exitoso
+        setFormData({
+          title: '',
+          eventDate: '',
+          municipality: '',
+          department: '',
+          organizer: '',
+          website: '',
+          description: '',
+          distances: [],
+          registrationFeed: '',
+          category: 'Running',
+          coverImage: ''
+        })
+      }
+    } catch (error) {
+      setCommitResult({
+        error: 'Error al crear evento con sistema híbrido',
+        details: error instanceof Error ? error.message : 'Error desconocido'
+      })
+    } finally {
+      setIsCommitting(false)
+    }
+  }
+
+  // Simplificar función para crear solo drafts
+  const createEventDraft = async () => {
+    setIsCommitting(true)
+    setCommitResult(null)
+
+    try {
+      const token = localStorage.getItem('admin_token') || 'bypass-token'
+      
+      const response = await fetch('/api/hybrid-storage', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          action: 'create_event',
+          eventData: {
+            eventId: `${formData.eventDate}_${formData.municipality.toLowerCase()}_${formData.title.toLowerCase().replace(/[^a-z0-9]/g, '')}`,
+            title: formData.title.toUpperCase(),
+            date: formData.eventDate,
+            municipality: formData.municipality,
+            department: formData.department,
+            organizer: formData.organizer,
+            category: formData.category,
+            status: 'draft', // Siempre crear como draft
+            distances: formData.distances,
+            website: formData.website,
+            registrationFee: formData.registrationFeed,
+            description: formData.description,
+            altitude: '',
+            cover: optimizedImageUrl || formData.coverImage || '' // Usar imagen optimizada
+          }
+        })
+      })
+
+      const result = await response.json()
+      setCommitResult(result)
+
+      if (result.success) {
+        // Limpiar formulario después del commit exitoso
+        setFormData({
+          title: '',
+          eventDate: '',
+          municipality: '',
+          department: '',
+          organizer: '',
+          website: '',
+          description: '',
+          distances: [],
+          registrationFeed: '',
+          category: 'Running',
+          coverImage: ''
+        })
+        setImageOptimizationResult(null)
+        setOptimizedImageUrl('')
+      }
+    } catch (error) {
+      setCommitResult({
+        error: 'Error al crear borrador',
+        details: error instanceof Error ? error.message : 'Error desconocido'
+      })
+    } finally {
+      setIsCommitting(false)
+    }
+  }
+
   const generateMarkdown = () => {
     const date = new Date(formData.eventDate)
     const year = date.getFullYear()
@@ -208,19 +493,69 @@ ${formData.website ? `## Más Información\n\nVisita [${formData.website}](${for
     URL.revokeObjectURL(url)
   }
   
+  const enhanceWithAI = async () => {
+    setIsGenerating(true)
+    try {
+      const response = await fetch('/api/enhance-event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
+      
+      const result = await response.json()
+      setGeneratedEvent(result.markdown)
+    } catch (error) {
+      console.error('Error enhancing event:', error)
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+  
   return (
-    <div className="container max-w-4xl mx-auto py-8">
+    <div className={isPublic ? "" : "container max-w-4xl mx-auto py-8"}>
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calendar className="h-6 w-6" />
-            Crear Nuevo Evento de Atletismo
+            {isPublic ? 'Proponer Evento de Atletismo' : 'Crear Nuevo Evento de Atletismo'}
           </CardTitle>
           <CardDescription>
-            Completa la información básica y deja que la IA ayude a enriquecer los detalles
+            {isPublic 
+              ? 'Comparte la información del evento y lo revisaremos para publicarlo'
+              : 'Completa la información básica y deja que la IA ayude a enriquecer los detalles'
+            }
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
+          {/* Resultado de commit (solo para admin) */}
+          {!isPublic && commitResult && (
+            <div className={`p-4 rounded-lg border ${
+              commitResult.error 
+                ? 'border-red-200 bg-red-50 dark:bg-red-950/20' 
+                : 'border-green-200 bg-green-50 dark:bg-green-950/20'
+            }`}>
+              <h3 className={`font-medium ${
+                commitResult.error 
+                  ? 'text-red-900 dark:text-red-100' 
+                  : 'text-green-900 dark:text-green-100'
+              }`}>
+                {commitResult.error ? 'Error al Publicar' : 'Evento Publicado Exitosamente'}
+              </h3>
+              <p className={`text-sm mt-1 ${
+                commitResult.error 
+                  ? 'text-red-700 dark:text-red-300' 
+                  : 'text-green-700 dark:text-green-300'
+              }`}>
+                {commitResult.message || commitResult.error}
+              </p>
+              {commitResult.filename && (
+                <p className="text-xs mt-2 text-green-600">
+                  Archivo creado: {commitResult.filename}
+                </p>
+              )}
+            </div>
+          )}
+
           {/* Información Básica */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -243,6 +578,88 @@ ${formData.website ? `## Más Información\n\nVisita [${formData.website}](${for
               />
             </div>
           </div>
+
+          {/* Nueva sección de imagen - solo para admin */}
+          {!isPublic && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="coverImage" className="flex items-center gap-2">
+                  <ImageIcon className="h-4 w-4" />
+                  Imagen del Evento
+                </Label>
+                <Input
+                  id="coverImage"
+                  placeholder="https://ejemplo.com/imagen-evento.jpg"
+                  value={formData.coverImage}
+                  onChange={(e) => handleImageUrlChange(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Pega la URL de una imagen y se descargará y optimizará automáticamente
+                </p>
+              </div>
+
+              {/* Estado de optimización de imagen */}
+              {(isOptimizingImage || imageOptimizationResult) && (
+                <Card className="border-dashed">
+                  <CardContent className="p-4">
+                    {isOptimizingImage && (
+                      <div className="flex items-center gap-3">
+                        <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                        <div>
+                          <div className="font-medium text-blue-700">Optimizando imagen...</div>
+                          <div className="text-sm text-blue-600">Descargando, redimensionando y comprimiendo</div>
+                        </div>
+                      </div>
+                    )}
+
+                    {imageOptimizationResult && !isOptimizingImage && (
+                      <div className={`flex items-start gap-3 ${
+                        imageOptimizationResult.success ? 'text-green-700' : 'text-red-700'
+                      }`}>
+                        {imageOptimizationResult.success ? (
+                          <CheckCircle className="h-6 w-6 text-green-500 mt-0.5" />
+                        ) : (
+                          <AlertCircle className="h-6 w-6 text-red-500 mt-0.5" />
+                        )}
+                        <div className="flex-1">
+                          <div className="font-medium">
+                            {imageOptimizationResult.success ? 'Imagen optimizada correctamente' : 'Error al optimizar imagen'}
+                          </div>
+                          {imageOptimizationResult.success && (
+                            <div className="text-sm space-y-1 mt-2">
+                              <div>✅ Guardada en Blob Storage</div>
+                              <div>📊 Tamaño original: {Math.round((imageOptimizationResult.originalSize || 0) / 1024)} KB</div>
+                              <div>📉 Tamaño optimizado: {Math.round((imageOptimizationResult.optimizedSize || 0) / 1024)} KB</div>
+                              <div>🎯 Compresión: {imageOptimizationResult.compressionRatio}%</div>
+                            </div>
+                          )}
+                          {!imageOptimizationResult.success && (
+                            <div className="text-sm text-red-600 mt-1">
+                              {imageOptimizationResult.error}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Preview de imagen optimizada */}
+                    {optimizedImageUrl && (
+                      <div className="mt-4">
+                        <div className="text-sm font-medium mb-2">Vista previa (optimizada):</div>
+                        <img 
+                          src={optimizedImageUrl} 
+                          alt="Vista previa optimizada"
+                          className="max-w-full h-32 object-cover rounded border"
+                          onLoad={() => console.log('✅ Imagen optimizada cargada')}
+                          onError={() => console.log('❌ Error cargando imagen optimizada')}
+                        />
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          )}
           
           {/* Ubicación */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -350,21 +767,10 @@ ${formData.website ? `## Más Información\n\nVisita [${formData.website}](${for
             />
           </div>
           
-          {/* Acciones */}
+          {/* Acciones con IA restaurada */}
           <div className="space-y-4">
-            {isDevelopment ? (
-              // Modo desarrollo: IA + descarga
-              <div className="flex gap-4">
-                <Button onClick={enhanceWithAI} disabled={isGenerating || !formData.title}>
-                  {isGenerating ? 'Generando...' : '🤖 Enriquecer con IA'}
-                </Button>
-                
-                <Button className="bg-secondary text-secondary-foreground" onClick={downloadEvent} disabled={!formData.title}>
-                  📥 Descargar Markdown
-                </Button>
-              </div>
-            ) : (
-              // Modo producción: envío por email
+            {isPublic ? (
+              // Versión pública: solo envío por email que se guarda en Postgres
               <div className="space-y-4">
                 {emailSent ? (
                   <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
@@ -372,10 +778,10 @@ ${formData.website ? `## Más Información\n\nVisita [${formData.website}](${for
                       <div className="h-5 w-5 bg-green-500 rounded-full flex items-center justify-center">
                         <span className="text-white text-sm">✓</span>
                       </div>
-                      <span className="text-green-700 font-medium">¡Evento enviado exitosamente!</span>
+                      <span className="text-green-700 font-medium">¡Propuesta enviada exitosamente!</span>
                     </div>
                     <p className="text-green-600 text-sm mt-1">
-                      El administrador revisará tu evento y lo publicará pronto.
+                      Tu propuesta se guardó en nuestra base de datos. La revisaremos y publicaremos en 24-48 horas.
                     </p>
                   </div>
                 ) : (
@@ -385,30 +791,65 @@ ${formData.website ? `## Más Información\n\nVisita [${formData.website}](${for
                     className="w-full"
                   >
                     {isSending ? (
-                      <>📤 Enviando...</>
+                      <>📤 Enviando Propuesta...</>
                     ) : (
-                      <>📧 Enviar Evento para Revisión</>
+                      <>📧 Enviar Propuesta</>
                     )}
                   </Button>
                 )}
-                
-                <p className="text-sm text-muted-foreground text-center">
-                  Tu evento será revisado y publicado por el administrador
-                </p>
+              </div>
+            ) : (
+              // Versión admin: crear drafts con IA
+              <div className="space-y-4">
+                <div className="flex gap-4">
+                  <Button onClick={enhanceWithAI} disabled={isGenerating || !formData.title} variant="outline">
+                    {isGenerating ? 'Generando...' : '🤖 Enriquecer con IA'}
+                  </Button>
+                  
+                  <Button 
+                    onClick={createEventDraft} 
+                    disabled={isCommitting || !formData.title || !formData.eventDate}
+                    className="flex-1"
+                  >
+                    {isCommitting ? (
+                      <>🔄 Guardando...</>
+                    ) : (
+                      <>📝 Guardar como Borrador</>
+                    )}
+                  </Button>
+                </div>
               </div>
             )}
           </div>
           
-          {/* Preview */}
-          {generatedEvent && (
+          {/* Preview restaurado - solo para admin */}
+          {!isPublic && generatedEvent && (
             <Card>
               <CardHeader>
-                <CardTitle>Vista Previa Generada</CardTitle>
+                <CardTitle>Vista Previa Generada con IA</CardTitle>
               </CardHeader>
               <CardContent>
                 <pre className="whitespace-pre-wrap bg-muted p-4 rounded text-sm overflow-auto max-h-96">
                   {generatedEvent}
                 </pre>
+                <div className="mt-4 flex gap-2">
+                  <Button 
+                    onClick={() => {
+                      // Extraer descripción del markdown y aplicarla
+                      const lines = generatedEvent.split('\n')
+                      const frontmatterEnd = lines.findIndex((line, index) => index > 0 && line === '---')
+                      const description = lines.slice(frontmatterEnd + 1).join('\n').trim()
+                      setFormData(prev => ({ ...prev, description }))
+                      setGeneratedEvent('')
+                    }}
+                    size="sm"
+                  >
+                    Aplicar al Formulario
+                  </Button>
+                  <Button onClick={() => setGeneratedEvent('')} variant="outline" size="sm">
+                    Descartar
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           )}

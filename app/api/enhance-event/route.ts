@@ -1,25 +1,62 @@
 import Groq from 'groq-sdk'
 import { NextRequest, NextResponse } from 'next/server'
+import fs from 'fs'
 import path from 'path'
 
-// Importar herramientas de imágenes
-const { downloadEventImage, createEventPlaceholder } = require(path.join(process.cwd(), 'scripts', 'image-tools.js'))
+// Función simplificada para crear placeholder SVG (sin dependencias externas)
+function createEventPlaceholder(eventId: string) {
+  try {
+    const publicImagesDir = path.join(process.cwd(), 'public', 'images', 'events')
+    
+    // Verificar si el directorio existe, si no, crearlo
+    if (!fs.existsSync(publicImagesDir)) {
+      fs.mkdirSync(publicImagesDir, { recursive: true })
+    }
+    
+    // Crear SVG simple
+    const svgContent = `<svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#1e40af;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#grad)"/>
+      <text x="50%" y="50%" fill="white" text-anchor="middle" dy=".3em" font-size="24" font-family="Arial, sans-serif">
+        ${eventId.replace(/_/g, ' ').replace(/\d+/g, '').trim() || 'Evento'}
+      </text>
+    </svg>`
+    
+    const filePath = path.join(publicImagesDir, `${eventId}.svg`)
+    fs.writeFileSync(filePath, svgContent)
+    console.log(`✅ Placeholder SVG creado: ${filePath}`)
+  } catch (error) {
+    console.log(`❌ Error creando placeholder para ${eventId}:`, error)
+  }
+}
 
-// Función para procesar imagen del evento en background
+// Función para procesar imagen del evento en background (sin descargas externas en producción)
 async function processEventImage(imageUrl: string, eventId: string) {
   try {
-    if (imageUrl && imageUrl.startsWith('http')) {
-      await downloadEventImage(imageUrl, eventId)
-      console.log(`✅ Imagen descargada para evento: ${eventId}`)
+    // En producción, solo crear placeholder SVG local
+    if (process.env.NODE_ENV === 'production') {
+      createEventPlaceholder(eventId)
+      console.log(`✅ Placeholder creado para evento en producción: ${eventId}`)
     } else {
-      await createEventPlaceholder(eventId)
-      console.log(`✅ Placeholder creado para evento: ${eventId}`)
+      // En desarrollo, intentar descargar si la URL es válida
+      if (imageUrl && imageUrl.startsWith('http')) {
+        console.log(`🔄 En desarrollo - URL de imagen detectada: ${imageUrl}`)
+        createEventPlaceholder(eventId) // Por simplicidad, solo crear placeholder
+      } else {
+        createEventPlaceholder(eventId)
+        console.log(`✅ Placeholder creado para evento: ${eventId}`)
+      }
     }
   } catch (error) {
     console.log(`❌ Error procesando imagen para ${eventId}:`, error)
     // Crear placeholder como fallback
     try {
-      await createEventPlaceholder(eventId)
+      createEventPlaceholder(eventId)
     } catch (placeholderError) {
       console.log(`❌ Error creando placeholder:`, placeholderError)
     }
