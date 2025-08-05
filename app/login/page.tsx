@@ -21,7 +21,7 @@ export default function LoginPage() {
     setError('')
 
     try {
-      console.log('🔐 Intentando login con contraseña:', password)
+      console.log('🔐 Intentando login con contraseña')
       
       const response = await fetch('/api/auth/login', {
         method: 'POST',
@@ -33,7 +33,7 @@ export default function LoginPage() {
       
       if (response.ok) {
         const data = await response.json()
-        console.log('✅ Login exitoso, guardando token')
+        console.log('✅ Login exitoso, configurando autenticación')
         
         // Guardar token en localStorage
         localStorage.setItem('admin_token', data.token)
@@ -41,11 +41,20 @@ export default function LoginPage() {
         // También en sessionStorage como backup
         sessionStorage.setItem('admin_authenticated', 'true')
         
-        // Establecer cookie para que el middleware pueda leerla
-        document.cookie = `admin_token=${data.token}; path=/; max-age=${24 * 60 * 60}; SameSite=Lax`
+        // Establecer cookie con configuración mejorada
+        const expiresDate = new Date()
+        expiresDate.setTime(expiresDate.getTime() + (24 * 60 * 60 * 1000)) // 24 horas
+        document.cookie = `admin_token=${data.token}; expires=${expiresDate.toUTCString()}; path=/; SameSite=Lax`
         
-        // Forzar recarga de la página para que el middleware tome efecto
-        window.location.href = '/admin'
+        console.log('🔄 Redirigiendo al panel de admin...')
+        console.log('🍪 Cookie establecida:', document.cookie)
+        
+        // Usar setTimeout para asegurar que las cookies se establecen
+        setTimeout(() => {
+          console.log('🚀 Ejecutando redirección...')
+          window.location.replace('/admin')
+        }, 200)
+        
       } else {
         const errorData = await response.json()
         console.log('❌ Error de login:', errorData)
@@ -53,7 +62,7 @@ export default function LoginPage() {
       }
     } catch (error) {
       console.error('💥 Error de conexión:', error)
-      setError('Error de conexión. ¿Está el servidor corriendo?')
+      setError('Error de conexión. Verifica que el servidor esté corriendo.')
     } finally {
       setIsLoading(false)
     }
@@ -113,6 +122,27 @@ export default function LoginPage() {
               {isLoading ? 'Verificando...' : 'Acceder'}
             </Button>
           </form>
+
+          {/* Debug temporal para diagnosticar el problema */}
+          <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 rounded-lg">
+            <p className="text-xs text-yellow-800 dark:text-yellow-200 mb-2">Debug temporal:</p>
+            <Button 
+              onClick={() => {
+                console.log('🔍 Verificando estado de autenticación...')
+                console.log('localStorage admin_token:', localStorage.getItem('admin_token'))
+                console.log('sessionStorage:', sessionStorage.getItem('admin_authenticated'))
+                console.log('document.cookie:', document.cookie)
+                
+                // Intentar ir directo al admin
+                window.location.href = '/admin'
+              }}
+              variant="outline"
+              size="sm"
+              className="w-full"
+            >
+              🔍 Debug: Ir a Admin
+            </Button>
+          </div>
 
           <div className="mt-6 text-center text-sm text-muted-foreground">
             <p>Panel de gestión para Aldebaran</p>
