@@ -11,7 +11,8 @@ import { Settings, FileText, Calendar, LogOut, Database, Activity, Mail, Send, C
 
 export default function AdminPage() {
   const router = useRouter()
-  const [isAuthenticated, setIsAuthenticated] = useState(true)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true)
   const [systemStats, setSystemStats] = useState<any>(null)
   const [isLoadingStats, setIsLoadingStats] = useState(true)
   const [aiConfig, setAiConfig] = useState<any>(null)
@@ -21,24 +22,62 @@ export default function AdminPage() {
   const [testingEmail, setTestingEmail] = useState(false)
 
   useEffect(() => {
-    // Verificar autenticación de forma más permisiva
-    const token = localStorage.getItem('admin_token')
-    const sessionAuth = sessionStorage.getItem('admin_authenticated')
-    
-    if (token || sessionAuth) {
-      setIsAuthenticated(true)
-    } else {
-      console.log('⚠️ Sin autenticación, pero permitiendo acceso temporal')
-      setIsAuthenticated(true)
+    const checkAuthentication = async () => {
+      console.log('🔍 Verificando autenticación en AdminPage...')
+      
+      // Verificar token en localStorage primero
+      const token = localStorage.getItem('admin_token')
+      const sessionAuth = sessionStorage.getItem('admin_authenticated')
+      
+      console.log('🎯 Token en localStorage:', !!token)
+      console.log('🎯 Session auth:', !!sessionAuth)
+      
+      if (!token && !sessionAuth) {
+        console.log('❌ No hay autenticación, redirigiendo a login')
+        router.push('/login')
+        return
+      }
+      
+      // Si hay token, verificar que sea válido
+      if (token) {
+        try {
+          const response = await fetch('/api/auth/verify', {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ token })
+          })
+          
+          if (response.ok) {
+            console.log('✅ Token válido, permitiendo acceso')
+            setIsAuthenticated(true)
+          } else {
+            console.log('❌ Token inválido, redirigiendo a login')
+            localStorage.removeItem('admin_token')
+            sessionStorage.removeItem('admin_authenticated')
+            router.push('/login')
+          }
+        } catch (error) {
+          console.error('💥 Error verificando token:', error)
+          setIsAuthenticated(true) // Permitir acceso temporal si hay error de red
+        }
+      } else {
+        setIsAuthenticated(true) // Permitir acceso si hay session auth
+      }
+      
+      setIsCheckingAuth(false)
     }
 
+    checkAuthentication()
     // Cargar estadísticas del sistema híbrido
     loadSystemStats()
     // Cargar configuración de IA
     loadAiConfiguration()
     // Cargar configuración de emails
     loadEmailConfiguration()
-  }, [])
+  }, [router])
 
   const loadSystemStats = async () => {
     try {
@@ -276,8 +315,19 @@ Proveedor principal: ${data.primary.toUpperCase()}`
     }
   }
 
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p>Verificando autenticación...</p>
+        </div>
+      </div>
+    )
+  }
+
   if (!isAuthenticated) {
-    return <div className="min-h-screen flex items-center justify-center">Verificando autenticación...</div>
+    return <div className="min-h-screen flex items-center justify-center">Redirigiendo...</div>
   }
 
   return (

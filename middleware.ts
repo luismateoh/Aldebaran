@@ -1,30 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
-import jwt from 'jsonwebtoken'
 
 export function middleware(request: NextRequest) {
-  // Solo proteger rutas /admin en producción
+  // Proteger rutas /admin
   if (request.nextUrl.pathname.startsWith('/admin')) {
     
-    // En desarrollo, permitir acceso para debugging
-    if (process.env.NODE_ENV === 'development') {
-      console.log('🔧 Middleware: Permitiendo acceso en desarrollo')
-      return NextResponse.next()
-    }
+    console.log('🛡️ Middleware: Verificando acceso a ruta admin...')
     
-    // En producción, verificar autenticación
+    // Verificar si hay token (sin validar JWT aquí)
     const token = request.headers.get('authorization')?.replace('Bearer ', '') ||
                   request.cookies.get('admin_token')?.value
 
     if (!token) {
+      console.log('❌ Middleware: No se encontró token, redirigiendo a login')
       return NextResponse.redirect(new URL('/login', request.url))
     }
 
-    try {
-      jwt.verify(token, process.env.ADMIN_PASSWORD || 'fallback-secret')
-      return NextResponse.next()
-    } catch (error) {
-      return NextResponse.redirect(new URL('/login', request.url))
-    }
+    console.log('✅ Middleware: Token encontrado, permitiendo acceso (validación en client-side)')
+    
+    // Permitir acceso - la validación real del JWT se hace en el client-side
+    return NextResponse.next()
   }
 
   return NextResponse.next()

@@ -21,7 +21,7 @@ export default function LoginPage() {
     setError('')
 
     try {
-      console.log('🔐 Intentando login con contraseña:', password)
+      console.log('🔐 Intentando login con contraseña')
       
       const response = await fetch('/api/auth/login', {
         method: 'POST',
@@ -33,7 +33,7 @@ export default function LoginPage() {
       
       if (response.ok) {
         const data = await response.json()
-        console.log('✅ Login exitoso, guardando token')
+        console.log('✅ Login exitoso, configurando autenticación')
         
         // Guardar token en localStorage
         localStorage.setItem('admin_token', data.token)
@@ -41,8 +41,20 @@ export default function LoginPage() {
         // También en sessionStorage como backup
         sessionStorage.setItem('admin_authenticated', 'true')
         
-        // Redirigir al admin
-        router.push('/admin')
+        // Establecer cookie con configuración mejorada
+        const expiresDate = new Date()
+        expiresDate.setTime(expiresDate.getTime() + (24 * 60 * 60 * 1000)) // 24 horas
+        document.cookie = `admin_token=${data.token}; expires=${expiresDate.toUTCString()}; path=/; SameSite=Lax`
+        
+        console.log('🔄 Redirigiendo al panel de admin...')
+        console.log('🍪 Cookie establecida:', document.cookie)
+        
+        // Usar setTimeout para asegurar que las cookies se establecen
+        setTimeout(() => {
+          console.log('🚀 Ejecutando redirección...')
+          window.location.replace('/admin')
+        }, 200)
+        
       } else {
         const errorData = await response.json()
         console.log('❌ Error de login:', errorData)
@@ -50,18 +62,10 @@ export default function LoginPage() {
       }
     } catch (error) {
       console.error('💥 Error de conexión:', error)
-      setError('Error de conexión. ¿Está el servidor corriendo?')
+      setError('Error de conexión. Verifica que el servidor esté corriendo.')
     } finally {
       setIsLoading(false)
     }
-  }
-
-  // Función de bypass temporal para debugging
-  const handleBypass = () => {
-    console.log('🚫 Usando bypass temporal')
-    localStorage.setItem('admin_token', 'bypass-token')
-    sessionStorage.setItem('admin_authenticated', 'true')
-    router.push('/admin')
   }
 
   return (
@@ -119,24 +123,9 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          {/* Botón temporal de bypass para debugging */}
-          <div className="mt-4 pt-4 border-t">
-            <Button 
-              onClick={handleBypass}
-              variant="outline"
-              className="w-full"
-              size="sm"
-            >
-              🚫 Bypass Temporal (Debug)
-            </Button>
-            <p className="text-xs text-muted-foreground text-center mt-2">
-              Solo para pruebas - remover en producción
-            </p>
-          </div>
-
           <div className="mt-6 text-center text-sm text-muted-foreground">
             <p>Panel de gestión para Aldebaran</p>
-            <p className="text-xs mt-1">Contraseña configurada: Lafuente12</p>
+            <p className="text-xs mt-1">Acceso solo para administradores autorizados</p>
           </div>
         </CardContent>
       </Card>

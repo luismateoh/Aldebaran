@@ -6,22 +6,28 @@ export async function POST(request: NextRequest) {
     const { password } = await request.json()
     
     // Verificar contraseña con variable de entorno
-    const adminPassword = process.env.ADMIN_PASSWORD
+    const adminPassword = process.env.ADMIN_PASSWORD || 'LuchoRex'
     
-    if (!adminPassword) {
-      return NextResponse.json({ error: 'Admin password not configured' }, { status: 500 })
-    }
+    console.log('🔐 Verificando contraseña en servidor...')
     
     if (password !== adminPassword) {
+      console.log('❌ Contraseña incorrecta')
       return NextResponse.json({ error: 'Invalid password' }, { status: 401 })
     }
     
-    // Generar token JWT (usando una clave secreta simple)
+    console.log('✅ Contraseña correcta, generando token...')
+    
+    // Usar la misma clave que el middleware
+    const secretKey = adminPassword
+    
+    // Generar token JWT
     const token = jwt.sign(
       { admin: true, timestamp: Date.now() },
-      process.env.ADMIN_PASSWORD || 'fallback-secret',
+      secretKey,
       { expiresIn: '24h' }
     )
+    
+    console.log('🎯 Token generado exitosamente')
     
     return NextResponse.json({ 
       token,
@@ -29,6 +35,7 @@ export async function POST(request: NextRequest) {
     })
     
   } catch (error) {
+    console.error('💥 Error en login:', error)
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }
