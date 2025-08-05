@@ -1,25 +1,35 @@
 ---
 title: MEDIA MARATÓN VALLE DE UPAR
 author: Luis Hincapie
-publishDate: 2024-03-25
+publishDate: 2024-03-25T00:00:00.000Z
 draft: false
 category: Running
 tags:
   - Media maratón
-snippet: La Media Maratón Valle de Upar es una competencia de running que se celebra anualmente en Valledupar, Cesar, Colombia. La carrera ofrece distancias de 5K, 10K y 21K, y está abierta a corredores de todas las edades y niveles de experiencia.
+snippet: >-
+  La Media Maratón Valle de Upar es una competencia de running que se celebra
+  anualmente en Valledupar, Cesar, Colombia. La carrera ofrece distancias de 5K,
+  10K y 21K, y está abierta a corredores de todas las edades y niveles de
+  experiencia.
 altitude: 168m
 eventDate: 2024-oct-13
 organizer: Media Maratón Valle de Upar
 registrationDeadline: 2024-oct-13
 registrationFeed: $112.000
-website: https://mediamaratonvalledeupar.com/
+website: 'https://mediamaratonvalledeupar.com/'
 distances:
   - 5k
   - 10k
   - 21k
-cover: https://s3-us-west-2.amazonaws.com/eventrid-global-co/eventos/med_mmvdu/aea20416fc68f52eac6ab18f7f1847e1.jpg
+cover: >-
+  https://s3-us-west-2.amazonaws.com/eventrid-global-co/eventos/med_mmvdu/aea20416fc68f52eac6ab18f7f1847e1.jpg
 department: Cesar
 municipality: Valledupar
+date: '2025-08-05'
+status: published
+registrationFee: ''
+lastModified: '2025-08-04T20:04:52.979Z'
+publishedAt: '2025-08-04T20:04:45.054Z'
 ---
 
 El próximo 13 de octubre estaremos realizando la tercera versión de la Media Maratón Valle de Upar, la cual se ha

@@ -65,9 +65,13 @@ export default function EventComments({ eventId }: CommentsProps) {
       if (response.ok) {
         setNewComment({ author: '', content: '' })
         loadComments() // Recargar comentarios
+      } else {
+        const errorData = await response.json()
+        alert(`Error: ${errorData.error}`)
       }
     } catch (error) {
       console.error('Error submitting comment:', error)
+      alert('Error al enviar comentario. Por favor intenta de nuevo.')
     } finally {
       setIsSubmitting(false)
     }
@@ -94,19 +98,6 @@ export default function EventComments({ eventId }: CommentsProps) {
       <p className="text-muted-foreground">
         Comparte tu experiencia, haz preguntas o conecta con otros corredores
       </p>
-
-      {/* Nota sobre almacenamiento temporal en producción */}
-      {typeof window !== 'undefined' && window.location.hostname.includes('vercel.app') && (
-        <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-          <div className="flex items-start gap-2">
-            <div className="text-blue-600 dark:text-blue-400">ℹ️</div>
-            <div className="text-sm text-blue-800 dark:text-blue-200">
-              <strong>Demo en vivo:</strong> Los comentarios se almacenan temporalmente durante esta sesión. 
-              En la versión final se implementará almacenamiento permanente.
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Formulario para nuevo comentario */}
       <Card>

@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { commentQueries } from '@/lib/db'
 import fs from 'fs'
 import path from 'path'
 
-// Ruta donde se guardan los comentarios (solo desarrollo)
+// Detectar si estamos usando Vercel dev (conexiones reales) o next dev (desarrollo local)
+const isVercelDev = process.env.VERCEL_ENV || process.env.POSTGRES_URL
+const useRealDatabase = process.env.NODE_ENV === 'production' || isVercelDev
+
+// Ruta donde se guardan los comentarios (solo desarrollo local sin conexiones)
 const COMMENTS_DIR = path.join(process.cwd(), 'data', 'comments')
 
-// Asegurar que existe el directorio (solo en desarrollo)
-if (process.env.NODE_ENV !== 'production' && !fs.existsSync(COMMENTS_DIR)) {
+// Asegurar que existe el directorio (solo en desarrollo local)
+if (!useRealDatabase && !fs.existsSync(COMMENTS_DIR)) {
   fs.mkdirSync(COMMENTS_DIR, { recursive: true })
 }
 
@@ -17,10 +22,6 @@ interface Comment {
   timestamp: string
   eventId: string
 }
-
-// Simulación de base de datos en memoria para producción (temporal)
-// En una implementación real, usarías Vercel KV, Supabase, o Firebase
-const PRODUCTION_COMMENTS: Map<string, Comment[]> = new Map()
 
 // Comentarios iniciales de demo
 const DEMO_COMMENTS: Record<string, Comment[]> = {
@@ -42,13 +43,6 @@ const DEMO_COMMENTS: Record<string, Comment[]> = {
   ]
 }
 
-// Inicializar comentarios de demo en producción
-if (process.env.NODE_ENV === 'production') {
-  Object.entries(DEMO_COMMENTS).forEach(([eventId, comments]) => {
-    PRODUCTION_COMMENTS.set(eventId, [...comments])
-  })
-}
-
 // GET - Obtener comentarios de un evento
 export async function GET(request: NextRequest) {
   try {
@@ -60,24 +54,52 @@ export async function GET(request: NextRequest) {
     }
 
     let comments: Comment[] = []
+    let storageUsed = 'unknown'
 
-    // En producción, usar almacenamiento en memoria (temporal)
-    if (process.env.NODE_ENV === 'production') {
-      comments = PRODUCTION_COMMENTS.get(eventId) || []
+    if (useRealDatabase) {
+      // Usar Postgres (producción o vercel dev)
+      try {
+        console.log('🔧 Usando Postgres real para comentarios')
+        const dbComments = await commentQueries.getCommentsByEventId(eventId)
+        comments = dbComments.map(c => ({
+          id: c.id.toString(),
+          author: c.author,
+          content: c.content,
+          timestamp: c.createdAt?.toISOString() || new Date().toISOString(),
+          eventId: c.eventId
+        }))
+        storageUsed = 'postgres-real'
+      } catch (dbError) {
+        console.log('⚠️ Error Postgres, usando fallback:', dbError)
+        // Fallback a comentarios demo si Postgres falla
+        comments = DEMO_COMMENTS[eventId] || []
+        storageUsed = 'demo-fallback'
+      }
     } else {
-      // En desarrollo, usar sistema de archivos
+      // En desarrollo local sin conexiones, usar sistema de archivos
+      console.log('🔧 Usando archivos locales para comentarios')
       const commentsFile = path.join(COMMENTS_DIR, `${eventId}.json`)
       
       if (fs.existsSync(commentsFile)) {
         const commentsData = fs.readFileSync(commentsFile, 'utf8')
         comments = JSON.parse(commentsData)
+        storageUsed = 'local-files'
+      } else {
+        // Si no existe archivo local, usar comentarios demo
+        comments = DEMO_COMMENTS[eventId] || []
+        storageUsed = 'demo-local'
       }
     }
     
     // Ordenar por fecha (más recientes primero)
     comments.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
     
-    return NextResponse.json({ comments })
+    return NextResponse.json({ 
+      comments,
+      storage: storageUsed,
+      persistent: useRealDatabase,
+      environment: isVercelDev ? 'vercel-dev' : process.env.NODE_ENV
+    })
   } catch (error) {
     console.error('Error loading comments:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
@@ -118,19 +140,43 @@ export async function POST(request: NextRequest) {
       eventId
     }
 
-    if (process.env.NODE_ENV === 'production') {
-      // En producción, usar almacenamiento en memoria (temporal)
-      const existingComments = PRODUCTION_COMMENTS.get(eventId) || []
-      const updatedComments = [newComment, ...existingComments]
-      
-      // Limitar a 50 comentarios por evento
-      if (updatedComments.length > 50) {
-        updatedComments.splice(50)
+    if (useRealDatabase) {
+      // Usar Postgres (producción o vercel dev)
+      try {
+        console.log('🔧 Guardando comentario en Postgres real')
+        const dbComment = await commentQueries.createComment({
+          eventId,
+          author: author.trim(),
+          content: content.trim(),
+          ipAddress: request.ip || 'unknown',
+          userAgent: request.headers.get('user-agent') || 'unknown'
+        })
+        
+        console.log(`✅ Comentario guardado en Postgres para evento ${eventId}`)
+        
+        return NextResponse.json({ 
+          success: true, 
+          comment: {
+            id: dbComment.id.toString(),
+            author: dbComment.author,
+            content: dbComment.content,
+            timestamp: dbComment.createdAt?.toISOString() || new Date().toISOString(),
+            eventId: dbComment.eventId
+          },
+          message: 'Comentario agregado exitosamente',
+          storage: 'postgres-real',
+          persistent: true
+        })
+      } catch (dbError) {
+        console.error('❌ Error guardando en Postgres:', dbError)
+        return NextResponse.json({ 
+          error: 'Error al guardar comentario',
+          details: 'Servicio de base de datos temporalmente no disponible'
+        }, { status: 503 })
       }
-      
-      PRODUCTION_COMMENTS.set(eventId, updatedComments)
     } else {
-      // En desarrollo, usar sistema de archivos
+      // En desarrollo local, usar sistema de archivos
+      console.log('🔧 Guardando comentario en archivos locales')
       const commentsFile = path.join(COMMENTS_DIR, `${eventId}.json`)
       
       let comments: Comment[] = []
@@ -146,57 +192,72 @@ export async function POST(request: NextRequest) {
       }
 
       fs.writeFileSync(commentsFile, JSON.stringify(comments, null, 2))
+      console.log(`✅ Comentario guardado localmente para evento ${eventId}`)
+      
+      return NextResponse.json({ 
+        success: true, 
+        comment: newComment,
+        message: 'Comentario agregado exitosamente',
+        storage: 'local-files',
+        persistent: false
+      })
     }
-    
-    return NextResponse.json({ 
-      success: true, 
-      comment: newComment,
-      message: 'Comentario agregado exitosamente'
-    })
   } catch (error) {
     console.error('Error saving comment:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }
 
-// DELETE - Eliminar comentario (solo desarrollo)
+// DELETE - Eliminar comentario (solo para admin)
 export async function DELETE(request: NextRequest) {
   try {
-    // En producción, retornar error
-    if (process.env.NODE_ENV === 'production') {
-      return NextResponse.json({ 
-        error: 'Funcionalidad no disponible en producción',
-        demo: true
-      }, { status: 403 })
-    }
-
     const { searchParams } = new URL(request.url)
     const eventId = searchParams.get('eventId')
     const commentId = searchParams.get('commentId')
+    const adminToken = request.headers.get('authorization')
+    
+    // Verificar autorización admin
+    if (!adminToken || !adminToken.startsWith('Bearer ')) {
+      return NextResponse.json({ 
+        error: 'Autorización requerida para eliminar comentarios'
+      }, { status: 401 })
+    }
     
     if (!eventId || !commentId) {
       return NextResponse.json({ error: 'EventId y CommentId requeridos' }, { status: 400 })
     }
 
-    const commentsFile = path.join(COMMENTS_DIR, `${eventId}.json`)
-    
-    if (!fs.existsSync(commentsFile)) {
-      return NextResponse.json({ error: 'Comentarios no encontrados' }, { status: 404 })
-    }
+    if (useRealDatabase) {
+      // En producción o vercel dev, usar Postgres
+      console.log(`🔧 Eliminando comentario de Postgres: ${commentId}`)
+      try {
+        await commentQueries.deleteComment(parseInt(commentId))
+        console.log(`✅ Comentario eliminado de Postgres: ${commentId}`)
+      } catch (dbError) {
+        console.error('Error eliminando de Postgres:', dbError)
+        return NextResponse.json({ error: 'Error eliminando comentario' }, { status: 500 })
+      }
+    } else {
+      // En desarrollo local, usar sistema de archivos
+      const commentsFile = path.join(COMMENTS_DIR, `${eventId}.json`)
+      
+      if (!fs.existsSync(commentsFile)) {
+        return NextResponse.json({ error: 'Comentarios no encontrados' }, { status: 404 })
+      }
 
-    const commentsData = fs.readFileSync(commentsFile, 'utf8')
-    let comments: Comment[] = JSON.parse(commentsData)
-    
-    // Filtrar el comentario a eliminar
-    const initialLength = comments.length
-    comments = comments.filter(comment => comment.id !== commentId)
-    
-    if (comments.length === initialLength) {
-      return NextResponse.json({ error: 'Comentario no encontrado' }, { status: 404 })
-    }
+      const commentsData = fs.readFileSync(commentsFile, 'utf8')
+      let comments: Comment[] = JSON.parse(commentsData)
+      
+      const initialLength = comments.length
+      comments = comments.filter(comment => comment.id !== commentId)
+      
+      if (comments.length === initialLength) {
+        return NextResponse.json({ error: 'Comentario no encontrado' }, { status: 404 })
+      }
 
-    // Guardar comentarios actualizados
-    fs.writeFileSync(commentsFile, JSON.stringify(comments, null, 2))
+      fs.writeFileSync(commentsFile, JSON.stringify(comments, null, 2))
+      console.log(`✅ Comentario eliminado localmente: ${commentId}`)
+    }
     
     return NextResponse.json({ 
       success: true,

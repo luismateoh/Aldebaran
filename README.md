@@ -13,8 +13,8 @@ Un sistema moderno y completo para eventos de atletismo en Colombia, construido 
 ### 💬 **Comentarios de Comunidad**
 - 🗨️ **Sistema propio** sin dependencias externas
 - 📱 **Interfaz moderna** y responsive
-- 🆓 **Completamente gratis** (archivos locales + Vercel)
-- 🔧 **Migración fácil** a Vercel KV cuando sea necesario
+- 🆓 **Completamente gratis** (archivos locales + Postgres)
+- 🔧 **Sistema escalable** con Postgres en producción
 
 ### 🎨 **Interfaz Moderna**
 - 🌓 **Tema claro/oscuro**
@@ -82,7 +82,7 @@ npm run format:write       # Formatear código
 
 ### Gestionar Comentarios
 - Los comentarios se guardan automáticamente en `/data/comments/`
-- Para producción, migra a Vercel KV (lee `docs/comments-setup.md`)
+- Para producción, migra a Postgres (lee `docs/comments-setup.md`)
 - Sistema anti-spam básico incluido
 
 ## 🛠️ Tecnologías
@@ -92,7 +92,7 @@ npm run format:write       # Formatear código
 - **Estilos:** Tailwind CSS
 - **Componentes:** Radix UI
 - **IA:** Groq (gratuita) + OpenAI (opcional)
-- **Comentarios:** Sistema propio + Vercel KV (opcional)
+- **Comentarios:** Sistema propio + Postgres (opcional)
 - **Hosting:** Vercel (capa gratuita)
 
 ## About this project
