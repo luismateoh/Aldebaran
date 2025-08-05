@@ -1,7 +1,6 @@
 "use client"
 
-import React from "react"
-
+import React, { useState, useEffect } from "react"
 import { useCountdown } from "@/hooks/useCountdown"
 
 export default function CountDownTimer({
@@ -9,7 +8,37 @@ export default function CountDownTimer({
 }: {
   targetDate: string | number | Date
 }) {
+  const [isClient, setIsClient] = useState(false)
   const [days, hours, minutes, seconds] = useCountdown(targetDate)
+
+  // Solo renderizar en el cliente para evitar hidratación
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  // Mostrar placeholder mientras se hidrata
+  if (!isClient) {
+    return (
+      <div className="grid grid-cols-4 items-center justify-center gap-2">
+        <div className="flex flex-col items-center rounded-md border p-0.5">
+          <div className="text-xl font-semibold">--</div>
+          <div className="opacity-70">Dias</div>
+        </div>
+        <div className="flex flex-col items-center rounded-md border p-0.5">
+          <div className="text-xl font-semibold">--</div>
+          <div className="opacity-70">Horas</div>
+        </div>
+        <div className="flex flex-col items-center rounded-md border p-0.5">
+          <div className="text-xl font-semibold">--</div>
+          <div className="opacity-70">Mins</div>
+        </div>
+        <div className="flex flex-col items-center rounded-md border p-0.5">
+          <div className="text-xl font-semibold">--</div>
+          <div className="opacity-70">Segs</div>
+        </div>
+      </div>
+    )
+  }
 
   if (days == -1) {
     return <span className="text-2xl font-medium">¡El evento es Hoy!</span>

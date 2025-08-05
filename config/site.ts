@@ -6,10 +6,10 @@ export const siteConfig = {
   description:
     "¡Bienvenido a Aldebaran: Tu Guía de Carreras de Atletismo en Colombia!",
   mainNav: [
-    /*    {
-      title: "Tabla",
-      href: "/table",
-    },*/
+    {
+      title: "Proponer Evento",
+      href: "/proponer",
+    },
   ],
   links: {
     twitter: "https://twitter.com/luismateoh",

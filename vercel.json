@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "name": "aldebaran",
+  "functions": {
+    "app/api/*/route.js": {
+      "maxDuration": 30
+    }
+  }
+}

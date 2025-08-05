@@ -1,4 +1,3 @@
-import Image from "next/image"
 import Link from "next/link"
 import { formatDate } from "date-fns"
 import { es } from "date-fns/locale"
@@ -10,8 +9,10 @@ import { Badge } from "@/components/ui/badge"
 import AddToCalendar from "@/components/add-to-calendar"
 import { BackButton } from "@/components/back-button"
 import CountDownTimer from "@/components/count-down-timer"
+import EventComments from "@/components/event-comments"
 import InteractiveSection from "@/components/interactive-section"
 import SeeAllEventsCta from "@/components/see-all-events-cta"
+import SmartImage from "@/components/smart-image"
 
 type Params = {
   id: string
@@ -41,12 +42,16 @@ export default async function Event({ params }: Props) {
             <Badge className="rounded-md capitalize">
               {eventData.category}
             </Badge>
-            <Image
-              className="my-6 w-full overflow-hidden rounded-xl"
-              width={800}
-              height={360}
+            <SmartImage
               src={eventData.cover}
               alt={eventData.title}
+              width={800}
+              height={360}
+              className="my-6 w-full overflow-hidden rounded-xl"
+              eventId={eventData.id}
+              fallbackType={eventData.category?.includes('marathon') ? 'marathon' : 
+                          eventData.category?.includes('trail') ? 'trail' : 'running'}
+              priority
             />
             {/* Event Title */}
             <h1 className="my-4 font-heading text-3xl md:text-4xl">
@@ -167,6 +172,9 @@ export default async function Event({ params }: Props) {
           </article>
           <SeeAllEventsCta />
         </div>
+        
+        {/* Comentarios de la comunidad */}
+        <EventComments eventId={params.id} />
       </InteractiveSection>
     </section>
   )
