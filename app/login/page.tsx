@@ -41,8 +41,11 @@ export default function LoginPage() {
         // También en sessionStorage como backup
         sessionStorage.setItem('admin_authenticated', 'true')
         
-        // Redirigir al admin
-        router.push('/admin')
+        // Establecer cookie para que el middleware pueda leerla
+        document.cookie = `admin_token=${data.token}; path=/; max-age=${24 * 60 * 60}; SameSite=Lax`
+        
+        // Forzar recarga de la página para que el middleware tome efecto
+        window.location.href = '/admin'
       } else {
         const errorData = await response.json()
         console.log('❌ Error de login:', errorData)
@@ -54,14 +57,6 @@ export default function LoginPage() {
     } finally {
       setIsLoading(false)
     }
-  }
-
-  // Función de bypass temporal para debugging
-  const handleBypass = () => {
-    console.log('🚫 Usando bypass temporal')
-    localStorage.setItem('admin_token', 'bypass-token')
-    sessionStorage.setItem('admin_authenticated', 'true')
-    router.push('/admin')
   }
 
   return (
@@ -119,24 +114,9 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          {/* Botón temporal de bypass para debugging */}
-          <div className="mt-4 pt-4 border-t">
-            <Button 
-              onClick={handleBypass}
-              variant="outline"
-              className="w-full"
-              size="sm"
-            >
-              🚫 Bypass Temporal (Debug)
-            </Button>
-            <p className="text-xs text-muted-foreground text-center mt-2">
-              Solo para pruebas - remover en producción
-            </p>
-          </div>
-
           <div className="mt-6 text-center text-sm text-muted-foreground">
             <p>Panel de gestión para Aldebaran</p>
-            <p className="text-xs mt-1">Contraseña configurada: Lafuente12</p>
+            <p className="text-xs mt-1">Acceso solo para administradores autorizados</p>
           </div>
         </CardContent>
       </Card>

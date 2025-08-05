@@ -14,7 +14,7 @@ export function middleware(request: NextRequest) {
     }
 
     try {
-      jwt.verify(token, process.env.ADMIN_PASSWORD || 'default-secret')
+      jwt.verify(token, process.env.ADMIN_PASSWORD || 'LuchoRex')
       return NextResponse.next()
     } catch (error) {
       return NextResponse.redirect(new URL('/login', request.url))
