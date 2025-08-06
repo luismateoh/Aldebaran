@@ -1,8 +1,9 @@
 import Link from "next/link"
 import { formatDate } from "date-fns"
 import { es } from "date-fns/locale"
+import { notFound } from "next/navigation"
 
-import { getEventData } from "@/lib/events"
+import { eventsService } from "@/lib/events-firebase"
 import { EventData } from "@/lib/types"
 import { capitalize } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -23,16 +24,45 @@ type Props = {
 }
 
 export async function generateMetadata({ params }: Props) {
-  const eventData: EventData = await getEventData(params.id)
+  try {
+    const eventData: EventData = await eventsService.getEventById(params.id)
+    return {
+      title: eventData.title.toUpperCase(),
+    }
+  } catch (error) {
+    return {
+      title: 'Evento no encontrado'
+    }
+  }
+}
 
-  return {
-    title: eventData.title.toUpperCase(),
+// Generar páginas estáticas para todos los eventos
+export async function generateStaticParams() {
+  try {
+    const events = await eventsService.getAllEvents()
+    return events.map((event) => ({
+      id: event.id,
+    }))
+  } catch (error) {
+    console.error('Error generating static params:', error)
+    return []
   }
 }
 
 // -< Event >-
 export default async function Event({ params }: Props) {
-  const eventData: EventData = await getEventData(params.id)
+  let eventData: EventData
+  
+  try {
+    eventData = await eventsService.getEventById(params.id)
+  } catch (error) {
+    console.error('Error fetching event:', error)
+    notFound()
+  }
+
+  // Convertir description de markdown a HTML si es necesario
+  const contentHtml = eventData.description || ''
+
   return (
     <section className="container relative max-w-screen-md py-5 md:py-10">
       <InteractiveSection>
@@ -43,7 +73,7 @@ export default async function Event({ params }: Props) {
               {eventData.category}
             </Badge>
             <SmartImage
-              src={eventData.cover}
+              src={eventData.cover || undefined}
               alt={eventData.title}
               width={800}
               height={360}
@@ -59,28 +89,40 @@ export default async function Event({ params }: Props) {
             </h1>
 
             {/* Event Meta */}
-
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:grid-rows-8 sm:gap-4">
               {/* Event Distances */}
               <div className="col-span-2 row-span-1 flex flex-wrap items-center justify-between gap-2 overflow-hidden rounded-lg border bg-card p-3 align-middle text-card-foreground shadow-sm sm:col-span-2 sm:row-span-2 sm:p-4">
                 <h2 className="m-0 pr-2 font-light">Distancias</h2>
 
                 <div className="flex flex-wrap gap-2">
-                  {eventData.distances
-                    .sort(
-                      (a: any, b: any) =>
-                        parseFloat(a.value) - parseFloat(b.value)
-                    )
-                    .map((distance) => (
-                      <Badge
-                        className="rounded-md text-xl sm:text-2xl"
-                        key={distance}
-                      >
-                        {distance}
-                      </Badge>
-                    ))}
+                  {/* Manejar distances como array */}
+                  {eventData.distances && Array.isArray(eventData.distances) ? (
+                    eventData.distances
+                      .sort((a: any, b: any) => {
+                        const aValue = typeof a === 'string' ? parseFloat(a) : parseFloat(a.value || '0')
+                        const bValue = typeof b === 'string' ? parseFloat(b) : parseFloat(b.value || '0')
+                        return aValue - bValue
+                      })
+                      .map((distance: any, index: number) => (
+                        <Badge
+                          className="rounded-md text-xl sm:text-2xl"
+                          key={`distance-${index}`}
+                        >
+                          {typeof distance === 'string' ? distance : distance.value || distance}
+                        </Badge>
+                      ))
+                  ) : eventData.distance ? (
+                    <Badge className="rounded-md text-xl sm:text-2xl">
+                      {eventData.distance}
+                    </Badge>
+                  ) : (
+                    <Badge className="rounded-md text-xl sm:text-2xl">
+                      10k
+                    </Badge>
+                  )}
                 </div>
               </div>
+              
               {/* Event Date */}
               <div className="col-span-2 row-span-1 overflow-hidden rounded-lg border bg-card p-3 text-card-foreground shadow-sm sm:col-start-3 sm:row-span-4 sm:flex-row sm:items-center sm:p-4">
                 <div className="flex flex-row flex-wrap items-center justify-between gap-2 sm:h-full sm:flex-col sm:items-start">
@@ -98,17 +140,18 @@ export default async function Event({ params }: Props) {
                   <AddToCalendar
                     title={eventData.title.toUpperCase()}
                     description={
-                      eventData.website
-                        ? `Más información en <a href="${eventData.website}">${eventData.website}</a>`
+                      eventData.registrationUrl
+                        ? `Más información en <a href="${eventData.registrationUrl}">${eventData.registrationUrl}</a>`
                         : ""
                     }
                     location={`${eventData.municipality}, ${eventData.department}`}
                     evenDate={eventData.eventDate}
                     organizer={eventData.organizer}
-                    website={eventData.website}
+                    website={eventData.registrationUrl}
                   />
                 </div>
               </div>
+              
               {/* Event Location */}
               <div className="row-span-1 flex flex-col flex-wrap justify-center overflow-hidden text-ellipsis rounded-lg border bg-card p-3 text-card-foreground shadow-sm sm:row-span-2 sm:p-4">
                 <h2 className="m-0 font-light">Ubicación</h2>
@@ -121,39 +164,52 @@ export default async function Event({ params }: Props) {
                   </span>
                 </div>
               </div>
+              
               {/* Event Altitude */}
-              <div className="row-span-1 flex flex-col flex-wrap justify-center overflow-hidden rounded-lg border bg-card p-3 text-card-foreground shadow-sm sm:row-span-2 sm:p-4">
-                <h2 className="m-0 font-light">Altura</h2>
-                <span className="text-3xl font-medium">
-                  {eventData.altitude}
-                </span>
-              </div>
+              {eventData.altitude && (
+                <div className="row-span-1 flex flex-col flex-wrap justify-center overflow-hidden rounded-lg border bg-card p-3 text-card-foreground shadow-sm sm:row-span-2 sm:p-4">
+                  <h2 className="m-0 font-light">Altura</h2>
+                  <span className="text-3xl font-medium">
+                    {eventData.altitude}
+                  </span>
+                </div>
+              )}
+              
               {/* Event Organizer */}
-              <div className="col-span-2 flex flex-col flex-wrap justify-center overflow-hidden rounded-lg border bg-card p-3 text-card-foreground shadow-sm sm:row-span-2 sm:p-4">
-                <h2 className="m-0 font-light">Organiza</h2>
-                <span className="text-2xl font-medium">
-                  {eventData.organizer}
-                </span>
-              </div>
+              {eventData.organizer && (
+                <div className="col-span-2 flex flex-col flex-wrap justify-center overflow-hidden rounded-lg border bg-card p-3 text-card-foreground shadow-sm sm:row-span-2 sm:p-4">
+                  <h2 className="m-0 font-light">Organiza</h2>
+                  <span className="text-2xl font-medium">
+                    {eventData.organizer}
+                  </span>
+                </div>
+              )}
+              
               {/* Event Registration */}
-              <div className="col-span-1 flex flex-col flex-wrap justify-center overflow-hidden rounded-lg border bg-card p-3 text-card-foreground shadow-sm sm:col-span-2 sm:row-span-2 sm:p-4">
-                <h2 className="m-0 font-light">Costo</h2>
-                <span className="text-2xl font-medium">
-                  Desde {eventData.registrationFeed}
-                </span>
-              </div>
+              {eventData.price && (
+                <div className="col-span-1 flex flex-col flex-wrap justify-center overflow-hidden rounded-lg border bg-card p-3 text-card-foreground shadow-sm sm:col-span-2 sm:row-span-2 sm:p-4">
+                  <h2 className="m-0 font-light">Costo</h2>
+                  <span className="text-2xl font-medium">
+                    Desde {eventData.price}
+                  </span>
+                </div>
+              )}
+              
               {/* Event Website */}
-              <div className="flex flex-col flex-wrap justify-center overflow-hidden rounded-lg border bg-card p-3 text-card-foreground shadow-sm sm:col-span-1 sm:row-span-2 sm:p-4">
-                <h2 className="m-0 font-light">Sitio</h2>
-                <Link
-                  className="text-2xl font-medium"
-                  href={eventData.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Web
-                </Link>
-              </div>
+              {eventData.registrationUrl && (
+                <div className="flex flex-col flex-wrap justify-center overflow-hidden rounded-lg border bg-card p-3 text-card-foreground shadow-sm sm:col-span-1 sm:row-span-2 sm:p-4">
+                  <h2 className="m-0 font-light">Sitio</h2>
+                  <Link
+                    className="text-2xl font-medium"
+                    href={eventData.registrationUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Web
+                  </Link>
+                </div>
+              )}
+              
               {/* Event Temporizer */}
               <div className="col-span-2 flex flex-col justify-center gap-1 overflow-hidden rounded-lg border bg-card p-3 text-card-foreground shadow-sm sm:col-span-3 sm:row-span-2 sm:p-4">
                 <h2 className="m-0 font-light">Faltan</h2>
@@ -164,11 +220,13 @@ export default async function Event({ params }: Props) {
             </div>
 
             <hr className="my-6" />
+            
             {/* Event Content */}
-            <div
-              className="break-words"
-              dangerouslySetInnerHTML={{ __html: eventData.contentHtml }}
-            />
+            <div className="break-words prose prose-lg max-w-none dark:prose-invert">
+              {contentHtml.split('\n').map((paragraph, index) => (
+                <p key={index}>{paragraph}</p>
+              ))}
+            </div>
           </article>
           <SeeAllEventsCta />
         </div>

@@ -1,0 +1,186 @@
+import { 
+  collection, 
+  doc, 
+  getDocs, 
+  getDoc, 
+  addDoc, 
+  updateDoc, 
+  deleteDoc, 
+  query, 
+  where, 
+  limit,
+  onSnapshot,
+  serverTimestamp,
+  Timestamp
+} from 'firebase/firestore'
+import { db } from './firebase'
+import type { FirebaseEventData, EventData } from '../types'
+
+const EVENTS_COLLECTION = 'events'
+
+export class EventsService {
+  private eventsRef = collection(db, EVENTS_COLLECTION)
+
+  async getAllEvents(): Promise<EventData[]> {
+    try {
+      console.log('🔍 Obteniendo eventos desde Firebase...')
+      
+      // Consulta sin filtro de status para ver todos los eventos
+      const snapshot = await getDocs(this.eventsRef)
+      
+      console.log(`📊 Encontrados ${snapshot.docs.length} eventos en Firebase`)
+      
+      const events = snapshot.docs.map(doc => this.transformFirestoreDoc(doc))
+      
+      // Ordenar en el cliente para evitar problemas con índices
+      const sortedEvents = events.sort((a, b) => {
+        const dateA = new Date(a.eventDate || '2024-01-01')
+        const dateB = new Date(b.eventDate || '2024-01-01')
+        return dateB.getTime() - dateA.getTime()
+      })
+      
+      console.log('✅ Eventos ordenados correctamente')
+      return sortedEvents
+    } catch (error) {
+      console.error('❌ Error fetching events:', error)
+      throw error
+    }
+  }
+
+  // Obtener un evento específico por ID
+  async getEventById(id: string): Promise<EventData> {
+    try {
+      console.log(`🔍 Obteniendo evento con ID: ${id}`)
+      
+      const docRef = doc(this.eventsRef, id)
+      const docSnap = await getDoc(docRef)
+      
+      if (!docSnap.exists()) {
+        throw new Error(`Evento con ID ${id} no encontrado`)
+      }
+      
+      const eventData = this.transformFirestoreDoc(docSnap)
+      console.log(`✅ Evento encontrado: ${eventData.title}`)
+      
+      return eventData
+    } catch (error) {
+      console.error(`❌ Error obteniendo evento ${id}:`, error)
+      throw error
+    }
+  }
+
+  async createEvent(eventData: Omit<EventData, 'id'>): Promise<EventData> {
+    try {
+      const docRef = await addDoc(this.eventsRef, {
+        ...eventData,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        status: eventData.status || 'published'
+      })
+      
+      const newDoc = await getDoc(docRef)
+      return this.transformFirestoreDoc(newDoc)
+    } catch (error) {
+      console.error('Error creating event:', error)
+      throw error
+    }
+  }
+
+  async updateEvent(id: string, updates: Partial<EventData>): Promise<EventData | null> {
+    try {
+      const docRef = doc(db, EVENTS_COLLECTION, id)
+      await updateDoc(docRef, {
+        ...updates,
+        updatedAt: serverTimestamp()
+      })
+      
+      const updatedDoc = await getDoc(docRef)
+      return updatedDoc.exists() ? this.transformFirestoreDoc(updatedDoc) : null
+    } catch (error) {
+      console.error('Error updating event:', error)
+      throw error
+    }
+  }
+
+  async deleteEvent(id: string): Promise<boolean> {
+    try {
+      const docRef = doc(db, EVENTS_COLLECTION, id)
+      await deleteDoc(docRef)
+      return true
+    } catch (error) {
+      console.error('Error deleting event:', error)
+      return false
+    }
+  }
+
+  async searchEvents(searchTerm: string): Promise<EventData[]> {
+    try {
+      // Firestore no tiene full-text search nativo, usaremos array-contains para tags
+      const q = query(
+        this.eventsRef,
+        where('status', '==', 'published'),
+        orderBy('eventDate', 'desc')
+      )
+      const snapshot = await getDocs(q)
+      
+      // Filtrar en el cliente por ahora (en producción usar Algolia o similar)
+      return snapshot.docs
+        .map(doc => this.transformFirestoreDoc(doc))
+        .filter(event => 
+          event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          event.municipality.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          event.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (event.description && event.description.toLowerCase().includes(searchTerm.toLowerCase()))
+        )
+    } catch (error) {
+      console.error('Error searching events:', error)
+      throw error
+    }
+  }
+
+  // Listener en tiempo real
+  subscribeToEvents(callback: (events: EventData[]) => void): () => void {
+    console.log('🔔 Iniciando listener de eventos en tiempo real...')
+    
+    // Consulta sin filtro de status para obtener todos los eventos
+    return onSnapshot(this.eventsRef, (snapshot) => {
+      console.log(`📡 Listener activado: ${snapshot.docs.length} eventos`)
+      
+      const events = snapshot.docs.map(doc => this.transformFirestoreDoc(doc))
+      
+      // Ordenar en el cliente
+      const sortedEvents = events.sort((a, b) => {
+        const dateA = new Date(a.eventDate || '2024-01-01')
+        const dateB = new Date(b.eventDate || '2024-01-01')
+        return dateB.getTime() - dateA.getTime()
+      })
+      
+      callback(sortedEvents)
+    }, (error) => {
+      console.error('❌ Error en listener de Firebase:', error)
+    })
+  }
+
+  private transformFirestoreDoc(doc: any): EventData {
+    const data = doc.data()
+    return {
+      id: doc.id,
+      ...data,
+      createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : data.createdAt,
+      updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate() : data.updatedAt
+    }
+  }
+}
+
+export const eventsService = new EventsService()
+
+// Mantener compatibilidad con funciones existentes
+export const getAllEvents = () => eventsService.getAllEvents()
+export const getEventById = (id: string) => eventsService.getEventById(id)
+export const createEvent = (eventData: Omit<EventData, 'id'>) => eventsService.createEvent(eventData)
+export const updateEvent = (id: string, updates: Partial<EventData>) => eventsService.updateEvent(id, updates)
+export const deleteEvent = (id: string) => eventsService.deleteEvent(id)
+
+// Aliases para compatibilidad
+export const getSortedEventsData = getAllEvents
+export const getEventData = getEventById
