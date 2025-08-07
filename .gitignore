@@ -55,3 +55,6 @@ next-env.d.ts
 **/public/sw.js.map
 **/public/workbox-*.js.map
 **/public/worker-*.js.map
+
+# Secrets and credentials
+firebase-service-account.json
