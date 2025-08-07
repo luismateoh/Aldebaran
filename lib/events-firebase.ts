@@ -25,21 +25,31 @@ export class EventsService {
     try {
       console.log('🔍 Obteniendo eventos desde Firebase...')
       
-      // Consulta sin filtro de status para ver todos los eventos
+      // Obtener todos los eventos
       const snapshot = await getDocs(this.eventsRef)
       
       console.log(`📊 Encontrados ${snapshot.docs.length} eventos en Firebase`)
       
       const events = snapshot.docs.map(doc => this.transformFirestoreDoc(doc))
       
-      // Ordenar en el cliente para evitar problemas con índices
-      const sortedEvents = events.sort((a, b) => {
-        const dateA = new Date(a.eventDate || '2024-01-01')
-        const dateB = new Date(b.eventDate || '2024-01-01')
-        return dateB.getTime() - dateA.getTime()
+      // Filtrar solo eventos futuros (desde hoy en adelante)
+      const today = new Date()
+      today.setHours(0, 0, 0, 0) // Establecer a inicio del día para incluir eventos de hoy
+      
+      const futureEvents = events.filter(event => {
+        if (!event.eventDate) return false
+        const eventDate = new Date(event.eventDate)
+        return eventDate >= today
       })
       
-      console.log('✅ Eventos ordenados correctamente')
+      // Ordenar por fecha ascendente (próximos primero)
+      const sortedEvents = futureEvents.sort((a, b) => {
+        const dateA = new Date(a.eventDate || '2024-01-01')
+        const dateB = new Date(b.eventDate || '2024-01-01')
+        return dateA.getTime() - dateB.getTime()
+      })
+      
+      console.log(`✅ ${futureEvents.length} eventos futuros encontrados y ordenados`)
       return sortedEvents
     } catch (error) {
       console.error('❌ Error fetching events:', error)
@@ -142,17 +152,26 @@ export class EventsService {
   subscribeToEvents(callback: (events: EventData[]) => void): () => void {
     console.log('🔔 Iniciando listener de eventos en tiempo real...')
     
-    // Consulta sin filtro de status para obtener todos los eventos
     return onSnapshot(this.eventsRef, (snapshot) => {
       console.log(`📡 Listener activado: ${snapshot.docs.length} eventos`)
       
       const events = snapshot.docs.map(doc => this.transformFirestoreDoc(doc))
       
-      // Ordenar en el cliente
-      const sortedEvents = events.sort((a, b) => {
+      // Filtrar solo eventos futuros
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      
+      const futureEvents = events.filter(event => {
+        if (!event.eventDate) return false
+        const eventDate = new Date(event.eventDate)
+        return eventDate >= today
+      })
+      
+      // Ordenar por fecha ascendente (próximos primero)
+      const sortedEvents = futureEvents.sort((a, b) => {
         const dateA = new Date(a.eventDate || '2024-01-01')
         const dateB = new Date(b.eventDate || '2024-01-01')
-        return dateB.getTime() - dateA.getTime()
+        return dateA.getTime() - dateB.getTime()
       })
       
       callback(sortedEvents)

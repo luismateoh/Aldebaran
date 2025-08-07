@@ -36,18 +36,8 @@ export async function generateMetadata({ params }: Props) {
   }
 }
 
-// Generar páginas estáticas para todos los eventos
-export async function generateStaticParams() {
-  try {
-    const events = await eventsService.getAllEvents()
-    return events.map((event) => ({
-      id: event.id,
-    }))
-  } catch (error) {
-    console.error('Error generating static params:', error)
-    return []
-  }
-}
+// Usar renderizado dinámico para eventos desde Firestore
+export const dynamic = 'force-dynamic'
 
 // Función auxiliar para parsear fechas de manera segura
 function parseEventDate(dateString: string): Date {
