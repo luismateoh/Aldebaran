@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 
@@ -36,8 +35,6 @@ export default function SmartImage({
   const [imageSrc, setImageSrc] = useState<string>('')
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
-  const [isOptimizing, setIsOptimizing] = useState(false)
-  const [optimizationAttempted, setOptimizationAttempted] = useState(false)
 
   // Imágenes predeterminadas por tipo con gradientes atractivos
   const fallbackImages = {
@@ -54,35 +51,7 @@ export default function SmartImage({
       setHasError(false)
 
       try {
-        // 1. Si hay una imagen externa y está habilitada la optimización automática
-        if (src && src.startsWith('http') && autoOptimize && !optimizationAttempted) {
-          setOptimizationAttempted(true)
-          
-          // Intentar optimizar la imagen automáticamente
-          const optimizedResult = await optimizeImageAutomatically(src, eventId || 'unknown')
-          
-          if (optimizedResult.success && optimizedResult.optimizedUrl) {
-            console.log('✅ Usando imagen optimizada automáticamente')
-            setImageSrc(optimizedResult.optimizedUrl)
-            setIsLoading(false)
-            return
-          } else {
-            console.log('⚠️ Optimización falló, intentando imagen original:', optimizedResult.error)
-          }
-        }
-
-        // 2. Intentar imagen local específica del evento en Blob Storage
-        if (eventId) {
-          const blobEventImage = await checkBlobStorageImage(eventId)
-          if (blobEventImage) {
-            console.log('✅ Usando imagen del evento desde Blob Storage')
-            setImageSrc(blobEventImage)
-            setIsLoading(false)
-            return
-          }
-        }
-
-        // 3. Intentar imagen externa proporcionada (sin optimizar)
+        // Usar imagen externa si está disponible
         if (src && await imageExists(src)) {
           console.log('✅ Usando imagen externa original')
           setImageSrc(src)
@@ -90,7 +59,7 @@ export default function SmartImage({
           return
         }
 
-        // 4. Usar imagen predeterminada por tipo
+        // Usar imagen predeterminada por tipo
         console.log(`🎨 Usando imagen predeterminada: ${fallbackType}`)
         setImageSrc(fallbackImages[fallbackType])
         
@@ -104,79 +73,8 @@ export default function SmartImage({
     }
 
     loadImage()
-  }, [src, eventId, fallbackType, autoOptimize])
+  }, [src, fallbackType])
 
-  // Función para optimizar imagen automáticamente
-  const optimizeImageAutomatically = async (imageUrl: string, eventId: string): Promise<ImageOptimizationResult> => {
-    if (isOptimizing) return { success: false, error: 'Ya optimizando' }
-    
-    setIsOptimizing(true)
-    
-    try {
-      const response = await fetch('/api/optimize-image', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          imageUrl,
-          eventId
-        })
-      })
-
-      const result = await response.json()
-      
-      if (result.success) {
-        console.log('🎯 Imagen optimizada:', {
-          original: Math.round((result.originalSize || 0) / 1024) + ' KB',
-          optimized: Math.round((result.optimizedSize || 0) / 1024) + ' KB',
-          compression: result.compressionRatio + '%'
-        })
-        
-        return {
-          success: true,
-          optimizedUrl: result.optimizedUrl
-        }
-      } else {
-        return {
-          success: false,
-          error: result.error || 'Error optimizando'
-        }
-      }
-    } catch (error) {
-      console.error('❌ Error en optimización automática:', error)
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Error de conexión'
-      }
-    } finally {
-      setIsOptimizing(false)
-    }
-  }
-
-  // Función para verificar si hay imagen en Blob Storage
-  const checkBlobStorageImage = async (eventId: string): Promise<string | null> => {
-    try {
-      // Verificar diferentes formatos posibles en Blob Storage
-      const possibleUrls = [
-        `https://aldebaran.vercel.app/_vercel/blob/events/${eventId}.webp`,
-        `https://aldebaran.vercel.app/_vercel/blob/events/${eventId}_optimized.webp`,
-        `https://aldebaran.vercel.app/_vercel/blob/events/${eventId}.jpg`,
-        `https://aldebaran.vercel.app/_vercel/blob/events/${eventId}.png`
-      ]
-
-      for (const url of possibleUrls) {
-        if (await imageExists(url)) {
-          return url
-        }
-      }
-      
-      return null
-    } catch (error) {
-      console.error('Error checking Blob Storage:', error)
-      return null
-    }
-  }
 
   // Función mejorada para verificar si una imagen existe
   const imageExists = (url: string): Promise<boolean> => {
@@ -208,16 +106,14 @@ export default function SmartImage({
 
   return (
     <div className={cn("relative overflow-hidden", className)}>
-      {(isLoading || isOptimizing) && (
+      {isLoading && (
         <div 
           className="absolute inset-0 bg-gradient-to-br from-blue-100 to-green-100 animate-pulse flex items-center justify-center"
           style={{ width, height }}
         >
           <div className="text-center">
             <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-            <p className="text-sm text-gray-600">
-              {isOptimizing ? 'Optimizando imagen...' : 'Cargando imagen...'}
-            </p>
+            <p className="text-sm text-gray-600">Cargando imagen...</p>
           </div>
         </div>
       )}
@@ -233,12 +129,11 @@ export default function SmartImage({
               height={height}
               className={cn(
                 "transition-opacity duration-300",
-                (isLoading || isOptimizing) ? "opacity-0" : "opacity-100"
+                isLoading ? "opacity-0" : "opacity-100"
               )}
               onError={handleImageError}
               onLoad={() => {
                 setIsLoading(false)
-                setIsOptimizing(false)
               }}
               style={{
                 objectFit: 'cover',
@@ -247,22 +142,20 @@ export default function SmartImage({
               }}
             />
           ) : (
-            // Para JPG/PNG/WebP, usar Next.js Image
-            <Image
+            // Para JPG/PNG/WebP, usar img estándar
+            <img
               src={imageSrc}
               alt={alt}
               width={width}
               height={height}
               className={cn(
                 "transition-opacity duration-300",
-                (isLoading || isOptimizing) ? "opacity-0" : "opacity-100"
+                isLoading ? "opacity-0" : "opacity-100"
               )}
               onError={handleImageError}
               onLoad={() => {
                 setIsLoading(false)
-                setIsOptimizing(false)
               }}
-              priority={priority}
               style={{
                 objectFit: 'cover',
                 width: '100%',
@@ -273,7 +166,7 @@ export default function SmartImage({
         </>
       )}
       
-      {hasError && !isLoading && !isOptimizing && (
+      {hasError && !isLoading && (
         <div 
           className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center"
           style={{ width, height }}
@@ -289,15 +182,6 @@ export default function SmartImage({
         </div>
       )}
       
-      {/* Indicador de imagen optimizada */}
-      {imageSrc && imageSrc.includes('vercel.app/_vercel/blob') && (
-        <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1 opacity-75">
-          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-          </svg>
-          Optimizada
-        </div>
-      )}
     </div>
   )
 }

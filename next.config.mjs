@@ -20,16 +20,6 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
 
-  images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**',
-        port: '',
-        pathname: '**',
-      },
-    ],
-  },
   headers
 
 }
