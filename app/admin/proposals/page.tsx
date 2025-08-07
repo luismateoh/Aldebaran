@@ -52,26 +52,24 @@ export default function ProposalsPage() {
   const loadProposals = async () => {
     try {
       setIsLoading(true)
-      const token = localStorage.getItem('admin_token')
-      const response = await fetch('/api/hybrid-storage?action=list_proposals', {
-        headers: { 'Authorization': `Bearer ${token}` }
+      
+      // Simular carga de propuestas - actualmente no hay sistema de propuestas implementado
+      console.log('🔍 Cargando propuestas...')
+      
+      // Por ahora, no hay propuestas ya que el sistema usa Firebase directamente
+      // En el futuro se podría implementar un sistema de propuestas en Firestore
+      setProposals([])
+      
+      setActionResult({
+        success: true,
+        message: 'Sistema de propuestas disponible para futura implementación'
       })
-
-      if (response.ok) {
-        const data = await response.json()
-        setProposals(data.proposals || [])
-      } else {
-        console.error('Error loading proposals:', response.status)
-        setActionResult({
-          success: false,
-          message: `Error cargando propuestas: ${response.status}`
-        })
-      }
+      
     } catch (error) {
       console.error('Error loading proposals:', error)
       setActionResult({
         success: false,
-        message: 'Error de conexión al cargar propuestas'
+        message: 'Error cargando propuestas'
       })
     } finally {
       setIsLoading(false)
@@ -83,41 +81,15 @@ export default function ProposalsPage() {
     setActionResult(null)
     
     try {
-      const token = localStorage.getItem('admin_token')
-      const response = await fetch('/api/hybrid-storage', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          action: 'update_proposal_status',
-          proposalId,
-          status: 'approved'
-        })
+      // Funcionalidad no implementada - sistema de propuestas pendiente
+      setActionResult({
+        success: false,
+        message: 'Sistema de propuestas no implementado. Use la creación directa de eventos.'
       })
-
-      if (response.ok) {
-        // Update local state
-        setProposals(proposals.map(p => 
-          p.id === proposalId ? { ...p, status: 'approved' as const } : p
-        ))
-        
-        setActionResult({
-          success: true,
-          message: 'Propuesta aprobada exitosamente'
-        })
-      } else {
-        const errorData = await response.json()
-        setActionResult({
-          success: false,
-          message: errorData.error || 'Error aprobando propuesta'
-        })
-      }
     } catch (error) {
       setActionResult({
         success: false,
-        message: `Error: ${error instanceof Error ? error.message : 'Desconocido'}`
+        message: 'Funcionalidad no disponible'
       })
     } finally {
       setIsProcessing(false)
@@ -129,40 +101,15 @@ export default function ProposalsPage() {
     setActionResult(null)
     
     try {
-      const token = localStorage.getItem('admin_token')
-      const response = await fetch('/api/hybrid-storage', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          action: 'update_proposal_status',
-          proposalId,
-          status: 'rejected'
-        })
+      // Funcionalidad no implementada - sistema de propuestas pendiente
+      setActionResult({
+        success: false,
+        message: 'Sistema de propuestas no implementado. Use la creación directa de eventos.'
       })
-
-      if (response.ok) {
-        setProposals(proposals.map(p => 
-          p.id === proposalId ? { ...p, status: 'rejected' as const } : p
-        ))
-        
-        setActionResult({
-          success: true,
-          message: 'Propuesta rechazada'
-        })
-      } else {
-        const errorData = await response.json()
-        setActionResult({
-          success: false,
-          message: errorData.error || 'Error rechazando propuesta'
-        })
-      }
     } catch (error) {
       setActionResult({
         success: false,
-        message: `Error: ${error instanceof Error ? error.message : 'Desconocido'}`
+        message: 'Funcionalidad no disponible'
       })
     } finally {
       setIsProcessing(false)
@@ -174,59 +121,15 @@ export default function ProposalsPage() {
     setActionResult(null)
     
     try {
-      const token = localStorage.getItem('admin_token')
-      
-      // Generate event data from proposal
-      const eventData = {
-        eventId: `${proposal.eventDate}_${proposal.municipality.toLowerCase()}_${proposal.title.toLowerCase().replace(/[^a-z0-9]/g, '')}`,
-        title: proposal.title.toUpperCase(),
-        date: proposal.eventDate,
-        municipality: proposal.municipality,
-        department: proposal.department,
-        organizer: proposal.organizer,
-        category: proposal.category,
-        status: 'published',
-        distances: proposal.distances,
-        website: proposal.website,
-        registrationFee: proposal.registrationFeed,
-        description: proposal.description,
-        altitude: '',
-        cover: ''
-      }
-
-      const response = await fetch('/api/hybrid-storage', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          action: 'publish_proposal_as_event',
-          proposalId: proposal.id,
-          eventData
-        })
+      // Funcionalidad no implementada - sistema de propuestas pendiente
+      setActionResult({
+        success: false,
+        message: 'Sistema de propuestas no implementado. Use la creación directa de eventos desde el panel principal.'
       })
-
-      if (response.ok) {
-        setProposals(proposals.map(p => 
-          p.id === proposal.id ? { ...p, status: 'approved' as const } : p
-        ))
-        
-        setActionResult({
-          success: true,
-          message: 'Propuesta publicada como evento exitosamente'
-        })
-      } else {
-        const errorData = await response.json()
-        setActionResult({
-          success: false,
-          message: errorData.error || 'Error publicando evento'
-        })
-      }
     } catch (error) {
       setActionResult({
         success: false,
-        message: `Error: ${error instanceof Error ? error.message : 'Desconocido'}`
+        message: 'Funcionalidad no disponible'
       })
     } finally {
       setIsProcessing(false)
@@ -363,8 +266,18 @@ export default function ProposalsPage() {
           Propuestas {filter !== 'all' && `(${filter})`}
         </h2>
         {filteredProposals.length === 0 ? (
-          <div className="p-4 border rounded-lg text-center text-muted-foreground">
-            No hay propuestas {filter !== 'all' && `${filter}`} disponibles.
+          <div className="p-8 border rounded-lg text-center">
+            <div className="space-y-4">
+              <div className="text-6xl">📝</div>
+              <h3 className="text-xl font-semibold">Sistema de Propuestas</h3>
+              <p className="text-muted-foreground max-w-md mx-auto">
+                El sistema de propuestas está disponible para implementación futura. 
+                Actualmente, los eventos se crean directamente desde el panel de administración.
+              </p>
+              <Button onClick={() => router.push('/admin')} variant="outline">
+                Volver al Panel Principal
+              </Button>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

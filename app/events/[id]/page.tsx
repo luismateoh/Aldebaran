@@ -162,8 +162,8 @@ export default async function Event({ params }: Props) {
                     }
                     location={`${eventData.municipality}, ${eventData.department}`}
                     evenDate={eventData.eventDate}
-                    organizer={eventData.organizer}
-                    website={eventData.registrationUrl}
+                    organizer={eventData.organizer || 'Sin especificar'}
+                    website={eventData.registrationUrl || ''}
                   />
                 </div>
               </div>

@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
         message: 'Token is valid' 
       })
     } catch (jwtError) {
-      console.log('❌ API Verify: Token inválido:', jwtError.message)
+      console.log('❌ API Verify: Token inválido:', jwtError instanceof Error ? jwtError.message : 'Unknown error')
       return NextResponse.json({ 
         valid: false,
         error: 'Invalid token' 

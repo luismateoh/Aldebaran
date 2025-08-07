@@ -103,7 +103,7 @@ Genera SOLO el archivo Markdown completo sin explicaciones adicionales:
     if (process.env.GROQ_API_KEY && process.env.GROQ_API_KEY !== 'demo') {
       try {
         const completion = await groq.chat.completions.create({
-          model: "llama-3.1-70b-versatile", // Modelo gratuito muy bueno
+          model: "openai/gpt-oss-120b", // Modelo gratuito muy bueno
           messages: [
             {
               role: "system",

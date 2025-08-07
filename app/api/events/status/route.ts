@@ -1,14 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { eventsService } from '@/lib/events-firebase'
 
 export async function PATCH(request: NextRequest) {
   try {
-    const token = request.headers.get('authorization')?.replace('Bearer ', '')
-    
-    // Verificar token de admin
-    if (!token) {
-      return NextResponse.json({ error: 'Token requerido' }, { status: 401 })
-    }
-
     const body = await request.json()
     const { eventId, status } = body
 
@@ -22,42 +16,28 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'Estado no válido' }, { status: 400 })
     }
 
-    // Usar la URL correcta para desarrollo local
-    const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : `http://localhost:${process.env.PORT || 3000}`
+    console.log(`📡 API /api/events/status - Actualizando evento ${eventId} a estado ${status}`)
 
-    // Actualizar estado del evento en el sistema híbrido (Blob Storage)
-    const response = await fetch(`${baseUrl}/api/hybrid-storage`, {
-      method: 'POST',
-      headers: { 
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        action: 'update_event_status',
-        eventId,
-        status
-      })
-    })
-
-    if (!response.ok) {
-      throw new Error(`Error updating event status: ${response.status}`)
+    // Actualizar estado del evento directamente en Firebase
+    const updatedEvent = await eventsService.updateEvent(eventId, { status })
+    
+    if (!updatedEvent) {
+      return NextResponse.json({ error: 'Evento no encontrado' }, { status: 404 })
     }
 
-    const data = await response.json()
+    console.log(`✅ API /api/events/status - Estado actualizado: ${updatedEvent.title}`)
     
     return NextResponse.json({ 
       success: true,
       message: `Estado del evento actualizado a: ${status}`,
-      event: data.event,
-      source: 'blob_storage'
+      event: updatedEvent,
+      source: 'firebase'
     })
 
   } catch (error) {
-    console.error('Error in events/status:', error)
+    console.error('❌ Error in events/status:', error)
     return NextResponse.json({ 
-      error: 'Error actualizando estado del evento',
+      error: 'Error actualizando estado del evento en Firebase',
       details: error instanceof Error ? error.message : 'Error desconocido'
     }, { status: 500 })
   }

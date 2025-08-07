@@ -7,7 +7,7 @@ import NewEventForm from '@/components/new-event-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Settings, FileText, Calendar, LogOut, Database, Activity, Mail, Send, CheckCircle, AlertCircle } from 'lucide-react'
+import { FileText, Calendar, LogOut, Mail, Send, CheckCircle, AlertCircle, Zap } from 'lucide-react'
 import { eventsService } from '@/lib/events-firebase'
 
 export default function AdminPage() {
@@ -131,15 +131,6 @@ export default function AdminPage() {
     router.push('/login')
   }
 
-  const handleTestFirebase = async () => {
-    try {
-      const events = await eventsService.getAllEvents()
-      alert(`✅ Firebase funcionando correctamente!\n\nEventos encontrados: ${events.length}\nPublicados: ${events.filter(e => e.status === 'published').length}\nBorradores: ${events.filter(e => e.status === 'draft').length}`)
-      loadSystemStats() // Recargar stats
-    } catch (error) {
-      alert('❌ Error en conexión a Firebase: ' + error)
-    }
-  }
 
   const handleTestEmail = async () => {
     setTestingEmail(true)
@@ -260,40 +251,30 @@ export default function AdminPage() {
 
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Database className="h-5 w-5 text-purple-500" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Firebase</p>
-                  <Badge variant="outline" className="text-xs text-green-600">
-                    Conectado
-                  </Badge>
-                </div>
+            <div className="flex items-center space-x-2">
+              <AlertCircle className="h-5 w-5 text-orange-500" />
+              <div>
+                <p className="text-sm text-muted-foreground">Borradores</p>
+                <p className="text-2xl font-bold">
+                  {isLoadingStats ? '...' : (systemStats?.draftEvents || '0')}
+                </p>
               </div>
-              <Button size="sm" variant="ghost" onClick={handleTestFirebase}>
-                🔧
-              </Button>
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Mail className="h-5 w-5 text-pink-500" />
-                <div>
-                  <p className="text-sm text-muted-foreground">EmailJS</p>
-                  <Badge variant="outline" className={`text-xs ${
-                    emailConfig?.configured ? 'text-green-600' : 'text-orange-600'
-                  }`}>
-                    {isLoadingEmailConfig ? '...' : (emailConfig?.configured ? 'Listo' : 'Config')}
-                  </Badge>
-                </div>
+            <div className="flex items-center space-x-2">
+              <Mail className="h-5 w-5 text-pink-500" />
+              <div>
+                <p className="text-sm text-muted-foreground">Email Status</p>
+                <Badge variant="outline" className={`text-xs ${
+                  emailConfig?.configured ? 'text-green-600' : 'text-orange-600'
+                }`}>
+                  {isLoadingEmailConfig ? '...' : (emailConfig?.configured ? 'Configurado' : 'Pendiente')}
+                </Badge>
               </div>
-              <Button size="sm" variant="ghost" onClick={handleTestEmail} disabled={!emailConfig?.configured}>
-                📧
-              </Button>
             </div>
           </CardContent>
         </Card>
@@ -380,27 +361,27 @@ export default function AdminPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5" />
+                <Zap className="h-5 w-5" />
                 Acciones Rápidas
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <Button
-                onClick={() => router.push('/')}
+                onClick={() => router.push('/admin/proposals')}
+                className="w-full justify-start"
+                variant="outline"
+              >
+                <FileText className="h-4 w-4 mr-2" />
+                Gestionar Propuestas
+              </Button>
+              
+              <Button
+                onClick={() => router.push('/admin/events')}
                 className="w-full justify-start"
                 variant="outline"
               >
                 <Calendar className="h-4 w-4 mr-2" />
-                Ver Eventos Publicados
-              </Button>
-              
-              <Button
-                onClick={handleTestFirebase}
-                className="w-full justify-start"
-                variant="outline"
-              >
-                <Database className="h-4 w-4 mr-2" />
-                Probar Conexión Firebase
+                Administrar Eventos
               </Button>
             </CardContent>
           </Card>

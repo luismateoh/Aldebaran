@@ -145,7 +145,7 @@ export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
         cover: formData.cover,
         altitude: '1000m', // Valor por defecto
         tags: [formData.category.toLowerCase()],
-        status: 'published',
+        status: 'published' as const,
         featured: false
       }
 

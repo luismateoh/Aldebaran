@@ -1,26 +1,25 @@
 # Aldebaran 🏃‍♂️
 
-Un sistema moderno y completo para eventos de atletismo en Colombia, construido con Next.js 14.
+Una plataforma moderna para eventos de atletismo en Colombia, construida con Next.js 14 y Firebase.
 
 ## 🚀 Características
 
-### ✨ **Sistema de Eventos Automatizado**
-- 📅 **Actualización automática** de eventos recurrentes
+### ✨ **Sistema de Eventos con Firebase**
+- 🔥 **Firebase Firestore** como base de datos principal
 - 🤖 **IA gratuita** para generar contenido enriquecido (Groq)
-- 📝 **Formulario intuitivo** para crear nuevos eventos
-- 🔄 **Migración automática** de eventos 2024 → 2025
+- 📝 **Panel de administración** intuitivo
+- 📅 **Filtrado automático** de eventos (solo futuros)
 
-### 💬 **Comentarios de Comunidad**
-- 🗨️ **Sistema propio** sin dependencias externas
+### 💬 **Sistema de Comentarios**
+- 🗨️ **Sistema basado en archivos** sin dependencias externas
 - 📱 **Interfaz moderna** y responsive
-- 🆓 **Completamente gratis** (archivos locales + Postgres)
-- 🔧 **Sistema escalable** con Postgres en producción
+- 🔧 **Moderación básica** incluida
 
 ### 🎨 **Interfaz Moderna**
 - 🌓 **Tema claro/oscuro**
 - 📱 **Completamente responsive**
 - ⚡ **Componentes optimizados** con Radix UI
-- 🎯 **UX centrada en el usuario**
+- 🎯 **PWA** con soporte offline
 
 ## 🏁 Inicio Rápido
 
@@ -31,19 +30,34 @@ cd Aldebaran
 npm install
 ```
 
-### 2. Configurar IA (Opcional pero Recomendado)
+### 2. Configurar Firebase
+Crea un archivo `.env.local` con tus credenciales de Firebase:
 ```bash
-npm run setup-ai
-# Sigue las instrucciones para obtener API key gratuita de Groq
+NEXT_PUBLIC_FIREBASE_API_KEY=tu_api_key_aqui
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=tu_proyecto.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=tu_proyecto_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=tu_proyecto.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=123456789
+NEXT_PUBLIC_FIREBASE_APP_ID=1:123456789:web:abcdef123456
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-XXXXXXXXXX
 ```
 
-### 3. Configurar Comentarios
+### 3. Configurar IA (Opcional)
+Para desarrollo con IA, añade a tu `.env.local`:
 ```bash
-npm run setup-comments
-# Crea comentarios de ejemplo para probar el sistema
+GROQ_API_KEY=gsk_tu_groq_key_aqui
 ```
 
-### 4. Ejecutar en Desarrollo
+### 4. Configurar EmailJS (Producción)
+Para notificaciones por email, añade:
+```bash
+NEXT_PUBLIC_EMAILJS_SERVICE_ID=service_xxxxx
+NEXT_PUBLIC_EMAILJS_TEMPLATE_ID=template_xxxxx  
+NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=xxxxxxxxxxxxxxx
+NEXT_PUBLIC_ADMIN_EMAIL=admin@example.com
+```
+
+### 5. Ejecutar en Desarrollo
 ```bash
 npm run dev
 # Abre http://localhost:3000
@@ -56,44 +70,99 @@ npm run dev
 npm run dev                 # Servidor de desarrollo
 npm run build              # Build de producción
 npm run start              # Servidor de producción
-
-# Gestión de Eventos
-npm run update-events      # Actualizar eventos 2024 → 2025
-npm run new-event          # Script para crear eventos (CLI)
-
-# Configuración
-npm run setup-ai           # Configurar IA gratuita
-npm run setup-comments     # Configurar sistema de comentarios
+npm run preview            # Build + start local
 
 # Calidad de Código
-npm run lint               # Linter
+npm run lint               # ESLint
+npm run lint:fix           # Corregir issues automáticamente
 npm run typecheck          # Verificar tipos TypeScript
-npm run format:write       # Formatear código
+npm run format:write       # Formatear código con Prettier
+npm run format:check       # Verificar formato
+
+# Firebase (si usas Firebase)
+npm run firebase:emulators # Iniciar emuladores Firebase
+npm run firebase:deploy    # Desplegar a Firebase
 ```
 
 ## 🎯 Uso del Sistema
 
-### Crear Nuevo Evento
+### Panel de Administración
 1. Ve a `/admin` en tu navegador
-2. Completa el formulario con la información básica
-3. Haz clic en "🤖 Enriquecer con IA" (si tienes API key configurada)
-4. Descarga el archivo Markdown generado
-5. Guárdalo en la carpeta `/events/`
+2. Usa las "Acciones Rápidas":
+   - **Gestionar Propuestas**: Revisar eventos propuestos
+   - **Administrar Eventos**: Gestión completa de eventos
 
-### Gestionar Comentarios
-- Los comentarios se guardan automáticamente en `/data/comments/`
-- Para producción, migra a Postgres (lee `docs/comments-setup.md`)
-- Sistema anti-spam básico incluido
+### Crear Nuevo Evento
+1. Accede al panel de administración
+2. Completa el formulario con la información del evento
+3. Usa la IA para enriquecer el contenido (si está configurada)
+4. El evento se guarda automáticamente en Firebase
+
+### Proponer Eventos
+- Los usuarios pueden proponer eventos en `/proponer`
+- Sistema de notificaciones por email al administrador
 
 ## 🛠️ Tecnologías
 
 - **Framework:** Next.js 14 (App Router)
+- **Base de Datos:** Firebase Firestore
 - **Lenguaje:** TypeScript
 - **Estilos:** Tailwind CSS
 - **Componentes:** Radix UI
-- **IA:** Groq (gratuita) + OpenAI (opcional)
-- **Comentarios:** Sistema propio + Postgres (opcional)
-- **Hosting:** Vercel (capa gratuita)
+- **IA:** Groq (gratuita)
+- **Email:** EmailJS
+- **Hosting:** Vercel
+- **PWA:** next-pwa
+
+## 🚀 Despliegue
+
+### Vercel (Recomendado)
+1. Conecta tu repositorio a Vercel
+2. Configura las variables de entorno en el dashboard de Vercel
+3. Vercel manejará automáticamente el build y despliegue
+
+### Variables de Entorno para Producción
+```bash
+# Firebase
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+NEXT_PUBLIC_FIREBASE_APP_ID=
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=
+
+# EmailJS
+NEXT_PUBLIC_EMAILJS_SERVICE_ID=
+NEXT_PUBLIC_EMAILJS_TEMPLATE_ID=
+NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=
+NEXT_PUBLIC_ADMIN_EMAIL=
+```
+
+## 📁 Estructura del Proyecto
+
+```
+Aldebaran/
+├── app/                    # Next.js App Router
+│   ├── admin/             # Panel de administración
+│   ├── api/               # API routes
+│   ├── events/            # Páginas de eventos
+│   └── proponer/          # Formulario de propuestas
+├── components/            # Componentes React
+├── lib/                   # Utilidades y servicios
+├── hooks/                 # Custom React hooks
+├── data/                  # Datos locales (comentarios)
+├── public/                # Assets estáticos
+└── scripts/               # Scripts de utilidad
+```
+
+## 📝 Contribuir
+
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
 
 ## About this project
 

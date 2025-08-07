@@ -1,48 +1,51 @@
 import { MetadataRoute } from "next"
+import { eventsService } from "@/lib/events-firebase"
 
-import { getAllEventsIds } from "@/lib/events"
+const SITE_URL = "https://aldebaran.run"
 
-const EXTERNAL_DATA_URL = "https://aldebaran.run/events"
-
-function generateSiteMap(posts: any) {
-  const mainUrl = {
-    url: "https://aldebaran.run",
-    lastModified: new Date(),
-    changeFrequency: "yearly",
-    priority: 1,
-  }
-
-  const postUrls = posts.map(({ id }: any) => {
-    return {
-      url: `${EXTERNAL_DATA_URL}/${id}`,
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  try {
+    // Get all events from Firebase
+    const events = await eventsService.getAllEvents()
+    
+    // Main site URL
+    const mainUrl = {
+      url: SITE_URL,
       lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.8,
+      changeFrequency: 'daily' as const,
+      priority: 1,
     }
-  })
 
-  return [mainUrl, ...postUrls]
-}
+    // Event URLs
+    const eventUrls = events.map((event) => ({
+      url: `${SITE_URL}/events/${event.id}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    }))
 
-export async function getServerSideProps({ res }: any) {
-  // We make an API call to gather the URLs for our site
-  const eventsData = getAllEventsIds()
+    // Static pages
+    const staticUrls = [
+      {
+        url: `${SITE_URL}/proponer`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly' as const,
+        priority: 0.6,
+      }
+    ]
 
-  // We generate the XML sitemap with the posts data
-  const sitemap = generateSiteMap(eventsData)
-
-  res.setHeader("Content-Type", "application/json")
-  // we send the JSON to the browser
-  res.write(JSON.stringify(sitemap))
-  res.end()
-
-  return {
-    props: {},
+    return [mainUrl, ...staticUrls, ...eventUrls]
+    
+  } catch (error) {
+    console.error('Error generating sitemap:', error)
+    // Return basic sitemap on error
+    return [
+      {
+        url: SITE_URL,
+        lastModified: new Date(),
+        changeFrequency: 'daily' as const,
+        priority: 1,
+      }
+    ]
   }
-}
-
-export default function sitemap(): MetadataRoute.Sitemap {
-  const eventsData = getAllEventsIds()
-  console.log(eventsData)
-  return generateSiteMap(eventsData)
 }
