@@ -49,6 +49,29 @@ export async function generateStaticParams() {
   }
 }
 
+// Función auxiliar para parsear fechas de manera segura
+function parseEventDate(dateString: string): Date {
+  if (!dateString) {
+    return new Date()
+  }
+
+  // Intentar diferentes formatos de fecha
+  const date = new Date(dateString)
+  if (!isNaN(date.getTime())) {
+    return date
+  }
+
+  // Si es formato YYYY-MM-DD, asegurar que se parsee correctamente
+  if (typeof dateString === 'string' && dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    const [year, month, day] = dateString.split('-').map(Number)
+    return new Date(year, month - 1, day) // month es 0-indexed en JS
+  }
+
+  // Fallback a fecha actual si no se puede parsear
+  console.warn(`No se pudo parsear la fecha: ${dateString}`)
+  return new Date()
+}
+
 // -< Event >-
 export default async function Event({ params }: Props) {
   let eventData: EventData
@@ -62,6 +85,9 @@ export default async function Event({ params }: Props) {
 
   // Convertir description de markdown a HTML si es necesario
   const contentHtml = eventData.description || ''
+  
+  // Parsear fecha de manera segura
+  const eventDate = parseEventDate(eventData.eventDate)
 
   return (
     <section className="container relative max-w-screen-md py-5 md:py-10">
@@ -127,7 +153,7 @@ export default async function Event({ params }: Props) {
               <div className="col-span-2 row-span-1 overflow-hidden rounded-lg border bg-card p-3 text-card-foreground shadow-sm sm:col-start-3 sm:row-span-4 sm:flex-row sm:items-center sm:p-4">
                 <div className="flex flex-row flex-wrap items-center justify-between gap-2 sm:h-full sm:flex-col sm:items-start">
                   <span className="text-2xl font-medium text-accent-foreground sm:flex sm:flex-col md:text-3xl">
-                    {formatDate(new Date(eventData.eventDate), "dd MMMM yyyy", {
+                    {formatDate(eventDate, "dd MMMM yyyy", {
                       locale: es,
                     })
                       .split(" ")
@@ -214,7 +240,7 @@ export default async function Event({ params }: Props) {
               <div className="col-span-2 flex flex-col justify-center gap-1 overflow-hidden rounded-lg border bg-card p-3 text-card-foreground shadow-sm sm:col-span-3 sm:row-span-2 sm:p-4">
                 <h2 className="m-0 font-light">Faltan</h2>
                 <CountDownTimer
-                  targetDate={new Date(eventData.eventDate).getTime()}
+                  targetDate={eventDate.getTime()}
                 />
               </div>
             </div>

@@ -44,17 +44,51 @@ export default function AddToCalendar({
      */
   const MINUTE_IN_MS = 60 * 1000
 
+  // Función auxiliar para parsear fechas de manera segura
+  function parseEventDate(dateString: string): Date {
+    if (!dateString) {
+      return new Date()
+    }
+
+    // Intentar diferentes formatos de fecha
+    const date = new Date(dateString)
+    if (!isNaN(date.getTime())) {
+      return date
+    }
+
+    // Si es formato YYYY-MM-DD, asegurar que se parsee correctamente
+    if (typeof dateString === 'string' && dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      const [year, month, day] = dateString.split('-').map(Number)
+      return new Date(year, month - 1, day) // month es 0-indexed en JS
+    }
+
+    // Fallback a fecha actual si no se puede parsear
+    console.warn(`No se pudo parsear la fecha en AddToCalendar: ${dateString}`)
+    return new Date()
+  }
+
   function formatDateForCalendarUrl(date: Date) {
-    return date.toISOString().replace(/-|:|\.\d+/g, "")
+    try {
+      return date.toISOString().replace(/-|:|\.\d+/g, "")
+    } catch (error) {
+      console.warn('Error formateando fecha para calendar URL:', error)
+      return new Date().toISOString().replace(/-|:|\.\d+/g, "")
+    }
   }
 
   // Formate date as 20240402
   function formatDateSimple(date: Date) {
-    return date.toISOString().slice(0, 10).replace(/-/g, "")
+    try {
+      return date.toISOString().slice(0, 10).replace(/-/g, "")
+    } catch (error) {
+      console.warn('Error formateando fecha simple:', error)
+      return new Date().toISOString().slice(0, 10).replace(/-/g, "")
+    }
   }
 
   function generateGoogleCalendarUrl() {
-    const date = formatDateSimple(new Date(evenDate))
+    const eventDate = parseEventDate(evenDate)
+    const date = formatDateSimple(eventDate)
     return encodeURI(
       [
         "https://calendar.google.com/calendar/render",
@@ -82,7 +116,8 @@ export default function AddToCalendar({
     END:VCALENDAR
      */
   function generateIcsCalendarFile() {
-    const date = formatDateForCalendarUrl(new Date(evenDate))
+    const eventDate = parseEventDate(evenDate)
+    const date = formatDateForCalendarUrl(eventDate)
 
     return encodeURI(
       [
@@ -103,7 +138,8 @@ export default function AddToCalendar({
   }
 
   function generateYahooCalendarUrl() {
-    const date = formatDateForCalendarUrl(new Date(evenDate))
+    const eventDate = parseEventDate(evenDate)
+    const date = formatDateForCalendarUrl(eventDate)
     return encodeURI(
       [
         "https://calendar.yahoo.com",
@@ -119,7 +155,8 @@ export default function AddToCalendar({
   }
 
   function generateMicrosoftTeamsUrl() {
-    const date = formatDateForCalendarUrl(new Date(evenDate))
+    const eventDate = parseEventDate(evenDate)
+    const date = formatDateForCalendarUrl(eventDate)
     return encodeURI(
       [
         "https://teams.microsoft.com/l/meeting/new?subject=" + title,
@@ -133,7 +170,8 @@ export default function AddToCalendar({
 
   //AOL
   function generateAolCalendarUrl() {
-    const date = formatDateForCalendarUrl(new Date(evenDate))
+    const eventDate = parseEventDate(evenDate)
+    const date = formatDateForCalendarUrl(eventDate)
     return encodeURI(
       [
         "https://calendar.aol.com",
@@ -149,7 +187,8 @@ export default function AddToCalendar({
   }
 
   function generateOutlookCalendarUrl() {
-    const date = formatDateForCalendarUrl(new Date(evenDate))
+    const eventDate = parseEventDate(evenDate)
+    const date = formatDateForCalendarUrl(eventDate)
     return encodeURI(
       [
         "https://outlook.live.com/calendar/0/action/compose",
@@ -166,7 +205,8 @@ export default function AddToCalendar({
   }
 
   function generateMicrosoft365Url() {
-    const date = formatDateForCalendarUrl(new Date(evenDate))
+    const eventDate = parseEventDate(evenDate)
+    const date = formatDateForCalendarUrl(eventDate)
     return encodeURI(
       [
         "https://outlook.office.com/calendar/0/deeplink/compose?start=" + date,
