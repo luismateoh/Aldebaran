@@ -98,6 +98,14 @@ export function UserMenu() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         
+        <DropdownMenuItem 
+          onClick={() => router.push('/perfil')}
+          className="cursor-pointer px-3 py-2 focus:bg-purple-50 dark:focus:bg-purple-950/50"
+        >
+          <User className="mr-2 h-4 w-4 text-purple-600" />
+          <span className="font-medium">Mi Perfil</span>
+        </DropdownMenuItem>
+        
         {isAdmin && (
           <>
             <DropdownMenuItem 
@@ -110,16 +118,6 @@ export function UserMenu() {
             <DropdownMenuSeparator />
           </>
         )}
-        
-        <DropdownMenuItem 
-          onClick={() => router.push('/perfil')}
-          className="cursor-pointer px-3 py-2"
-          disabled
-        >
-          <User className="mr-2 h-4 w-4 text-muted-foreground" />
-          <span className="text-muted-foreground">Mi Perfil</span>
-          <span className="ml-auto text-xs text-muted-foreground">(Próximamente)</span>
-        </DropdownMenuItem>
         
         <DropdownMenuSeparator />
         

@@ -21,7 +21,7 @@ const COMMENTS_COLLECTION = 'comments'
 export class CommentsService {
   private commentsRef = collection(db, COMMENTS_COLLECTION)
 
-  async getCommentsByEventId(eventId: string): Promise<FirebaseCommentData[]> {
+  async getCommentsByEventId(eventId: string, includeHidden = false): Promise<FirebaseCommentData[]> {
     try {
       const q = query(
         this.commentsRef,
@@ -30,7 +30,14 @@ export class CommentsService {
       )
       const snapshot = await getDocs(q)
       
-      return snapshot.docs.map(doc => this.transformFirestoreDoc(doc))
+      const allComments = snapshot.docs.map(doc => this.transformFirestoreDoc(doc))
+      
+      // Filtrar comentarios ocultos si no se especifica incluirlos
+      if (!includeHidden) {
+        return allComments.filter(comment => !comment.hidden)
+      }
+      
+      return allComments
     } catch (error) {
       console.error('Error fetching comments:', error)
       throw error
@@ -78,7 +85,7 @@ export class CommentsService {
   }
 
   // Listener en tiempo real para comentarios
-  subscribeToComments(eventId: string, callback: (comments: FirebaseCommentData[]) => void): () => void {
+  subscribeToComments(eventId: string, callback: (comments: FirebaseCommentData[]) => void, includeHidden = false): () => void {
     const q = query(
       this.commentsRef,
       where('eventId', '==', eventId),
@@ -86,8 +93,14 @@ export class CommentsService {
     )
     
     return onSnapshot(q, (snapshot) => {
-      const comments = snapshot.docs.map(doc => this.transformFirestoreDoc(doc))
-      callback(comments)
+      const allComments = snapshot.docs.map(doc => this.transformFirestoreDoc(doc))
+      
+      // Filtrar comentarios ocultos si no se especifica incluirlos
+      const filteredComments = includeHidden 
+        ? allComments 
+        : allComments.filter(comment => !comment.hidden)
+      
+      callback(filteredComments)
     })
   }
 

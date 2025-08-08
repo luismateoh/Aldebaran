@@ -77,6 +77,43 @@ service cloud.firestore {
         (request.auth.uid == userId || isAdmin());
     }
 
+    // Event likes collection - authenticated users can manage their own likes
+    match /event_likes/{likeId} {
+      allow read: if true; // Public read for like counts
+      allow create: if isAuthenticated() && 
+        request.resource.data.userId == request.auth.uid; // Can only like with own userId
+      allow delete: if isAuthenticated() && 
+        resource.data.userId == request.auth.uid; // Can only remove own likes
+    }
+
+    // User interactions collection - authenticated users manage their own interactions
+    match /user_interactions/{interactionId} {
+      allow read: if isAuthenticated() && 
+        (interactionId.split('_')[0] == request.auth.uid || isAdmin()); // Can read own interactions or if admin
+      allow write: if isAuthenticated() && 
+        (interactionId.split('_')[0] == request.auth.uid || isAdmin()); // Can write own interactions or if admin
+    }
+
+    // User profiles collection - authenticated users manage their own profiles
+    match /user_profiles/{userId} {
+      allow read: if isAuthenticated() && 
+        (request.auth.uid == userId || isAdmin()); // Can read own profile or if admin
+      allow write: if isAuthenticated() && 
+        (request.auth.uid == userId || isAdmin()); // Can write own profile or if admin
+    }
+
+    // User goals collection - authenticated users manage their own goals
+    match /user_goals/{goalId} {
+      allow read: if isAuthenticated() && 
+        (resource.data.userId == request.auth.uid || isAdmin()); // Can read own goals or if admin
+      allow create: if isAuthenticated() && 
+        request.resource.data.userId == request.auth.uid; // Can only create with own userId
+      allow update: if isAuthenticated() && 
+        (resource.data.userId == request.auth.uid || isAdmin()); // Can update own goals or if admin
+      allow delete: if isAuthenticated() && 
+        (resource.data.userId == request.auth.uid || isAdmin()); // Can delete own goals or if admin
+    }
+
     // Audit logs (optional, for tracking admin actions)
     match /auditLogs/{logId} {
       allow read: if isSuperAdmin(); // Only super admins can read audit logs

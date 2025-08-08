@@ -4,6 +4,7 @@ import type { EventData } from "@/lib/types"
 import { capitalize, formatDate } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import SmartImage from "@/components/smart-image"
+import EventLikeButton from "@/components/event-like-button"
 
 import { Icons } from "../icons"
 
@@ -16,22 +17,36 @@ export default function EventCard({ event: event }: { event: EventData }) {
         e.preventDefault()
       }}
     >
-      <a
-        href={`/events/${event.id}/`}
-        className="flex h-52 rounded-2xl bg-background transition duration-300 group-hover:-translate-y-2 group-hover:shadow-xl"
-      >
-        <SmartImage
-          src={event.cover || undefined}
-          alt={"Imagen de " + event.title}
-          width={720}
-          height={360}
-          className="size-full overflow-hidden rounded-xl object-cover"
-          eventId={event.id}
-          fallbackType={event.category?.includes('marathon') ? 'marathon' : 
-                      event.category?.includes('trail') ? 'trail' : 'running'}
-          priority
-        />
-      </a>
+      <div className="relative">
+        <a
+          href={`/events/${event.id}/`}
+          className="flex h-52 rounded-2xl bg-background transition duration-300 group-hover:-translate-y-2 group-hover:shadow-xl"
+        >
+          <SmartImage
+            src={event.cover || undefined}
+            alt={"Imagen de " + event.title}
+            width={720}
+            height={360}
+            className="size-full overflow-hidden rounded-xl object-cover"
+            eventId={event.id}
+            fallbackType={event.category?.includes('marathon') ? 'marathon' : 
+                        event.category?.includes('trail') ? 'trail' : 'running'}
+            priority
+          />
+        </a>
+        
+        {/* Botón de like en la esquina superior derecha */}
+        <div className="absolute top-3 right-3 z-10">
+          <EventLikeButton
+            eventId={event.id}
+            initialCount={(event as any).likesCount || 0}
+            variant="ghost"
+            size="sm"
+            showCount={true}
+            className="bg-white/80 backdrop-blur-sm hover:bg-white/90"
+          />
+        </div>
+      </div>
 
       <div className="flex items-center justify-between">
         <Badge className="rounded-md capitalize">{event.category}</Badge>

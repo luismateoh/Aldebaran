@@ -30,6 +30,11 @@ export interface FirebaseEventData {
   snippet?: string
   registrationDeadline?: string
   contentHtml?: string
+  
+  // Estadísticas de interacción
+  likesCount?: number
+  interestedCount?: number
+  attendeesCount?: number
 }
 
 export interface FirebaseCommentData {
@@ -37,9 +42,12 @@ export interface FirebaseCommentData {
   eventId: string
   author: string
   email?: string
+  userId?: string
+  photoURL?: string // Foto de perfil del usuario
   content: string
   parentId?: string // Para replies
   likes?: number
+  hidden?: boolean // Para ocultar comentarios sin eliminarlos
   createdAt?: any // Firestore Timestamp
 }
 

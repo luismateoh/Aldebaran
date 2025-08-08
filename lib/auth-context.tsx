@@ -16,6 +16,7 @@ interface AuthContextType {
   isAdmin: boolean
   loading: boolean
   signInWithGoogle: () => Promise<void>
+  signInWithGoogleForComments: () => Promise<void>
   logout: () => Promise<void>
 }
 
@@ -62,6 +63,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
+  const signInWithGoogleForComments = async () => {
+    try {
+      const provider = new GoogleAuthProvider()
+      await signInWithPopup(auth, provider)
+      // No verificar permisos de admin, permitir cualquier usuario autenticado
+    } catch (error) {
+      console.error('Error signing in with Google for comments:', error)
+      throw error
+    }
+  }
+
   const logout = async () => {
     try {
       await signOut(auth)
@@ -98,6 +110,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isAdmin,
     loading,
     signInWithGoogle,
+    signInWithGoogleForComments,
     logout
   }
 

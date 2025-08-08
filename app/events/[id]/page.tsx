@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import AddToCalendar from "@/components/add-to-calendar"
 import CountDownTimer from "@/components/count-down-timer"
 import EventComments from "@/components/event-comments"
+import EventActions from "@/components/event-actions"
 import InteractiveSection from "@/components/interactive-section"
 import SeeAllEventsCta from "@/components/see-all-events-cta"
 import SmartImage from "@/components/smart-image"
@@ -176,6 +177,15 @@ export default async function Event({ params }: Props) {
                     organizer={eventData.organizer || 'Sin especificar'}
                     website={eventData.registrationUrl || ''}
                   />
+                  
+                  {/* Botones de acción del evento */}
+                  <div className="mt-6 border-t pt-4">
+                    <EventActions
+                      event={eventData}
+                      variant="horizontal"
+                      className="justify-center sm:justify-start"
+                    />
+                  </div>
                 </div>
               </div>
               
