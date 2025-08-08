@@ -3,8 +3,7 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
-import { Suspense } from 'react'
-import NewEventForm from '@/components/new-event-form'
+import NewEventFormWrapper from '@/components/new-event-form-wrapper'
 
 export default function NewEventPage() {
   const router = useRouter()
@@ -36,9 +35,7 @@ export default function NewEventPage() {
 
   return (
     <div className="container relative py-6 lg:py-10">
-      <Suspense fallback={<div>Cargando formulario...</div>}>
-        <NewEventForm />
-      </Suspense>
+      <NewEventFormWrapper />
     </div>
   )
 }

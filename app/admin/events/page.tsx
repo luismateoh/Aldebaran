@@ -7,8 +7,10 @@ import { useAuthApi } from '@/hooks/use-auth-api'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, Edit, Calendar, MapPin, User, Plus, MoreHorizontal, Trash, Ban, Check } from 'lucide-react'
+import { ArrowLeft, Edit, Calendar, MapPin, User, Plus, MoreHorizontal, Trash, Ban, Check, Search, Filter, SortAsc, Copy, Zap } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,6 +40,11 @@ export default function EventsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'draft' | 'published' | 'cancelled'>('all')
   const [actionResult, setActionResult] = useState<{success?: boolean, message: string} | null>(null)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [departmentFilter, setDepartmentFilter] = useState<string>('all')
+  const [categoryFilter, setCategoryFilter] = useState<string>('all')
+  const [sortBy, setSortBy] = useState<'date' | 'title' | 'created'>('date')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
 
   // Redirect if not authenticated or not admin
   useEffect(() => {
@@ -139,9 +146,93 @@ export default function EventsPage() {
     }
   }
 
-  const filteredEvents = events.filter(event => 
-    filter === 'all' || event.status === filter
-  )
+  // Obtener departamentos únicos para filtro
+  const uniqueDepartments = Array.from(new Set(events.map(e => e.department).filter(Boolean)))
+  const uniqueCategories = Array.from(new Set(events.map(e => e.category).filter(Boolean)))
+
+  // Función de duplicado de evento
+  const handleDuplicateEvent = async (eventId: string) => {
+    try {
+      const response = await makeAuthenticatedRequest(`/api/events/detail?id=${eventId}`)
+      if (response.ok) {
+        const data = await response.json()
+        const event = data.event
+        
+        // Crear nuevo evento duplicado
+        const duplicatedEvent = {
+          ...event,
+          title: event.title + ' - Copia',
+          status: 'draft',
+          eventDate: '', // Limpiar fecha para que el admin la establezca
+        }
+        delete duplicatedEvent.id // Remover ID para crear nuevo
+        
+        const createResponse = await makeAuthenticatedRequest('/api/events', {
+          method: 'POST',
+          body: JSON.stringify(duplicatedEvent)
+        })
+        
+        if (createResponse.ok) {
+          setActionResult({
+            success: true,
+            message: 'Evento duplicado exitosamente. Actualice la fecha antes de publicar.'
+          })
+          loadEvents() // Recargar lista
+        }
+      }
+    } catch (error) {
+      setActionResult({
+        success: false,
+        message: 'Error duplicando evento'
+      })
+    }
+  }
+
+  // Filtrado avanzado
+  const filteredEvents = events
+    .filter(event => {
+      // Filtro por estado
+      if (filter !== 'all' && event.status !== filter) return false
+      
+      // Filtro por búsqueda
+      if (searchTerm && !event.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
+          !event.municipality.toLowerCase().includes(searchTerm.toLowerCase()) &&
+          !event.organizer.toLowerCase().includes(searchTerm.toLowerCase())) {
+        return false
+      }
+      
+      // Filtro por departamento
+      if (departmentFilter !== 'all' && event.department !== departmentFilter) return false
+      
+      // Filtro por categoría  
+      if (categoryFilter !== 'all' && event.category !== categoryFilter) return false
+      
+      return true
+    })
+    .sort((a, b) => {
+      let aValue, bValue
+      
+      switch (sortBy) {
+        case 'title':
+          aValue = a.title.toLowerCase()
+          bValue = b.title.toLowerCase()
+          break
+        case 'created':
+          aValue = new Date(a.createdAt || '').getTime()
+          bValue = new Date(b.createdAt || '').getTime()
+          break
+        case 'date':
+        default:
+          aValue = new Date(a.eventDate || '').getTime()
+          bValue = new Date(b.eventDate || '').getTime()
+      }
+      
+      if (sortOrder === 'asc') {
+        return aValue > bValue ? 1 : -1
+      } else {
+        return aValue < bValue ? 1 : -1
+      }
+    })
 
   // Show loading while checking authentication
   if (loading) {
@@ -168,23 +259,123 @@ export default function EventsPage() {
   return (
     <div className="container max-w-6xl mx-auto py-8 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Button variant="outline" onClick={() => router.push('/admin')}>
+          <Button variant="outline" size="sm" onClick={() => router.push('/admin')}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Volver al Panel
+            Panel
           </Button>
           <div>
-            <h1 className="text-3xl font-bold">Gestión de Eventos</h1>
-            <p className="text-muted-foreground">
-              Administra eventos publicados y borradores
+            <h1 className="text-2xl sm:text-3xl font-bold">Gestión de Eventos</h1>
+            <p className="text-sm text-muted-foreground">
+              {filteredEvents.length} de {events.length} eventos
             </p>
           </div>
         </div>
-        <Button onClick={handleCreateEvent}>
+        <Button onClick={handleCreateEvent} size="sm">
           <Plus className="h-4 w-4 mr-2" />
-          Crear Nuevo Evento
+          Nuevo
         </Button>
+      </div>
+
+      {/* Search and Filters - Mobile Optimized */}
+      <div className="space-y-4">
+        {/* Search Bar */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Input
+            placeholder="Buscar eventos por título, municipio u organizador..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+
+        {/* Filters - Collapsible on mobile */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2">
+          {/* Status Filter */}
+          <Select value={filter} onValueChange={(value: any) => setFilter(value)}>
+            <SelectTrigger className="text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos</SelectItem>
+              <SelectItem value="published">Publicados</SelectItem>
+              <SelectItem value="draft">Borradores</SelectItem>
+              <SelectItem value="cancelled">Cancelados</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Department Filter */}
+          {uniqueDepartments.length > 0 && (
+            <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
+              <SelectTrigger className="text-xs">
+                <SelectValue placeholder="Depto" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos Deptos</SelectItem>
+                {uniqueDepartments.map(dept => (
+                  <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+
+          {/* Category Filter */}
+          {uniqueCategories.length > 0 && (
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <SelectTrigger className="text-xs">
+                <SelectValue placeholder="Categoría" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas</SelectItem>
+                {uniqueCategories.map(cat => (
+                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+
+          {/* Sort By */}
+          <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
+            <SelectTrigger className="text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="date">Por Fecha</SelectItem>
+              <SelectItem value="title">Por Título</SelectItem>
+              <SelectItem value="created">Por Creación</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Sort Order */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+            className="text-xs"
+          >
+            <SortAsc className={`h-3 w-3 mr-1 ${sortOrder === 'desc' ? 'rotate-180' : ''}`} />
+            {sortOrder === 'asc' ? 'A-Z' : 'Z-A'}
+          </Button>
+
+          {/* Clear Filters */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setSearchTerm('')
+              setFilter('all')
+              setDepartmentFilter('all')
+              setCategoryFilter('all')
+              setSortBy('date')
+              setSortOrder('desc')
+            }}
+            className="text-xs"
+          >
+            Limpiar
+          </Button>
+        </div>
       </div>
 
       {/* Action Result */}
@@ -278,6 +469,14 @@ export default function EventsPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => handleEditEvent(event.id)}>
+                            <Edit className="mr-2 h-4 w-4" />
+                            <span>Editar</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleDuplicateEvent(event.id)}>
+                            <Copy className="mr-2 h-4 w-4" />
+                            <span>Duplicar</span>
+                          </DropdownMenuItem>
                           {event.status !== 'published' && (
                             <DropdownMenuItem onClick={() => handleUpdateStatus(event.id, 'published')}>
                               <Check className="mr-2 h-4 w-4" />

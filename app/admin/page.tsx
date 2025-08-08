@@ -7,7 +7,7 @@ import { useAuthApi } from '@/hooks/use-auth-api'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { FileText, Calendar, Mail, Send, CheckCircle, AlertCircle, Zap, User, Plus, Settings, Database, Brain, UserPlus, PenTool } from 'lucide-react'
+import { FileText, Calendar, Mail, Send, CheckCircle, AlertCircle, Zap, User, Plus, Settings, Database, Brain, UserPlus, PenTool, Copy, Search, Filter, MapPin, Clock } from 'lucide-react'
 
 export default function AdminPage() {
   const router = useRouter()
@@ -237,6 +237,63 @@ export default function AdminPage() {
             <User className="h-3 w-3 mr-1" />
             {user.email}
           </Badge>
+        </div>
+
+        {/* Acciones Rápidas - Mobile Optimized */}
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mt-4">
+          <Button 
+            onClick={() => router.push('/admin/events/new')}
+            size="sm"
+            className="h-12 text-xs flex flex-col gap-1"
+          >
+            <Plus className="h-4 w-4" />
+            Nuevo Evento
+          </Button>
+          
+          <Button 
+            onClick={() => router.push('/admin/templates')}
+            size="sm"
+            variant="outline"
+            className="h-12 text-xs flex flex-col gap-1 border-blue-200 text-blue-700 hover:bg-blue-50"
+          >
+            <Zap className="h-4 w-4" />
+            Templates
+          </Button>
+          
+          <Button 
+            onClick={() => router.push('/admin/events')}
+            size="sm"
+            variant="outline"
+            className="h-12 text-xs flex flex-col gap-1"
+          >
+            <Search className="h-4 w-4" />
+            Buscar
+          </Button>
+          
+          <Button 
+            onClick={() => router.push('/admin/proposals')}
+            size="sm"
+            variant="outline"
+            className="h-12 text-xs flex flex-col gap-1 relative"
+          >
+            <Mail className="h-4 w-4" />
+            Propuestas
+            {systemStats?.proposals > 0 && (
+              <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center">
+                {systemStats.proposals}
+              </div>
+            )}
+          </Button>
+          
+          <Button 
+            onClick={() => router.push('/admin/events?filter=draft')}
+            size="sm"
+            variant="outline"
+            className="h-12 text-xs flex flex-col gap-1"
+          >
+            <FileText className="h-4 w-4" />
+            Borradores
+          </Button>
         </div>
       </div>
 

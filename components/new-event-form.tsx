@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import emailjs from '@emailjs/browser'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -31,6 +32,7 @@ interface NewEventFormProps {
 }
 
 export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
+  const searchParams = !isPublic ? useSearchParams() : null
   const [formData, setFormData] = useState<EventFormData>({
     title: '',
     eventDate: '',
@@ -49,6 +51,7 @@ export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
   const [emailSent, setEmailSent] = useState(false)
   const [isCommitting, setIsCommitting] = useState(false)
   const [commitResult, setCommitResult] = useState<any>(null)
+  const [validationErrors, setValidationErrors] = useState<{field: string, message: string}[]>([])
   
   const departments = [
     'Antioquia', 'Atlántico', 'Bogotá', 'Bolívar', 'Boyacá', 'Caldas', 
@@ -59,6 +62,63 @@ export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
   
   const categories = ['Running', 'Trail', 'Maraton', 'Media maraton', 'Ultra', 'Kids']
   const distanceOptions = ['1k', '2k', '3k', '5k', '8k', '10k', '15k', '21k', '25k', '30k', '42k', '50k', '100k']
+
+  // Load template from URL parameters (only for admin)
+  useEffect(() => {
+    if (isPublic || !searchParams) return
+    
+    const templateTitle = searchParams.get('title')
+    const templateCategory = searchParams.get('category')
+    const templateDistances = searchParams.get('distances')
+    const templatePrice = searchParams.get('price')
+    const templateDescription = searchParams.get('description')
+
+    if (templateTitle || templateCategory) {
+      setFormData(prev => ({
+        ...prev,
+        title: templateTitle || prev.title,
+        category: templateCategory || prev.category,
+        distances: templateDistances ? templateDistances.split(',') : prev.distances,
+        price: templatePrice || prev.price,
+        description: templateDescription || prev.description
+      }))
+    }
+  }, [searchParams, isPublic])
+
+  // Validation function
+  const validateForm = (): {field: string, message: string}[] => {
+    const errors: {field: string, message: string}[] = []
+    
+    if (!formData.title.trim()) {
+      errors.push({ field: 'title', message: 'El título es obligatorio' })
+    } else if (formData.title.length < 10) {
+      errors.push({ field: 'title', message: 'El título debe tener al menos 10 caracteres' })
+    }
+    
+    if (!formData.eventDate) {
+      errors.push({ field: 'eventDate', message: 'La fecha del evento es obligatoria' })
+    } else {
+      const eventDate = new Date(formData.eventDate)
+      const today = new Date()
+      if (eventDate <= today) {
+        errors.push({ field: 'eventDate', message: 'La fecha debe ser futura' })
+      }
+    }
+    
+    if (!formData.municipality.trim()) {
+      errors.push({ field: 'municipality', message: 'El municipio es obligatorio' })
+    }
+    
+    if (!formData.department) {
+      errors.push({ field: 'department', message: 'El departamento es obligatorio' })
+    }
+    
+    if (formData.distances.length === 0) {
+      errors.push({ field: 'distances', message: 'Debe seleccionar al menos una distancia' })
+    }
+    
+    return errors
+  }
   
   const handleDistanceToggle = (distance: string) => {
     setFormData(prev => ({
@@ -384,8 +444,16 @@ export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
                   </div>
                 ) : (
                   <Button 
-                    onClick={sendEventByEmail} 
-                    disabled={isSending || !formData.title || !formData.eventDate}
+                    onClick={() => {
+                      const errors = validateForm()
+                      if (errors.length > 0) {
+                        setValidationErrors(errors)
+                        return
+                      }
+                      setValidationErrors([])
+                      sendEventByEmail()
+                    }} 
+                    disabled={isSending}
                     className="w-full"
                   >
                     {isSending ? (
@@ -400,8 +468,16 @@ export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
               // Versión admin: crear directamente en Firebase
               <div className="space-y-4">
                 <Button 
-                  onClick={createEventInFirebase} 
-                  disabled={isCommitting || !formData.title || !formData.eventDate}
+                  onClick={() => {
+                    const errors = validateForm()
+                    if (errors.length > 0) {
+                      setValidationErrors(errors)
+                      return
+                    }
+                    setValidationErrors([])
+                    createEventInFirebase()
+                  }} 
+                  disabled={isCommitting}
                   className="w-full"
                 >
                   {isCommitting ? (

@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ArrowLeft, Check, X, Edit, Calendar, MapPin, User, ExternalLink, RefreshCw } from 'lucide-react'
 
 interface Proposal {
-  id: number
+  id: string
   title: string
   eventDate: string
   municipality: string
@@ -23,12 +23,16 @@ interface Proposal {
   website: string
   description: string
   distances: string[]
-  registrationFeed: string
+  registrationFee: string
   category: string
   status: 'pending' | 'approved' | 'rejected'
   submittedBy: string
-  created_at: string
+  createdAt: string
+  submitterEmail?: string
   userAgent?: string
+  reviewedBy?: string
+  reviewedAt?: string
+  rejectionReason?: string
 }
 
 export default function ProposalsPage() {
@@ -59,64 +63,116 @@ export default function ProposalsPage() {
   const loadProposals = async () => {
     try {
       setIsLoading(true)
+      setActionResult(null)
       
-      // Simular carga de propuestas - actualmente no hay sistema de propuestas implementado
-      console.log('🔍 Cargando propuestas...')
+      console.log('🔍 Cargando propuestas desde Firebase...')
       
-      // Por ahora, no hay propuestas ya que el sistema usa Firebase directamente
-      // En el futuro se podría implementar un sistema de propuestas en Firestore
-      setProposals([])
+      const response = await makeAuthenticatedRequest('/api/proposals')
       
-      setActionResult({
-        success: true,
-        message: 'Sistema de propuestas disponible para futura implementación'
-      })
+      if (response.ok) {
+        const data = await response.json()
+        setProposals(data.proposals || [])
+        
+        if (data.proposals.length === 0) {
+          setActionResult({
+            success: true,
+            message: 'No hay propuestas disponibles. Las propuestas aparecerán aquí cuando los usuarios las envíen.'
+          })
+        }
+      } else {
+        const errorData = await response.json()
+        setActionResult({
+          success: false,
+          message: `Error cargando propuestas: ${errorData.error || response.status}`
+        })
+      }
       
     } catch (error) {
       console.error('Error loading proposals:', error)
       setActionResult({
         success: false,
-        message: 'Error cargando propuestas'
+        message: 'Error de conexión al cargar propuestas'
       })
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleApproveProposal = async (proposalId: number) => {
+  const handleApproveProposal = async (proposalId: string) => {
     setIsProcessing(true)
     setActionResult(null)
     
     try {
-      // Funcionalidad no implementada - sistema de propuestas pendiente
-      setActionResult({
-        success: false,
-        message: 'Sistema de propuestas no implementado. Use la creación directa de eventos.'
+      const response = await makeAuthenticatedRequest(`/api/proposals/${proposalId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: 'approved' })
       })
+      
+      if (response.ok) {
+        const data = await response.json()
+        
+        // Actualizar estado local
+        setProposals(proposals.map(p => 
+          p.id === proposalId ? { ...p, status: 'approved' } : p
+        ))
+        
+        setActionResult({
+          success: true,
+          message: data.message || 'Propuesta aprobada exitosamente'
+        })
+      } else {
+        const errorData = await response.json()
+        setActionResult({
+          success: false,
+          message: errorData.error || 'Error aprobando propuesta'
+        })
+      }
     } catch (error) {
       setActionResult({
         success: false,
-        message: 'Funcionalidad no disponible'
+        message: 'Error de conexión: ' + (error instanceof Error ? error.message : 'Error desconocido')
       })
     } finally {
       setIsProcessing(false)
     }
   }
 
-  const handleRejectProposal = async (proposalId: number) => {
+  const handleRejectProposal = async (proposalId: string, rejectionReason?: string) => {
     setIsProcessing(true)
     setActionResult(null)
     
     try {
-      // Funcionalidad no implementada - sistema de propuestas pendiente
-      setActionResult({
-        success: false,
-        message: 'Sistema de propuestas no implementado. Use la creación directa de eventos.'
+      const response = await makeAuthenticatedRequest(`/api/proposals/${proposalId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ 
+          status: 'rejected',
+          rejectionReason: rejectionReason || 'Sin razón especificada'
+        })
       })
+      
+      if (response.ok) {
+        const data = await response.json()
+        
+        // Actualizar estado local
+        setProposals(proposals.map(p => 
+          p.id === proposalId ? { ...p, status: 'rejected', rejectionReason } : p
+        ))
+        
+        setActionResult({
+          success: true,
+          message: data.message || 'Propuesta rechazada exitosamente'
+        })
+      } else {
+        const errorData = await response.json()
+        setActionResult({
+          success: false,
+          message: errorData.error || 'Error rechazando propuesta'
+        })
+      }
     } catch (error) {
       setActionResult({
         success: false,
-        message: 'Funcionalidad no disponible'
+        message: 'Error de conexión: ' + (error instanceof Error ? error.message : 'Error desconocido')
       })
     } finally {
       setIsProcessing(false)
@@ -128,15 +184,34 @@ export default function ProposalsPage() {
     setActionResult(null)
     
     try {
-      // Funcionalidad no implementada - sistema de propuestas pendiente
-      setActionResult({
-        success: false,
-        message: 'Sistema de propuestas no implementado. Use la creación directa de eventos desde el panel principal.'
+      const response = await makeAuthenticatedRequest('/api/proposals/publish', {
+        method: 'POST',
+        body: JSON.stringify({ proposalId: proposal.id })
       })
+      
+      if (response.ok) {
+        const data = await response.json()
+        
+        setActionResult({
+          success: true,
+          message: data.message || 'Propuesta publicada como evento exitosamente'
+        })
+        
+        // Recargar propuestas para reflejar cambios
+        setTimeout(() => {
+          loadProposals()
+        }, 1000)
+      } else {
+        const errorData = await response.json()
+        setActionResult({
+          success: false,
+          message: errorData.error || 'Error publicando propuesta como evento'
+        })
+      }
     } catch (error) {
       setActionResult({
         success: false,
-        message: 'Funcionalidad no disponible'
+        message: 'Error de conexión: ' + (error instanceof Error ? error.message : 'Error desconocido')
       })
     } finally {
       setIsProcessing(false)
@@ -310,7 +385,7 @@ export default function ProposalsPage() {
                     {getStatusBadge(proposal.status)}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    Enviado el {formatDate(proposal.created_at)} por {proposal.submittedBy}
+                    Enviado el {formatDate(proposal.createdAt)} por {proposal.submittedBy}
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">
@@ -454,7 +529,7 @@ export default function ProposalsPage() {
                 </div>
                 <div>
                   <Label>Costo de Inscripción</Label>
-                  <p>{selectedProposal.registrationFeed || 'No especificado'}</p>
+                  <p>{selectedProposal.registrationFee || 'No especificado'}</p>
                 </div>
               </div>
 
@@ -490,7 +565,7 @@ export default function ProposalsPage() {
 
               <div className="text-xs text-muted-foreground pt-4 border-t">
                 <p>Enviado por: {selectedProposal.submittedBy}</p>
-                <p>Fecha de envío: {formatDate(selectedProposal.created_at)}</p>
+                <p>Fecha de envío: {formatDate(selectedProposal.createdAt)}</p>
                 {selectedProposal.userAgent && (
                   <p>Navegador: {selectedProposal.userAgent}</p>
                 )}
