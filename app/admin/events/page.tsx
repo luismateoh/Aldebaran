@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@/lib/auth-context'
+import { useAuthApi } from '@/hooks/use-auth-api'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -17,7 +19,7 @@ import {
 interface Event {
   id: string
   title: string
-  date: string
+  eventDate: string
   municipality: string
   department: string
   organizer: string
@@ -30,27 +32,29 @@ interface Event {
 
 export default function EventsPage() {
   const router = useRouter()
+  const { user, isAdmin, loading } = useAuth()
+  const { makeAuthenticatedRequest } = useAuthApi()
   const [events, setEvents] = useState<Event[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'draft' | 'published' | 'cancelled'>('all')
   const [actionResult, setActionResult] = useState<{success?: boolean, message: string} | null>(null)
 
+  // Redirect if not authenticated or not admin
   useEffect(() => {
-    const token = localStorage.getItem('admin_token')
-    if (!token) {
+    if (!loading && (!user || !isAdmin)) {
       router.push('/login')
-      return
     }
-    
-    loadEvents()
-  }, [])
+  }, [user, isAdmin, loading, router])
+
+  useEffect(() => {
+    if (user && isAdmin) {
+      loadEvents()
+    }
+  }, [user, isAdmin])
 
   const loadEvents = async () => {
     try {
-      const token = localStorage.getItem('admin_token')
-      const response = await fetch('/api/events/list', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      })
+      const response = await makeAuthenticatedRequest('/api/events/list')
 
       if (response.ok) {
         const data = await response.json()
@@ -76,14 +80,9 @@ export default function EventsPage() {
   const handleUpdateStatus = async (eventId: string, status: 'draft' | 'published' | 'cancelled') => {
     try {
       setActionResult(null)
-      const token = localStorage.getItem('admin_token')
       
-      const response = await fetch('/api/events/status', {
+      const response = await makeAuthenticatedRequest('/api/events/status', {
         method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify({ eventId, status })
       })
 
@@ -143,6 +142,20 @@ export default function EventsPage() {
   const filteredEvents = events.filter(event => 
     filter === 'all' || event.status === filter
   )
+
+  // Show loading while checking authentication
+  if (loading) {
+    return (
+      <div className="container max-w-6xl mx-auto py-8">
+        <div className="text-center">Verificando autenticación...</div>
+      </div>
+    )
+  }
+
+  // Don't render anything if not authenticated (will redirect)
+  if (!user || !isAdmin) {
+    return null
+  }
 
   if (isLoading) {
     return (
@@ -292,7 +305,7 @@ export default function EventsPage() {
                   <div className="space-y-2 text-sm text-muted-foreground mb-4">
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4" />
-                      {formatDate(event.date)}
+                      {formatDate(event.eventDate)}
                     </div>
                     <div className="flex items-center gap-2">
                       <MapPin className="h-4 w-4" />

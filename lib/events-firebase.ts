@@ -183,11 +183,47 @@ export class EventsService {
 
   private transformFirestoreDoc(doc: any): EventData {
     const data = doc.data()
+    
+    // Manejar fecha del evento de manera más robusta
+    let eventDate = ''
+    const rawDate = data.eventDate || data.date
+    if (rawDate) {
+      // Si es un Timestamp de Firestore
+      if (rawDate instanceof Timestamp) {
+        eventDate = rawDate.toDate().toISOString().split('T')[0]
+      }
+      // Si es una fecha en string
+      else if (typeof rawDate === 'string' && rawDate.trim()) {
+        const parsedDate = new Date(rawDate)
+        if (!isNaN(parsedDate.getTime())) {
+          eventDate = parsedDate.toISOString().split('T')[0]
+        }
+      }
+    }
+
     return {
       id: doc.id,
-      ...data,
-      createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : data.createdAt,
-      updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate() : data.updatedAt
+      title: data.title || '',
+      author: data.author || 'Luis Hincapie',
+      publishDate: data.publishDate || new Date().toISOString().split('T')[0],
+      draft: data.draft || data.status === 'draft',
+      category: data.category || 'Running',
+      tags: data.tags || [data.category?.toLowerCase() || 'running'],
+      snippet: data.snippet || data.description?.substring(0, 150) || '',
+      altitude: data.altitude || '1000m',
+      eventDate: eventDate,
+      organizer: data.organizer || '',
+      registrationDeadline: data.registrationDeadline || '',
+      registrationFeed: data.registrationFeed || data.registrationFee || data.price || '',
+      website: data.website || '',
+      distances: data.distances || [],
+      cover: data.cover || '',
+      department: data.department || '',
+      municipality: data.municipality || '',
+      contentHtml: data.description || data.contentHtml || '',
+      status: data.status || 'published',
+      createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate().toISOString() : (data.createdAt || new Date().toISOString()),
+      updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate().toISOString() : (data.updatedAt || new Date().toISOString())
     }
   }
 }

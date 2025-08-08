@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { eventsService } from '@/lib/events-firebase'
+import { eventsServiceAdmin } from '@/lib/events-firebase-admin'
 import { verifyAdminToken } from '@/lib/auth-server'
 
 export async function PATCH(request: NextRequest) {
@@ -14,7 +14,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     console.log('✅ Admin verified:', authResult.user?.email)
-  try {
+
     const body = await request.json()
     const { eventId, status } = body
 
@@ -30,8 +30,8 @@ export async function PATCH(request: NextRequest) {
 
     console.log(`📡 API /api/events/status - Actualizando evento ${eventId} a estado ${status}`)
 
-    // Actualizar estado del evento directamente en Firebase
-    const updatedEvent = await eventsService.updateEvent(eventId, { status })
+    // Actualizar estado del evento directamente en Firebase usando Admin SDK
+    const updatedEvent = await eventsServiceAdmin.updateEventStatus(eventId, status)
     
     if (!updatedEvent) {
       return NextResponse.json({ error: 'Evento no encontrado' }, { status: 404 })

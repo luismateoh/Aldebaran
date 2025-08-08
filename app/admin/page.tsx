@@ -111,16 +111,20 @@ export default function AdminPage() {
 
   const loadAiConfiguration = async () => {
     try {
-      const config = {
-        groqApiKey: process.env.GROQ_API_KEY ? '***configured***' : null,
-        hasKey: !!process.env.GROQ_API_KEY
+      const response = await fetch('/api/ai-status')
+      const data = await response.json()
+      
+      if (response.ok) {
+        const hasActiveProvider = data.primary !== 'none'
+        setAiConfig({
+          configured: hasActiveProvider,
+          status: hasActiveProvider ? 'configured' : 'missing_vars',
+          primary: data.primary,
+          providers: data
+        })
+      } else {
+        setAiConfig({ configured: false, status: 'error' })
       }
-
-      setAiConfig({
-        ...config,
-        configured: config.hasKey,
-        status: config.hasKey ? 'configured' : 'missing_vars'
-      })
     } catch (error) {
       console.error('Error loading AI config:', error)
       setAiConfig({ configured: false, status: 'error' })
@@ -183,8 +187,19 @@ export default function AdminPage() {
   const handleTestAi = async () => {
     setTestingAi(true)
     try {
-      // Test AI functionality - this would need an actual AI test endpoint
-      alert('🤖 Función de prueba AI no implementada aún')
+      const response = await fetch('/api/ai-status')
+      const data = await response.json()
+      
+      if (response.ok) {
+        const hasActiveProvider = data.primary !== 'none'
+        if (hasActiveProvider) {
+          alert(`✅ IA configurada correctamente!\n\nProveedor activo: ${data.primary}\nModelo: ${data[data.primary]?.model}\nEstado: ${data[data.primary]?.status}`)
+        } else {
+          alert('❌ No hay proveedores de IA configurados.\n\nConfigura al menos una API key (GROQ_API_KEY, OPENAI_API_KEY, o GOOGLE_API_KEY) en las variables de entorno.')
+        }
+      } else {
+        alert('❌ Error verificando configuración de IA')
+      }
     } catch (error) {
       alert(`💥 Error probando AI: ${error}`)
     } finally {
@@ -402,7 +417,7 @@ export default function AdminPage() {
                     {aiConfig?.configured ? 'Configurado' : 'Sin configurar'}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {aiConfig?.configured ? 'API Key configurada' : 'API Key faltante'}
+                    {aiConfig?.configured ? `Proveedor: ${aiConfig.primary}` : 'API Key faltante'}
                   </p>
                 </div>
               </div>

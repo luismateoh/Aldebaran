@@ -92,9 +92,6 @@ export default function LoginPage() {
 
           <div className="mt-6 text-center text-sm text-muted-foreground">
             <p>Panel de gestión para Aldebaran</p>
-            <p className="text-xs mt-1">
-              Solo luismateohm@gmail.com tiene acceso de administrador
-            </p>
           </div>
         </CardContent>
       </Card>

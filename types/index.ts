@@ -9,10 +9,11 @@ export interface FirebaseEventData {
   distance?: string
   price?: string
   registrationUrl?: string
+  registrationFee?: string
   organizer?: string
   category?: string
   modality?: string
-  status?: 'published' | 'draft' | 'archived'
+  status?: 'published' | 'draft' | 'archived' | 'cancelled'
   featured?: boolean
   createdAt?: any // Firestore Timestamp
   updatedAt?: any // Firestore Timestamp
@@ -20,6 +21,15 @@ export interface FirebaseEventData {
   cover?: string
   altitude?: string
   distances?: string[] | Array<{value: string}>
+  website?: string
+  // Campos adicionales para compatibilidad con el editor
+  author?: string
+  publishDate?: string
+  draft?: boolean
+  tags?: string[]
+  snippet?: string
+  registrationDeadline?: string
+  contentHtml?: string
 }
 
 export interface FirebaseCommentData {

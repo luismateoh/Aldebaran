@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { eventsService } from '@/lib/events-firebase'
+import { eventsServiceAdmin } from '@/lib/events-firebase-admin'
 import { verifyAdminToken } from '@/lib/auth-server'
 
 export async function GET(request: NextRequest) {
@@ -16,8 +16,8 @@ export async function GET(request: NextRequest) {
     console.log('✅ Admin verified:', authResult.user?.email)
     console.log('📡 API /api/events/list - Obteniendo eventos desde Firebase...')
 
-    // Cargar eventos directamente desde Firebase
-    const events = await eventsService.getAllEvents()
+    // Cargar eventos directamente desde Firebase usando Admin SDK
+    const events = await eventsServiceAdmin.getAllEvents()
 
     console.log(`✅ API /api/events/list - ${events.length} eventos encontrados`)
 

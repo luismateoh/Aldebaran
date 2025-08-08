@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
+import { useAuth } from '@/lib/auth-context'
+import { useAuthApi } from '@/hooks/use-auth-api'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -15,7 +17,7 @@ import { ArrowLeft, Save, Calendar, MapPin, User, Globe, DollarSign, Check } fro
 interface EventData {
   id: string
   title: string
-  date: string
+  eventDate: string
   municipality: string
   department: string
   organizer: string
@@ -33,6 +35,8 @@ export default function EditEventPage() {
   const router = useRouter()
   const params = useParams()
   const eventId = params.id as string
+  const { user, isAdmin, loading } = useAuth()
+  const { makeAuthenticatedRequest } = useAuthApi()
 
   const [eventData, setEventData] = useState<EventData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -58,22 +62,22 @@ export default function EditEventPage() {
   const categories = ['Running', 'Trail', 'Maraton', 'Media maraton', 'Ultra', 'Kids']
   const distanceOptions = ['1k', '2k', '3k', '5k', '8k', '10k', '15k', '21k', '25k', '30k', '42k', '50k', '100k']
 
+  // Redirect if not authenticated or not admin
   useEffect(() => {
-    const token = localStorage.getItem('admin_token')
-    if (!token) {
+    if (!loading && (!user || !isAdmin)) {
       router.push('/login')
-      return
     }
-    
-    loadEventData()
-  }, [eventId])
+  }, [user, isAdmin, loading, router])
+
+  useEffect(() => {
+    if (user && isAdmin && eventId) {
+      loadEventData()
+    }
+  }, [user, isAdmin, eventId])
 
   const loadEventData = async () => {
     try {
-      const token = localStorage.getItem('admin_token')
-      const response = await fetch(`/api/events/detail?id=${eventId}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      })
+      const response = await makeAuthenticatedRequest(`/api/events/detail?id=${eventId}`)
 
       if (response.ok) {
         const data = await response.json()
@@ -126,13 +130,8 @@ export default function EditEventPage() {
     setSaveResult(null)
 
     try {
-      const token = localStorage.getItem('admin_token')
-      const response = await fetch('/api/events/update', {
+      const response = await makeAuthenticatedRequest('/api/events/update', {
         method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify({
           eventId: eventData.id,
           eventData: eventData
@@ -168,13 +167,8 @@ export default function EditEventPage() {
     setSaveResult(null)
     
     try {
-      const token = localStorage.getItem('admin_token')
-      const response = await fetch('/api/events/status', {
+      const response = await makeAuthenticatedRequest('/api/events/status', {
         method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify({ 
           eventId: eventData.id, 
           status: 'published' 
@@ -216,7 +210,7 @@ export default function EditEventPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: eventData.title,
-          eventDate: eventData.date,
+          eventDate: eventData.eventDate, // Fecha del evento
           municipality: eventData.municipality,
           department: eventData.department,
           organizer: eventData.organizer,
@@ -224,7 +218,9 @@ export default function EditEventPage() {
           description: eventData.description,
           distances: eventData.distances,
           registrationFeed: eventData.registrationFee,
-          category: eventData.category
+          category: eventData.category,
+          // Incluir también el nombre alternativo por si acaso
+          date: eventData.eventDate
         })
       })
       
@@ -268,7 +264,7 @@ export default function EditEventPage() {
     
     const frontmatter = `---
 title: "${eventData.title}"
-eventDate: "${eventData.date}"
+eventDate: "${eventData.eventDate}"
 municipality: "${eventData.municipality}"
 department: "${eventData.department}"
 organizer: "${eventData.organizer}"
@@ -323,7 +319,7 @@ ${eventData.description}`
             newEventData.title = value
             break
           case 'eventDate':
-            newEventData.date = value
+            newEventData.eventDate = value
             break
           case 'municipality':
             newEventData.municipality = value
@@ -386,6 +382,20 @@ ${eventData.description}`
       setMarkdownContent(generateMarkdownContent())
     }
   }, [eventData, showMarkdownPreview])
+
+  // Show loading while checking authentication
+  if (loading) {
+    return (
+      <div className="container max-w-4xl mx-auto py-8">
+        <div className="text-center">Verificando autenticación...</div>
+      </div>
+    )
+  }
+
+  // Don't render anything if not authenticated (will redirect)
+  if (!user || !isAdmin) {
+    return null
+  }
 
   if (isLoading) {
     return (
@@ -466,8 +476,8 @@ ${eventData.description}`
               <Input
                 id="date"
                 type="date"
-                value={eventData.date}
-                onChange={(e) => setEventData(prev => prev ? { ...prev, date: e.target.value } : null)}
+                value={eventData.eventDate}
+                onChange={(e) => setEventData(prev => prev ? { ...prev, eventDate: e.target.value } : null)}
               />
             </div>
           </div>

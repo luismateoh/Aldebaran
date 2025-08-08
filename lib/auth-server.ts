@@ -46,8 +46,8 @@ export async function verifyAdminToken(request: NextRequest): Promise<AuthResult
 
     console.log('🔐 verifyAdminToken: Token found, verifying...')
 
-    // Verify the ID token
-    const decodedToken = await getAuth().verifyIdToken(token)
+    // Verify the ID token with additional validation
+    const decodedToken = await getAuth().verifyIdToken(token, true)
     console.log('✅ verifyAdminToken: Token verified for user:', decodedToken.email)
     
     if (!decodedToken.email) {
@@ -81,6 +81,26 @@ export async function verifyAdminToken(request: NextRequest): Promise<AuthResult
     }
   } catch (error) {
     console.error('Error verifying admin token:', error)
+    
+    // Handle specific Firebase auth errors
+    if (error instanceof Error) {
+      if (error.message.includes('no "kid" claim')) {
+        console.log('🔄 verifyAdminToken: Token missing kid claim - client should refresh token')
+        return { 
+          success: false, 
+          error: 'Token invalid - please refresh and try again'
+        }
+      }
+      
+      if (error.message.includes('expired')) {
+        console.log('⏰ verifyAdminToken: Token expired')
+        return { 
+          success: false, 
+          error: 'Token expired - please sign in again'
+        }
+      }
+    }
+    
     return { 
       success: false, 
       error: error instanceof Error ? error.message : 'Token verification failed'

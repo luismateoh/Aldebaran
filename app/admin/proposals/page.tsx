@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@/lib/auth-context'
+import { useAuthApi } from '@/hooks/use-auth-api'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -31,6 +33,8 @@ interface Proposal {
 
 export default function ProposalsPage() {
   const router = useRouter()
+  const { user, isAdmin, loading } = useAuth()
+  const { makeAuthenticatedRequest } = useAuthApi()
   const [proposals, setProposals] = useState<Proposal[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('pending')
@@ -39,15 +43,18 @@ export default function ProposalsPage() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [actionResult, setActionResult] = useState<{success?: boolean, message: string} | null>(null)
 
+  // Redirect if not authenticated or not admin
   useEffect(() => {
-    const token = localStorage.getItem('admin_token')
-    if (!token) {
+    if (!loading && (!user || !isAdmin)) {
       router.push('/login')
-      return
     }
-    
-    loadProposals()
-  }, [])
+  }, [user, isAdmin, loading, router])
+
+  useEffect(() => {
+    if (user && isAdmin) {
+      loadProposals()
+    }
+  }, [user, isAdmin])
 
   const loadProposals = async () => {
     try {
@@ -163,6 +170,20 @@ export default function ProposalsPage() {
   const filteredProposals = proposals.filter(proposal => 
     filter === 'all' || proposal.status === filter
   )
+
+  // Show loading while checking authentication
+  if (loading) {
+    return (
+      <div className="container max-w-6xl mx-auto py-8">
+        <div className="text-center">Verificando autenticación...</div>
+      </div>
+    )
+  }
+
+  // Don't render anything if not authenticated (will redirect)
+  if (!user || !isAdmin) {
+    return null
+  }
 
   if (isLoading) {
     return (
