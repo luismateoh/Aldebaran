@@ -1,48 +1,91 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Reglas para eventos
-    match /events/{eventId} {
-      // Permitir lectura a todos los usuarios
-      allow read: if true;
-      
-      // Permitir escritura solo a administradores autenticados
-      allow write: if request.auth != null && 
-        request.auth.token.email == 'luismateohm@gmail.com';
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
     }
     
-    // Reglas para comentarios
+    function isAdmin() {
+      return isAuthenticated() &&
+             exists(/databases/$(database)/documents/administrators/$(request.auth.token.email)) &&
+             get(/databases/$(database)/documents/administrators/$(request.auth.token.email)).data.isActive == true;
+    }
+    
+    function isSuperAdmin() {
+      return isAuthenticated() &&
+             exists(/databases/$(database)/documents/administrators/$(request.auth.token.email)) &&
+             get(/databases/$(database)/documents/administrators/$(request.auth.token.email)).data.role == 'super_admin' &&
+             get(/databases/$(database)/documents/administrators/$(request.auth.token.email)).data.isActive == true;
+    }
+
+    // Events collection - public read, admin write
+    match /events/{eventId} {
+      allow read: if true; // Public read access for events
+      allow write: if isAdmin(); // Only admins can write events
+    }
+    
+    // Comments collection - public read/create, admin moderate
     match /comments/{commentId} {
-      // Permitir lectura a todos los usuarios
-      allow read: if true;
-      
-      // Permitir crear comentarios a usuarios autenticados o anónimos con email
+      allow read: if true; // Public read access for comments
       allow create: if request.resource.data.author != null && 
         request.resource.data.content != null &&
-        request.resource.data.eventId != null;
-      
-      // Permitir actualizar solo el autor del comentario o admin
-      allow update: if (request.auth != null && 
+        request.resource.data.eventId != null; // Anyone can create comments with required fields
+      allow update: if (isAuthenticated() && 
         request.auth.token.email == resource.data.email) ||
-        (request.auth != null && 
-        request.auth.token.email == 'luismateohm@gmail.com');
-      
-      // Permitir eliminar solo al admin
-      allow delete: if request.auth != null && 
-        request.auth.token.email == 'luismateohm@gmail.com';
+        isAdmin(); // Author or admin can update
+      allow delete: if isAdmin(); // Only admins can delete comments
     }
-    
-    // Reglas para usuarios
+
+    // Administrators collection - admin access only
+    match /administrators/{adminEmail} {
+      allow read: if isAdmin(); // Admins can read administrator list
+      allow create: if isAdmin() && 
+                   request.auth.token.email != adminEmail && // Can't add yourself
+                   request.resource.data.addedBy == request.auth.token.email && // Must set addedBy correctly
+                   request.resource.data.isActive == true && // Must be active
+                   request.resource.data.email == adminEmail && // Email must match document ID
+                   request.resource.data.role in ['admin', 'super_admin']; // Valid roles only
+      allow update: if isAdmin() && 
+                   (request.auth.token.email == adminEmail || // Can update own profile
+                    (resource.data.role != 'super_admin' || isSuperAdmin())); // Can't modify super admin unless you are one
+      allow delete: if isAdmin() && 
+                   request.auth.token.email != adminEmail && // Can't delete yourself
+                   (resource.data.role != 'super_admin' || isSuperAdmin()); // Can't delete super admin unless you are super admin
+    }
+
+    // System Settings collection - admin access only
+    match /systemSettings/{settingId} {
+      allow read: if isAdmin(); // Admins can read settings
+      allow write: if isAdmin(); // Admins can write settings
+    }
+
+    // Proposals collection (for event proposals) - public create, admin manage
+    match /proposals/{proposalId} {
+      allow read: if isAdmin(); // Admins can read proposals
+      allow create: if true; // Anyone can create proposals (public submissions)
+      allow update: if isAdmin(); // Only admins can update/approve proposals
+      allow delete: if isAdmin(); // Only admins can delete proposals
+    }
+
+    // User profiles - authenticated user access
     match /users/{userId} {
-      // Permitir lectura solo al propio usuario o admin
-      allow read: if request.auth != null && 
-        (request.auth.uid == userId || 
-        request.auth.token.email == 'luismateohm@gmail.com');
-      
-      // Permitir escritura solo al propio usuario o admin
-      allow write: if request.auth != null && 
-        (request.auth.uid == userId || 
-        request.auth.token.email == 'luismateohm@gmail.com');
+      allow read: if isAuthenticated() && 
+        (request.auth.uid == userId || isAdmin());
+      allow write: if isAuthenticated() && 
+        (request.auth.uid == userId || isAdmin());
+    }
+
+    // Audit logs (optional, for tracking admin actions)
+    match /auditLogs/{logId} {
+      allow read: if isSuperAdmin(); // Only super admins can read audit logs
+      allow write: if false; // Only server-side functions can write audit logs
+    }
+
+    // Default rule - deny all other access
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

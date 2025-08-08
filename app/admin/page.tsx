@@ -2,94 +2,63 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Suspense } from 'react'
-import NewEventForm from '@/components/new-event-form'
+import { useAuth } from '@/lib/auth-context'
+import { useAuthApi } from '@/hooks/use-auth-api'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { FileText, Calendar, LogOut, Mail, Send, CheckCircle, AlertCircle, Zap } from 'lucide-react'
-import { eventsService } from '@/lib/events-firebase'
+import { FileText, Calendar, Mail, Send, CheckCircle, AlertCircle, Zap, User, Plus, Settings, Database, Brain, UserPlus, PenTool } from 'lucide-react'
 
 export default function AdminPage() {
   const router = useRouter()
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true)
+  const { user, isAdmin, loading } = useAuth()
+  const { makeAuthenticatedRequest } = useAuthApi()
   const [systemStats, setSystemStats] = useState<any>(null)
   const [isLoadingStats, setIsLoadingStats] = useState(true)
   const [emailConfig, setEmailConfig] = useState<any>(null)
   const [isLoadingEmailConfig, setIsLoadingEmailConfig] = useState(true)
+  const [firebaseConfig, setFirebaseConfig] = useState<any>(null)
+  const [aiConfig, setAiConfig] = useState<any>(null)
   const [testingEmail, setTestingEmail] = useState(false)
+  const [testingFirebase, setTestingFirebase] = useState(false)
+  const [testingAi, setTestingAi] = useState(false)
+
+  // Redirect if not authenticated or not admin
+  useEffect(() => {
+    if (!loading && (!user || !isAdmin)) {
+      router.push('/login')
+    }
+  }, [user, isAdmin, loading, router])
 
   useEffect(() => {
-    const checkAuthentication = async () => {
-      console.log('🔍 Verificando autenticación en AdminPage...')
-      
-      // Verificar token en localStorage primero
-      const token = localStorage.getItem('admin_token')
-      const sessionAuth = sessionStorage.getItem('admin_authenticated')
-      
-      console.log('🎯 Token en localStorage:', !!token)
-      console.log('🎯 Session auth:', !!sessionAuth)
-      
-      if (!token && !sessionAuth) {
-        console.log('❌ No hay autenticación, redirigiendo a login')
-        router.push('/login')
-        return
-      }
-      
-      // Si hay token, verificar que sea válido
-      if (token) {
-        try {
-          const response = await fetch('/api/auth/verify', {
-            method: 'POST',
-            headers: { 
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ token })
-          })
-          
-          if (response.ok) {
-            console.log('✅ Token válido, permitiendo acceso')
-            setIsAuthenticated(true)
-          } else {
-            console.log('❌ Token inválido, redirigiendo a login')
-            localStorage.removeItem('admin_token')
-            sessionStorage.removeItem('admin_authenticated')
-            router.push('/login')
-          }
-        } catch (error) {
-          console.error('💥 Error verificando token:', error)
-          setIsAuthenticated(true) // Permitir acceso temporal si hay error de red
-        }
-      } else {
-        setIsAuthenticated(true) // Permitir acceso si hay session auth
-      }
-      
-      setIsCheckingAuth(false)
+    if (user && isAdmin) {
+      loadSystemStats()
+      loadEmailConfiguration()
+      loadFirebaseConfiguration()
+      loadAiConfiguration()
     }
-
-    checkAuthentication()
-    loadSystemStats()
-    loadEmailConfiguration()
-  }, [router])
+  }, [user, isAdmin])
 
   const loadSystemStats = async () => {
     try {
-      // Cargar estadísticas desde Firebase
-      const events = await eventsService.getAllEvents()
+      const response = await makeAuthenticatedRequest('/api/events/list')
       
-      setSystemStats({
-        totalEvents: events.length,
-        publishedEvents: events.filter(e => e.status === 'published').length,
-        draftEvents: events.filter(e => e.status === 'draft').length,
-        status: 'connected'
-      })
-      
-      console.log('📊 Estadísticas del sistema cargadas desde Firebase:', events.length, 'eventos')
+      if (response.ok) {
+        const data = await response.json()
+        setSystemStats({
+          totalEvents: data.events?.length || 0,
+          publishedEvents: data.events?.filter((e: any) => e.status === 'published').length || 0,
+          draftEvents: data.events?.filter((e: any) => e.status === 'draft').length || 0,
+          proposals: data.events?.filter((e: any) => e.status === 'proposal').length || 0,
+          deletedEvents: data.events?.filter((e: any) => e.status === 'deleted').length || 0,
+          status: 'connected'
+        })
+      } else {
+        setSystemStats({ status: 'error', totalEvents: 0, publishedEvents: 0, draftEvents: 0, proposals: 0, deletedEvents: 0 })
+      }
     } catch (error) {
       console.error('Error loading system stats:', error)
-      setSystemStats({ status: 'error', totalEvents: 0, publishedEvents: 0, draftEvents: 0 })
+      setSystemStats({ status: 'error', totalEvents: 0, publishedEvents: 0, draftEvents: 0, proposals: 0, deletedEvents: 0 })
     } finally {
       setIsLoadingStats(false)
     }
@@ -97,51 +66,77 @@ export default function AdminPage() {
 
   const loadEmailConfiguration = async () => {
     try {
-      // Verificar configuración de EmailJS desde variables de entorno
       const config = {
         service_id: process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
         template_id: process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
         public_key: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY,
-        admin_email: process.env.NEXT_PUBLIC_ADMIN_EMAIL,
-        configured: !!(
-          process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID && 
-          process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID && 
-          process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
-        ),
-        status: 'ready'
+        admin_email: process.env.NEXT_PUBLIC_ADMIN_EMAIL
       }
 
-      setEmailConfig(config)
-      console.log('📧 Configuración de emails cargada:', config)
+      const isConfigured = !!(config.service_id && config.template_id && config.public_key && config.admin_email)
+      
+      setEmailConfig({
+        ...config,
+        configured: isConfigured,
+        status: isConfigured ? 'configured' : 'missing_vars'
+      })
     } catch (error) {
       console.error('Error loading email config:', error)
-      setEmailConfig({
-        configured: false,
-        status: 'error',
-        error: error instanceof Error ? error.message : 'Error desconocido'
-      })
+      setEmailConfig({ configured: false, status: 'error' })
     } finally {
       setIsLoadingEmailConfig(false)
     }
   }
 
-  const handleLogout = () => {
-    localStorage.removeItem('admin_token')
-    sessionStorage.removeItem('admin_authenticated')
-    router.push('/login')
+  const loadFirebaseConfiguration = async () => {
+    try {
+      const config = {
+        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+        apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+        authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+      }
+
+      const isConfigured = !!(config.projectId && config.apiKey && config.authDomain)
+      
+      setFirebaseConfig({
+        ...config,
+        configured: isConfigured,
+        status: isConfigured ? 'configured' : 'missing_vars'
+      })
+    } catch (error) {
+      console.error('Error loading Firebase config:', error)
+      setFirebaseConfig({ configured: false, status: 'error' })
+    }
+  }
+
+  const loadAiConfiguration = async () => {
+    try {
+      const config = {
+        groqApiKey: process.env.GROQ_API_KEY ? '***configured***' : null,
+        hasKey: !!process.env.GROQ_API_KEY
+      }
+
+      setAiConfig({
+        ...config,
+        configured: config.hasKey,
+        status: config.hasKey ? 'configured' : 'missing_vars'
+      })
+    } catch (error) {
+      console.error('Error loading AI config:', error)
+      setAiConfig({ configured: false, status: 'error' })
+    }
   }
 
 
   const handleTestEmail = async () => {
     setTestingEmail(true)
     try {
-      // Datos de prueba para el email
       const testEventData = {
-        title: 'EVENTO DE PRUEBA - SISTEMA ALDEBARAN',
+        title: 'Test Event - Aldebaran System',
         eventDate: new Date().toISOString().split('T')[0],
         municipality: 'Bogotá',
         department: 'Bogotá',
-        organizer: 'Administrador del Sistema',
+        organizer: 'Sistema Aldebaran',
         registrationUrl: 'https://aldebaran.vercel.app',
         description: 'Este es un email de prueba del sistema de notificaciones de Aldebaran.',
         distances: ['5k', '10k'],
@@ -151,82 +146,93 @@ export default function AdminPage() {
 
       const response = await fetch('/api/send-event-email', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(testEventData)
       })
 
-      const result = await response.json()
-
       if (response.ok) {
-        alert(`✅ Email de prueba enviado correctamente!\n\n${result.message}\n\nRevisa tu bandeja de entrada: ${emailConfig?.admin_email || 'tu email configurado'}`)
+        const data = await response.json()
+        alert(`✅ Email de prueba enviado exitosamente!\n\nPequeña vista previa:\n${data.preview?.substring(0, 200)}...`)
       } else {
-        alert(`❌ Error enviando email de prueba:\n\n${result.error}`)
+        const errorData = await response.json()
+        alert(`❌ Error enviando email: ${errorData.error}`)
       }
     } catch (error) {
-      alert(`💥 Error de conexión:\n\n${error}`)
+      alert(`💥 Error de conexión: ${error}`)
     } finally {
       setTestingEmail(false)
     }
   }
 
-  if (isCheckingAuth) {
+  const handleTestFirebase = async () => {
+    setTestingFirebase(true)
+    try {
+      const response = await makeAuthenticatedRequest('/api/events/status')
+      if (response.ok) {
+        alert('✅ Conexión a Firebase exitosa!')
+      } else {
+        alert('❌ Error conectando a Firebase')
+      }
+    } catch (error) {
+      alert(`💥 Error de conexión a Firebase: ${error}`)
+    } finally {
+      setTestingFirebase(false)
+    }
+  }
+
+  const handleTestAi = async () => {
+    setTestingAi(true)
+    try {
+      // Test AI functionality - this would need an actual AI test endpoint
+      alert('🤖 Función de prueba AI no implementada aún')
+    } catch (error) {
+      alert(`💥 Error probando AI: ${error}`)
+    } finally {
+      setTestingAi(false)
+    }
+  }
+
+  // Show loading while checking authentication
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-8 h-8 border-2 border-current border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p>Verificando autenticación...</p>
         </div>
       </div>
     )
   }
 
-  if (!isAuthenticated) {
-    return <div className="min-h-screen flex items-center justify-center">Redirigiendo...</div>
+  // Don't render anything if not authenticated (will redirect)
+  if (!user || !isAdmin) {
+    return null
   }
 
   return (
-    <div className="container max-w-6xl mx-auto py-8 space-y-8">
-      {/* Header del Panel */}
-      <div className="flex justify-between items-center">
+    <div className="container relative py-6 lg:py-10">
+      {/* Header */}
+      <div className="flex flex-col gap-4">
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold">Panel de Gestión Aldebaran</h1>
+          <h1 className="text-3xl font-bold">Panel de Administración</h1>
           <p className="text-muted-foreground">
-            Sistema basado en Firebase + EmailJS
+            Dashboard de gestión de eventos Aldebaran
           </p>
-          <div className="flex gap-2">
-            <Badge variant="outline" className="text-xs">
-              Firebase como base de datos principal
-            </Badge>
-            <Badge variant="outline" className={`text-xs ${
-              systemStats?.status === 'connected' ? 'text-green-600' : 'text-red-600'
-            }`}>
-              Sistema: {systemStats?.status || 'Loading...'}
-            </Badge>
-            <Badge variant="outline" className={`text-xs ${
-              emailConfig?.configured ? 'text-green-600' : 'text-orange-600'
-            }`}>
-              Email: {emailConfig?.configured ? 'Configurado' : 'Pendiente'}
-            </Badge>
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={handleLogout}>
-            <LogOut className="h-4 w-4 mr-2" />
-            Cerrar Sesión
-          </Button>
+          <Badge variant="outline" className="text-xs w-fit">
+            <User className="h-3 w-3 mr-1" />
+            {user.email}
+          </Badge>
         </div>
       </div>
 
-      {/* Stats del sistema Firebase */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* Resumen de Eventos */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-6">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
               <Calendar className="h-5 w-5 text-blue-500" />
               <div>
-                <p className="text-sm text-muted-foreground">Eventos Totales</p>
+                <p className="text-sm text-muted-foreground">Total</p>
                 <p className="text-2xl font-bold">
                   {isLoadingStats ? '...' : (systemStats?.totalEvents || '0')}
                 </p>
@@ -252,7 +258,7 @@ export default function AdminPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <AlertCircle className="h-5 w-5 text-orange-500" />
+              <FileText className="h-5 w-5 text-yellow-500" />
               <div>
                 <p className="text-sm text-muted-foreground">Borradores</p>
                 <p className="text-2xl font-bold">
@@ -266,187 +272,282 @@ export default function AdminPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <Mail className="h-5 w-5 text-pink-500" />
+              <Mail className="h-5 w-5 text-blue-500" />
               <div>
-                <p className="text-sm text-muted-foreground">Email Status</p>
-                <Badge variant="outline" className={`text-xs ${
-                  emailConfig?.configured ? 'text-green-600' : 'text-orange-600'
-                }`}>
-                  {isLoadingEmailConfig ? '...' : (emailConfig?.configured ? 'Configurado' : 'Pendiente')}
-                </Badge>
+                <p className="text-sm text-muted-foreground">Propuestas</p>
+                <p className="text-2xl font-bold">
+                  {isLoadingStats ? '...' : (systemStats?.proposals || '0')}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-2">
+              <AlertCircle className="h-5 w-5 text-red-500" />
+              <div>
+                <p className="text-sm text-muted-foreground">Eliminados</p>
+                <p className="text-2xl font-bold">
+                  {isLoadingStats ? '...' : (systemStats?.deletedEvents || '0')}
+                </p>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Secciones del Panel */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Crear Nuevo Evento */}
-        <div className="lg:col-span-2">
-          <Suspense fallback={<div>Cargando formulario...</div>}>
-            <NewEventForm />
-          </Suspense>
-        </div>
-
-        {/* Panel de Control Lateral */}
-        <div className="space-y-6">
-          {/* Configuración de Emails */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Mail className="h-5 w-5" />
-                Configuración de Emails
-              </CardTitle>
-              <CardDescription>
-                Estado del sistema de notificaciones EmailJS
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Estado general */}
-              <div className="flex items-center justify-between p-3 rounded-lg border">
-                <div className="flex items-center gap-3">
-                  {emailConfig?.configured ? (
-                    <CheckCircle className="h-5 w-5 text-green-500" />
-                  ) : (
-                    <AlertCircle className="h-5 w-5 text-orange-500" />
-                  )}
-                  <div>
-                    <div className="font-medium">
-                      {emailConfig?.configured ? 'Sistema Configurado' : 'Configuración Pendiente'}
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      {emailConfig?.configured ? 
-                        'EmailJS listo para enviar notificaciones' : 
-                        'Faltan variables de entorno'
-                      }
-                    </div>
-                  </div>
+      {/* Configuraciones del Sistema */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+        {/* Firebase Configuration */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Database className="h-5 w-5" />
+              Firebase
+            </CardTitle>
+            <CardDescription>Base de datos y autenticación</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className={`w-3 h-3 rounded-full ${
+                  firebaseConfig?.configured ? 'bg-green-500' : 'bg-red-500'
+                }`} />
+                <div>
+                  <p className="font-medium text-sm">
+                    {firebaseConfig?.configured ? 'Configurado' : 'Sin configurar'}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {firebaseConfig?.projectId || 'No configurado'}
+                  </p>
                 </div>
               </div>
-
-              {/* Email de destino */}
-              {emailConfig?.admin_email && (
-                <div className="p-3 bg-muted rounded-lg">
-                  <div className="text-sm font-medium">Email de destino:</div>
-                  <div className="text-sm text-muted-foreground font-mono">
-                    {emailConfig.admin_email}
-                  </div>
-                </div>
-              )}
-
-              {/* Botón de prueba */}
               <Button 
-                onClick={handleTestEmail} 
-                disabled={testingEmail || !emailConfig?.configured}
-                className="w-full"
-                variant={emailConfig?.configured ? "default" : "outline"}
+                onClick={handleTestFirebase}
+                disabled={testingFirebase || !firebaseConfig?.configured}
+                size="sm"
+                variant="outline"
               >
-                {testingEmail ? (
-                  <>
-                    <Send className="h-4 w-4 mr-2 animate-pulse" />
-                    Enviando Prueba...
-                  </>
+                {testingFirebase ? (
+                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
                 ) : (
-                  <>
-                    <Send className="h-4 w-4 mr-2" />
-                    Enviar Email de Prueba
-                  </>
+                  <Settings className="h-4 w-4" />
                 )}
               </Button>
-            </CardContent>
-          </Card>
+            </div>
+          </CardContent>
+        </Card>
 
-          {/* Acciones Rápidas */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Zap className="h-5 w-5" />
-                Acciones Rápidas
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Button
-                onClick={() => router.push('/admin/proposals')}
-                className="w-full justify-start"
+        {/* Email Configuration */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Mail className="h-5 w-5" />
+              EmailJS
+            </CardTitle>
+            <CardDescription>Notificaciones por correo</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className={`w-3 h-3 rounded-full ${
+                  isLoadingEmailConfig ? 'bg-gray-400' :
+                  emailConfig?.configured ? 'bg-green-500' : 'bg-red-500'
+                }`} />
+                <div>
+                  <p className="font-medium text-sm">
+                    {isLoadingEmailConfig ? 'Verificando...' :
+                     emailConfig?.configured ? 'Configurado' : 'Sin configurar'}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {emailConfig?.admin_email || 'No configurado'}
+                  </p>
+                </div>
+              </div>
+              <Button 
+                onClick={handleTestEmail}
+                disabled={testingEmail || !emailConfig?.configured}
+                size="sm"
                 variant="outline"
               >
-                <FileText className="h-4 w-4 mr-2" />
-                Gestionar Propuestas
+                {testingEmail ? (
+                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
               </Button>
-              
-              <Button
-                onClick={() => router.push('/admin/events')}
-                className="w-full justify-start"
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* AI Configuration */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Brain className="h-5 w-5" />
+              IA (Groq)
+            </CardTitle>
+            <CardDescription>Mejora automática de eventos</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className={`w-3 h-3 rounded-full ${
+                  aiConfig?.configured ? 'bg-green-500' : 'bg-red-500'
+                }`} />
+                <div>
+                  <p className="font-medium text-sm">
+                    {aiConfig?.configured ? 'Configurado' : 'Sin configurar'}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {aiConfig?.configured ? 'API Key configurada' : 'API Key faltante'}
+                  </p>
+                </div>
+              </div>
+              <Button 
+                onClick={handleTestAi}
+                disabled={testingAi || !aiConfig?.configured}
+                size="sm"
                 variant="outline"
               >
-                <Calendar className="h-4 w-4 mr-2" />
-                Administrar Eventos
+                {testingAi ? (
+                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Brain className="h-4 w-4" />
+                )}
               </Button>
-            </CardContent>
-          </Card>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-          {/* Estado del Sistema */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Estado del Sistema</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Base de Datos</span>
-                <Badge variant="outline" className="text-green-600">Firebase</Badge>
-              </div>
-              
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Autenticación</span>
-                <Badge variant="outline" className="text-green-600">Firebase Auth</Badge>
-              </div>
+      {/* Gestión de Contenido */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+        {/* Gestión de Eventos */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              Gestión de Eventos
+            </CardTitle>
+            <CardDescription>
+              Crear, editar y administrar eventos
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Button 
+              onClick={() => router.push('/admin/events/new')}
+              className="w-full justify-start"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Crear Nuevo Evento
+            </Button>
+            
+            <Button 
+              onClick={() => router.push('/admin/events')}
+              className="w-full justify-start" 
+              variant="outline"
+            >
+              <PenTool className="h-4 w-4 mr-2" />
+              Administrar Eventos
+            </Button>
+          </CardContent>
+        </Card>
 
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Emails</span>
-                <Badge variant="outline" className={emailConfig?.configured ? "text-green-600" : "text-orange-600"}>
-                  {emailConfig?.configured ? "EmailJS" : "Pendiente"}
+        {/* Gestión de Propuestas */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Mail className="h-5 w-5" />
+              Propuestas de Eventos
+            </CardTitle>
+            <CardDescription>
+              Revisar y aprobar eventos propuestos
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Button 
+              onClick={() => router.push('/admin/proposals')}
+              className="w-full justify-start"
+            >
+              <Mail className="h-4 w-4 mr-2" />
+              Gestionar Propuestas
+              {systemStats?.proposals > 0 && (
+                <Badge variant="destructive" className="ml-auto">
+                  {systemStats.proposals}
                 </Badge>
-              </div>
+              )}
+            </Button>
+            
+            <Button 
+              onClick={() => router.push('/admin/proposals/pending')}
+              className="w-full justify-start" 
+              variant="outline"
+            >
+              <AlertCircle className="h-4 w-4 mr-2" />
+              Revisar Pendientes
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
 
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Tiempo Real</span>
-                <Badge variant="outline" className="text-green-600">Firestore</Badge>
-              </div>
-            </CardContent>
-          </Card>
+      {/* Configuración Avanzada */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+        {/* Administradores */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <UserPlus className="h-5 w-5" />
+              Administradores
+            </CardTitle>
+            <CardDescription>
+              Gestionar usuarios con acceso administrativo
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Button 
+              onClick={() => router.push('/admin/administrators')}
+              className="w-full justify-start"
+              variant="outline"
+            >
+              <UserPlus className="h-4 w-4 mr-2" />
+              Gestionar Administradores
+            </Button>
+            
+            <div className="text-sm text-muted-foreground">
+              <p>Administrador actual: {user.email}</p>
+            </div>
+          </CardContent>
+        </Card>
 
-          {/* Estadísticas de Eventos */}
-          {systemStats && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Estadísticas de Eventos</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Total de Eventos</span>
-                  <Badge variant="outline" className="text-blue-600">
-                    {systemStats.totalEvents}
-                  </Badge>
-                </div>
-                
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Publicados</span>
-                  <Badge variant="outline" className="text-green-600">
-                    {systemStats.publishedEvents}
-                  </Badge>
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Borradores</span>
-                  <Badge variant="outline" className="text-orange-600">
-                    {systemStats.draftEvents}
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+        {/* Configuración Sistema */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5" />
+              Configuración
+            </CardTitle>
+            <CardDescription>
+              Ajustes y configuración del sistema
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Button 
+              onClick={() => router.push('/admin/settings')}
+              className="w-full justify-start"
+              variant="outline"
+            >
+              <Settings className="h-4 w-4 mr-2" />
+              Configuración Avanzada
+            </Button>
+            
+            <div className="text-sm text-muted-foreground">
+              <p>Versión: Next.js 14 + Firebase</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

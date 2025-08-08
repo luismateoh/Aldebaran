@@ -1,8 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { eventsService } from '@/lib/events-firebase'
+import { verifyAdminToken } from '@/lib/auth-server'
 
 export async function GET(request: NextRequest) {
   try {
+    console.log('📡 API /api/events/list - Verificando autenticación...')
+
+    // Verify admin authentication
+    const authResult = await verifyAdminToken(request)
+    if (!authResult.success) {
+      console.log('❌ Admin verification failed:', authResult.error)
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    console.log('✅ Admin verified:', authResult.user?.email)
     console.log('📡 API /api/events/list - Obteniendo eventos desde Firebase...')
 
     // Cargar eventos directamente desde Firebase

@@ -81,18 +81,40 @@ type EventData = {
 
 ### Development (.env.local)
 ```bash
-GROQ_API_KEY=gsk_your_groq_key_here
-```
+# Firebase (Required)
+NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=123456789
+NEXT_PUBLIC_FIREBASE_APP_ID=1:123456789:web:abcdef123456
 
-### Production
-```bash
+# Firebase Admin SDK (Required for API routes)
+FIREBASE_PROJECT_ID=your_project_id
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@your_project.iam.gserviceaccount.com
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour private key here\n-----END PRIVATE KEY-----\n"
+
+# AI Enhancement (Optional)
+GROQ_API_KEY=gsk_your_groq_key_here
+
+# Email Notifications (Optional)
 NEXT_PUBLIC_EMAILJS_SERVICE_ID=service_xxxxx
 NEXT_PUBLIC_EMAILJS_TEMPLATE_ID=template_xxxxx  
 NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=xxxxxxxxxxxxxxx
 NEXT_PUBLIC_ADMIN_EMAIL=admin@example.com
 ```
 
+### Production
+Same as development variables above.
+
 ## Key Features
+
+### Firebase Authentication
+- Google OAuth integration for secure admin access
+- Restricted to luismateohm@gmail.com for admin privileges
+- Server-side authentication using Firebase Admin SDK
+- Client-side authentication state management
+- User menu in navbar with profile photo and logout functionality
 
 ### AI Integration
 - Uses Groq AI (free tier) for event content enhancement
@@ -109,9 +131,13 @@ NEXT_PUBLIC_ADMIN_EMAIL=admin@example.com
 - Service worker for offline functionality
 - Disabled in development mode
 
-## Firebase Migration Note
+## Firebase Integration
 
-The project has Firebase configuration files and migration scripts available, but currently uses a file-based approach for zero operational costs. Firebase integration is optional and configured for future scalability.
+The project now uses Firebase as the primary backend:
+- **Authentication**: Google OAuth with admin role restrictions
+- **Database**: Firestore for events and comments
+- **Security**: Server-side authentication with Firebase Admin SDK
+- **Client**: Real-time updates and client-side auth state management
 
 ## Deployment Considerations
 

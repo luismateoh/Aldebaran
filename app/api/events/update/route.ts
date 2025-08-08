@@ -1,7 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { eventsService } from '@/lib/events-firebase'
+import { verifyAdminToken } from '@/lib/auth-server'
 
 export async function PUT(request: NextRequest) {
+  try {
+    console.log('📡 API /api/events/update - Verificando autenticación...')
+
+    // Verify admin authentication
+    const authResult = await verifyAdminToken(request)
+    if (!authResult.success) {
+      console.log('❌ Admin verification failed:', authResult.error)
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    console.log('✅ Admin verified:', authResult.user?.email)
   try {
     const body = await request.json()
     const { eventId, eventData } = body

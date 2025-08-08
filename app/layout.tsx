@@ -12,6 +12,7 @@ import ScrollToTop from "@/components/scroll-to-top"
 import { SiteHeader } from "@/components/site-header"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
 import { ThemeProvider } from "@/components/theme-provider"
+import { AuthProvider } from "@/lib/auth-context"
 
 export const metadata: Metadata = {
   title: {
@@ -56,13 +57,15 @@ export default function RootLayout({ children }: RootLayoutProps) {
           )}
         >
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-            <div className="relative flex min-h-screen flex-col">
-              <SiteHeader />
-              <div className="flex-1">{children}</div>
-            </div>
-            <TailwindIndicator />
-            <Footer />
-            <ScrollToTop />
+            <AuthProvider>
+              <div className="relative flex min-h-screen flex-col">
+                <SiteHeader />
+                <div className="flex-1">{children}</div>
+              </div>
+              <TailwindIndicator />
+              <Footer />
+              <ScrollToTop />
+            </AuthProvider>
           </ThemeProvider>
           <Analytics />
           <SpeedInsights />
