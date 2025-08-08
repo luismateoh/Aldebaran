@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
-import { ArrowLeft, Save, Calendar, MapPin, User, Globe, DollarSign, Check } from 'lucide-react'
+import { Save, Calendar, MapPin, User, Globe, DollarSign, Check } from 'lucide-react'
 
 interface EventData {
   id: string
@@ -409,10 +409,7 @@ ${eventData.description}`
     return (
       <div className="container max-w-4xl mx-auto py-8">
         <div className="mt-4">
-          <Button variant="outline" onClick={() => router.push('/admin/events')}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Volver a Eventos
-          </Button>
+          <p>Evento no encontrado</p>
         </div>
       </div>
     )
@@ -422,11 +419,7 @@ ${eventData.description}`
     <div className="container max-w-4xl mx-auto py-8 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="outline" onClick={() => router.push('/admin/events')}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Volver a Eventos
-          </Button>
+        <div>
           <div>
             <h1 className="text-3xl font-bold">Editar Evento</h1>
             <p className="text-muted-foreground">

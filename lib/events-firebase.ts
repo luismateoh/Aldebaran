@@ -33,14 +33,15 @@ export class EventsService {
       
       const events = snapshot.docs.map(doc => this.transformFirestoreDoc(doc))
       
-      // Filtrar solo eventos futuros (desde hoy en adelante)
+      // Filtrar solo eventos futuros Y publicados (no borradores)
       const today = new Date()
       today.setHours(0, 0, 0, 0) // Establecer a inicio del día para incluir eventos de hoy
       
       const futureEvents = events.filter(event => {
         if (!event.eventDate) return false
         const eventDate = new Date(event.eventDate)
-        return eventDate >= today
+        // Excluir eventos en borrador y solo mostrar eventos futuros
+        return eventDate >= today && !event.draft
       })
       
       // Ordenar por fecha ascendente (próximos primero)
@@ -158,14 +159,15 @@ export class EventsService {
       
       const events = snapshot.docs.map(doc => this.transformFirestoreDoc(doc))
       
-      // Filtrar solo eventos futuros
+      // Filtrar solo eventos futuros Y publicados (no borradores)
       const today = new Date()
       today.setHours(0, 0, 0, 0)
       
       const futureEvents = events.filter(event => {
         if (!event.eventDate) return false
         const eventDate = new Date(event.eventDate)
-        return eventDate >= today
+        // Excluir eventos en borrador y solo mostrar eventos futuros
+        return eventDate >= today && !event.draft
       })
       
       // Ordenar por fecha ascendente (próximos primero)

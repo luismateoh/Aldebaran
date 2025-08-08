@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
-import { Settings, ArrowLeft, Database, Mail, Brain, Globe, Shield, AlertCircle, CheckCircle, Save, RotateCcw } from 'lucide-react'
+import { Settings, Database, Mail, Brain, Globe, Shield, AlertCircle, CheckCircle, Save, RotateCcw } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 
 interface SystemSettings {
@@ -164,11 +164,7 @@ export default function SettingsPage() {
     <div className="container relative py-6 lg:py-10">
       {/* Header */}
       <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" onClick={() => router.back()}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Volver
-          </Button>
+        <div>
         </div>
         <div className="space-y-2">
           <h1 className="text-3xl font-bold">Configuración Avanzada</h1>

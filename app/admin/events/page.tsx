@@ -7,7 +7,7 @@ import { useAuthApi } from '@/hooks/use-auth-api'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, Edit, Calendar, MapPin, User, Plus, MoreHorizontal, Trash, Ban, Check, Search, Filter, SortAsc, Copy, Zap } from 'lucide-react'
+import { Edit, Calendar, MapPin, User, Plus, MoreHorizontal, Trash, Ban, Check, Search, Filter, SortAsc, Copy, Zap } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -260,11 +260,7 @@ export default function EventsPage() {
     <div className="container max-w-6xl mx-auto py-8 space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Button variant="outline" size="sm" onClick={() => router.push('/admin')}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Panel
-          </Button>
+        <div>
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold">Gestión de Eventos</h1>
             <p className="text-sm text-muted-foreground">

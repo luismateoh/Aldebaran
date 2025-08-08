@@ -8,7 +8,6 @@ import { EventData } from "@/lib/types"
 import { capitalize } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import AddToCalendar from "@/components/add-to-calendar"
-import { BackButton } from "@/components/back-button"
 import CountDownTimer from "@/components/count-down-timer"
 import EventComments from "@/components/event-comments"
 import InteractiveSection from "@/components/interactive-section"
@@ -26,6 +25,14 @@ type Props = {
 export async function generateMetadata({ params }: Props) {
   try {
     const eventData: EventData = await eventsService.getEventById(params.id)
+    
+    // Si el evento es borrador, no generar metadata
+    if (eventData.draft) {
+      return {
+        title: 'Evento no encontrado'
+      }
+    }
+    
     return {
       title: eventData.title.toUpperCase(),
     }
@@ -68,6 +75,11 @@ export default async function Event({ params }: Props) {
   
   try {
     eventData = await eventsService.getEventById(params.id)
+    
+    // Si el evento es borrador, no permitir acceso público
+    if (eventData.draft) {
+      notFound()
+    }
   } catch (error) {
     console.error('Error fetching event:', error)
     notFound()
@@ -83,7 +95,6 @@ export default async function Event({ params }: Props) {
     <section className="container relative max-w-screen-md py-5 md:py-10">
       <InteractiveSection>
         <div>
-          <BackButton />
           <article className="prose max-w-none dark:prose-invert">
             <Badge className="rounded-md capitalize">
               {eventData.category}

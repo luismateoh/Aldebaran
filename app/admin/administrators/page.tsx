@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { UserPlus, User, Mail, Shield, Trash2, AlertCircle, CheckCircle, ArrowLeft } from 'lucide-react'
+import { UserPlus, User, Mail, Shield, Trash2, AlertCircle, CheckCircle } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 
 interface Admin {
@@ -174,11 +174,7 @@ export default function AdministratorsPage() {
     <div className="container relative py-6 lg:py-10">
       {/* Header */}
       <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" onClick={() => router.back()}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Volver
-          </Button>
+        <div>
         </div>
         <div className="space-y-2">
           <h1 className="text-3xl font-bold">Gestión de Administradores</h1>

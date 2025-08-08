@@ -4,7 +4,6 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft } from 'lucide-react'
 import EventTemplates from '@/components/event-templates'
 
 export default function TemplatesPage() {
@@ -52,11 +51,7 @@ export default function TemplatesPage() {
     <div className="container max-w-6xl mx-auto py-8 space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Button variant="outline" size="sm" onClick={() => router.push('/admin')}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Panel
-          </Button>
+        <div>
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold">Templates de Eventos</h1>
             <p className="text-sm text-muted-foreground">

@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { ArrowLeft, Check, X, Edit, Calendar, MapPin, User, ExternalLink, RefreshCw } from 'lucide-react'
+import { Check, X, Edit, Calendar, MapPin, User, ExternalLink, RefreshCw } from 'lucide-react'
 
 interface Proposal {
   id: string
@@ -272,11 +272,7 @@ export default function ProposalsPage() {
     <div className="container max-w-6xl mx-auto py-8 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="outline" onClick={() => router.push('/admin')}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Volver al Panel
-          </Button>
+        <div>
           <div>
             <h1 className="text-3xl font-bold">Gestión de Propuestas</h1>
             <p className="text-muted-foreground">
