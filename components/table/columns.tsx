@@ -85,9 +85,14 @@ export const columns: ColumnDef<EventData>[] = [
       )
     },
     getUniqueValues: ({ distances }) => {
+      if (!distances) return []
       const allDistances = distances
         .flat()
-        .map((distance) => distance.toLowerCase())
+        .map((distance) => {
+          if (typeof distance === 'string') return distance.toLowerCase()
+          if (typeof distance === 'object' && distance.value) return distance.value.toLowerCase()
+          return String(distance).toLowerCase()
+        })
       const uniqueDistancesSet = new Set(allDistances)
       return Array.from(uniqueDistancesSet)
     },

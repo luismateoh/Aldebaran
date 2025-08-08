@@ -71,63 +71,87 @@ const groq = new Groq({
 export async function POST(request: NextRequest) {
   try {
     const eventData = await request.json()
+    console.log('🔍 Datos recibidos para mejorar evento:', {
+      title: eventData.title,
+      eventDate: eventData.eventDate,
+      date: eventData.date,
+      hasWebsite: !!eventData.website
+    })
     
-    const prompt = `
-Eres un experto en eventos de atletismo en Colombia. Basándote en la siguiente información básica de un evento, genera un archivo Markdown completo y atractivo con información enriquecida:
+    // Primero intentar obtener información web si hay URL
+    let webContent = ''
+    if (eventData.website && eventData.website.startsWith('http')) {
+      try {
+        console.log(`🔍 Buscando información en: ${eventData.website}`)
+        const response = await fetch('/api/web-search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            url: eventData.website,
+            query: `información evento ${eventData.title} ${eventData.municipality}` 
+          })
+        })
+        
+        if (response.ok) {
+          const webData = await response.json()
+          webContent = webData.content || ''
+          console.log(`✅ Información web obtenida: ${webContent.length} caracteres`)
+        }
+      } catch (webError) {
+        console.log('⚠️ No se pudo obtener información web, continuando sin ella')
+      }
+    }
 
-INFORMACIÓN BÁSICA:
+    const prompt = `Genera una descripción mejorada para este evento de atletismo en Colombia.
+
+DATOS DEL EVENTO:
 - Título: ${eventData.title}
 - Fecha: ${eventData.eventDate}
-- Ciudad: ${eventData.municipality}, ${eventData.department}
+- Lugar: ${eventData.municipality}, ${eventData.department}
 - Organizador: ${eventData.organizer || 'Por definir'}
-- Sitio web: ${eventData.website || 'Por definir'}
 - Distancias: ${eventData.distances?.join(', ') || 'Por definir'}
-- Descripción básica: ${eventData.description || 'Evento de atletismo'}
 - Costo: ${eventData.registrationFeed || 'Por confirmar'}
+${webContent ? `- Información adicional web: ${webContent.substring(0, 500)}...` : ''}
 
 INSTRUCCIONES:
-1. Mantén el frontmatter YAML exactamente como se requiere para el sistema
-2. Enriquece la descripción con información típica de eventos similares en Colombia
-3. Agrega secciones útiles como: requisitos, recomendaciones, qué incluye la inscripción
-4. Incluye información sobre clima típico de la región en esa época
-5. Agrega consejos de entrenamiento específicos para las distancias disponibles
-6. Mantén un tono profesional pero entusiasta
-7. Incluye información sobre accesibilidad y servicios
+- Escribe SOLO una descripción fluida en español (máximo 200 palabras)
+- Incluye detalles específicos sobre el lugar y la experiencia del evento
+- Mantén un tono entusiasta pero profesional
+- NO incluyas frontmatter, títulos, ni estructura markdown
+- NO menciones información que no tengas (fechas específicas, precios, etc.)
 
-Genera SOLO el archivo Markdown completo sin explicaciones adicionales:
-`
+Descripción:`
 
-    let enhancedMarkdown = ''
+    let aiDescription = ''
 
-    // Intentar con Groq primero (gratuito)
+    // Intentar con Groq primero (gratuito) - solo para generar descripción
     if (process.env.GROQ_API_KEY && process.env.GROQ_API_KEY !== 'demo') {
       try {
         const completion = await groq.chat.completions.create({
-          model: "llama-3.1-70b-versatile", // Modelo gratuito muy bueno
+          model: "llama-3.1-8b-instant", // Modelo más estable
           messages: [
             {
               role: "system",
-              content: "Eres un experto en eventos deportivos en Colombia. Generas contenido profesional y atractivo para eventos de atletismo en formato Markdown."
+              content: "Eres un experto en eventos deportivos en Colombia. Escribes descripciones atractivas y profesionales."
             },
             {
               role: "user",
               content: prompt
             }
           ],
-          max_tokens: 1500,
+          max_tokens: 300,
           temperature: 0.7,
         })
 
-        enhancedMarkdown = completion.choices[0]?.message?.content || ''
+        aiDescription = completion.choices[0]?.message?.content?.trim() || ''
+        console.log(`✅ Descripción de IA generada: ${aiDescription.length} caracteres`)
       } catch (error) {
-        console.log('Groq failed, falling back to basic generation:', error)
+        console.log('⚠️ Groq failed, usando descripción básica:', error)
       }
     }
 
-    // Si no se pudo usar Groq o no hay API key, usar generación básica mejorada
-    if (!enhancedMarkdown) {
-      enhancedMarkdown = generateEnhancedMarkdown(eventData)
-    }
+    // Generar markdown estructurado con la descripción de IA o básica
+    const enhancedMarkdown = generateCleanMarkdown(eventData, aiDescription, webContent)
 
     // Procesar imagen del evento en paralelo (no bloquear la respuesta)
     let localImagePath = null
@@ -143,7 +167,8 @@ Genera SOLO el archivo Markdown completo sin explicaciones adicionales:
     return NextResponse.json({ 
       markdown: enhancedMarkdown,
       success: true,
-      provider: enhancedMarkdown.includes('## Clima y Preparación') ? 'ai' : 'basic',
+      provider: aiDescription ? 'ai' : 'basic',
+      webContentUsed: !!webContent,
       imageProcessed: !!eventData.cover
     })
 
@@ -151,17 +176,128 @@ Genera SOLO el archivo Markdown completo sin explicaciones adicionales:
     console.error('Error enhancing event:', error)
     
     // Fallback: generar markdown básico
-    const eventData = await request.json()
-    const fallbackMarkdown = generateEnhancedMarkdown(eventData)
-    
-    return NextResponse.json({ 
-      markdown: fallbackMarkdown,
-      success: false,
-      message: 'Usando generación básica mejorada'
-    })
+    try {
+      const eventData = await request.json()
+      const fallbackMarkdown = generateCleanMarkdown(eventData, '', '')
+      
+      return NextResponse.json({ 
+        markdown: fallbackMarkdown,
+        success: false,
+        provider: 'basic',
+        message: 'Usando generación básica'
+      })
+    } catch (fallbackError) {
+      return NextResponse.json({ 
+        error: 'Error completo al generar contenido',
+        success: false
+      }, { status: 500 })
+    }
   }
 }
 
+function generateCleanMarkdown(eventData: any, aiDescription: string = '', webContent: string = '') {
+  // Manejar fecha de manera más robusta
+  let date = new Date(eventData.eventDate || eventData.date)
+  let formattedDate = 'Por definir'
+  let year = new Date().getFullYear()
+  let month = String(new Date().getMonth() + 1).padStart(2, '0')
+  let day = String(new Date().getDate()).padStart(2, '0')
+  
+  // Verificar si la fecha es válida
+  if (!isNaN(date.getTime())) {
+    year = date.getFullYear()
+    month = String(date.getMonth() + 1).padStart(2, '0')
+    day = String(date.getDate()).padStart(2, '0')
+    formattedDate = date.toLocaleDateString('es-CO', { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    })
+  } else {
+    console.log('⚠️ Fecha inválida recibida:', eventData.eventDate || eventData.date)
+    // Usar fecha de hoy como fallback
+    date = new Date()
+    formattedDate = 'Fecha por confirmar'
+  }
+  
+  // Usar descripción de IA si está disponible, sino la básica, sino generar una
+  let description = aiDescription || eventData.description
+  
+  if (!description) {
+    description = `Únete a este emocionante evento de atletismo en ${eventData.municipality}, ${eventData.department}. Una experiencia deportiva que combina competencia, diversión y los hermosos paisajes de esta región colombiana.`
+  }
+
+  // Información de región simplificada
+  const regionInfo = getSimpleRegionInfo(eventData.department)
+  
+  return `---
+title: "${eventData.title || 'Evento de Atletismo'}"
+author: "Luis Hincapie"
+publishDate: "${new Date().toISOString().split('T')[0]}"
+draft: false
+category: "${eventData.category || 'Running'}"
+tags:
+  - "${(eventData.category || 'running').toLowerCase()}"
+  - "${(eventData.municipality || 'colombia').toLowerCase()}"
+  - "atletismo"
+snippet: "${description.substring(0, 150).replace(/"/g, '\\"')}..."
+altitude: "${regionInfo.altitude}"
+eventDate: "${year}-${month}-${day}"
+organizer: "${eventData.organizer || 'Por confirmar'}"
+registrationDeadline: "${year}-${month}-${day}"
+registrationFeed: "${eventData.registrationFeed || 'Por confirmar'}"
+website: "${eventData.website || ''}"
+distances:${eventData.distances?.map((d: string) => `\n  - "${d}"`).join('') || '\n  - "Por definir"'}
+cover: ""
+department: "${eventData.department || ''}"
+municipality: "${eventData.municipality || ''}"
+---
+
+${description}
+
+## Información del Evento
+
+- Fecha: ${formattedDate}
+- Lugar: ${eventData.municipality || 'Por definir'}, ${eventData.department || 'Colombia'}
+- Organizador: ${eventData.organizer || 'Por confirmar'}
+- Altitud: ${regionInfo.altitude}
+
+${eventData.distances?.length ? `## Distancias Disponibles
+
+${eventData.distances.map((d: string) => `- ${d} - ${getDistanceDescription(d)}`).join('\n')}` : ''}
+
+## Información Importante
+
+- Llegar con 30-45 minutos de anticipación
+- Llevar documento de identidad
+- Usar ropa deportiva adecuada
+- Mantenerse hidratado durante el evento
+
+${eventData.website ? `## Más Información
+
+Sitio web oficial: ${eventData.website}` : ''}
+
+---
+
+¡Prepárate para vivir una experiencia deportiva inolvidable!
+`
+}
+
+function getSimpleRegionInfo(department: string) {
+  const regions = {
+    'Antioquia': { altitude: '1,495 msnm' },
+    'Bogotá': { altitude: '2,640 msnm' },
+    'Valle del Cauca': { altitude: '1,000 msnm' },
+    'Atlántico': { altitude: '18 msnm' },
+    'Cundinamarca': { altitude: '2,000 msnm' },
+    'Santander': { altitude: '760 msnm' },
+  } as any
+
+  return regions[department] || { altitude: 'Variable' }
+}
+
+// Mantener la función anterior por compatibilidad
 function generateEnhancedMarkdown(eventData: any) {
   const date = new Date(eventData.eventDate)
   const year = date.getFullYear()

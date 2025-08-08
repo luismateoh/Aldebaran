@@ -21,7 +21,7 @@ export default function EventCard({ event: event }: { event: EventData }) {
         className="flex h-52 rounded-2xl bg-background transition duration-300 group-hover:-translate-y-2 group-hover:shadow-xl"
       >
         <SmartImage
-          src={event.cover}
+          src={event.cover || undefined}
           alt={"Imagen de " + event.title}
           width={720}
           height={360}
@@ -45,24 +45,39 @@ export default function EventCard({ event: event }: { event: EventData }) {
           <Badge variant="outline" className="rounded-md text-sm capitalize">
             {event.municipality}
           </Badge>
-          <p className="flex items-center justify-center gap-1 align-middle text-muted-foreground">
-            <Icons.mountain className="size-4" />
-            {event.altitude}
-          </p>
+          {/* Solo mostrar altitude si existe */}
+          {event.altitude && (
+            <p className="flex items-center justify-center gap-1 align-middle text-muted-foreground">
+              <Icons.mountain className="size-4" />
+              {event.altitude}
+            </p>
+          )}
         </div>
 
         <div className="flex items-center gap-1">
-          {event.distances
-            .sort((a: any, b: any) => parseFloat(a.value) - parseFloat(b.value))
-            .map((distance: string) => (
-              <Badge
-                className="rounded-md text-sm capitalize"
-                variant="secondary"
-                key={distance}
-              >
-                {distance}
-              </Badge>
-            ))}
+          {/* Verificar si existe distance y convertirlo a array si es necesario */}
+          {event.distance && (
+            <Badge
+              className="rounded-md text-sm capitalize"
+              variant="secondary"
+            >
+              {event.distance}
+            </Badge>
+          )}
+          {/* Manejar distances como array si existe */}
+          {event.distances && Array.isArray(event.distances) && 
+            event.distances
+              .sort((a: any, b: any) => parseFloat(a.value || a) - parseFloat(b.value || b))
+              .map((distance: any, index: number) => (
+                <Badge
+                  className="rounded-md text-sm capitalize"
+                  variant="secondary"
+                  key={`distance-${index}`}
+                >
+                  {typeof distance === 'string' ? distance : distance.value || distance}
+                </Badge>
+              ))
+          }
         </div>
       </div>
 

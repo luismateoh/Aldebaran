@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@/lib/auth-context'
+import { useAuthApi } from '@/hooks/use-auth-api'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -9,10 +11,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { ArrowLeft, Check, X, Edit, Calendar, MapPin, User, ExternalLink, RefreshCw } from 'lucide-react'
+import { Check, X, Edit, Calendar, MapPin, User, ExternalLink, RefreshCw } from 'lucide-react'
 
 interface Proposal {
-  id: number
+  id: string
   title: string
   eventDate: string
   municipality: string
@@ -21,16 +23,22 @@ interface Proposal {
   website: string
   description: string
   distances: string[]
-  registrationFeed: string
+  registrationFee: string
   category: string
   status: 'pending' | 'approved' | 'rejected'
   submittedBy: string
-  created_at: string
+  createdAt: string
+  submitterEmail?: string
   userAgent?: string
+  reviewedBy?: string
+  reviewedAt?: string
+  rejectionReason?: string
 }
 
 export default function ProposalsPage() {
   const router = useRouter()
+  const { user, isAdmin, loading } = useAuth()
+  const { makeAuthenticatedRequest } = useAuthApi()
   const [proposals, setProposals] = useState<Proposal[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('pending')
@@ -39,34 +47,46 @@ export default function ProposalsPage() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [actionResult, setActionResult] = useState<{success?: boolean, message: string} | null>(null)
 
+  // Redirect if not authenticated or not admin
   useEffect(() => {
-    const token = localStorage.getItem('admin_token')
-    if (!token) {
+    if (!loading && (!user || !isAdmin)) {
       router.push('/login')
-      return
     }
-    
-    loadProposals()
-  }, [])
+  }, [user, isAdmin, loading, router])
+
+  useEffect(() => {
+    if (user && isAdmin) {
+      loadProposals()
+    }
+  }, [user, isAdmin])
 
   const loadProposals = async () => {
     try {
       setIsLoading(true)
-      const token = localStorage.getItem('admin_token')
-      const response = await fetch('/api/hybrid-storage?action=list_proposals', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      })
-
+      setActionResult(null)
+      
+      console.log('🔍 Cargando propuestas desde Firebase...')
+      
+      const response = await makeAuthenticatedRequest('/api/proposals')
+      
       if (response.ok) {
         const data = await response.json()
         setProposals(data.proposals || [])
+        
+        if (data.proposals.length === 0) {
+          setActionResult({
+            success: true,
+            message: 'No hay propuestas disponibles. Las propuestas aparecerán aquí cuando los usuarios las envíen.'
+          })
+        }
       } else {
-        console.error('Error loading proposals:', response.status)
+        const errorData = await response.json()
         setActionResult({
           success: false,
-          message: `Error cargando propuestas: ${response.status}`
+          message: `Error cargando propuestas: ${errorData.error || response.status}`
         })
       }
+      
     } catch (error) {
       console.error('Error loading proposals:', error)
       setActionResult({
@@ -78,34 +98,27 @@ export default function ProposalsPage() {
     }
   }
 
-  const handleApproveProposal = async (proposalId: number) => {
+  const handleApproveProposal = async (proposalId: string) => {
     setIsProcessing(true)
     setActionResult(null)
     
     try {
-      const token = localStorage.getItem('admin_token')
-      const response = await fetch('/api/hybrid-storage', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          action: 'update_proposal_status',
-          proposalId,
-          status: 'approved'
-        })
+      const response = await makeAuthenticatedRequest(`/api/proposals/${proposalId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: 'approved' })
       })
-
+      
       if (response.ok) {
-        // Update local state
+        const data = await response.json()
+        
+        // Actualizar estado local
         setProposals(proposals.map(p => 
-          p.id === proposalId ? { ...p, status: 'approved' as const } : p
+          p.id === proposalId ? { ...p, status: 'approved' } : p
         ))
         
         setActionResult({
           success: true,
-          message: 'Propuesta aprobada exitosamente'
+          message: data.message || 'Propuesta aprobada exitosamente'
         })
       } else {
         const errorData = await response.json()
@@ -117,40 +130,37 @@ export default function ProposalsPage() {
     } catch (error) {
       setActionResult({
         success: false,
-        message: `Error: ${error instanceof Error ? error.message : 'Desconocido'}`
+        message: 'Error de conexión: ' + (error instanceof Error ? error.message : 'Error desconocido')
       })
     } finally {
       setIsProcessing(false)
     }
   }
 
-  const handleRejectProposal = async (proposalId: number) => {
+  const handleRejectProposal = async (proposalId: string, rejectionReason?: string) => {
     setIsProcessing(true)
     setActionResult(null)
     
     try {
-      const token = localStorage.getItem('admin_token')
-      const response = await fetch('/api/hybrid-storage', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          action: 'update_proposal_status',
-          proposalId,
-          status: 'rejected'
+      const response = await makeAuthenticatedRequest(`/api/proposals/${proposalId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ 
+          status: 'rejected',
+          rejectionReason: rejectionReason || 'Sin razón especificada'
         })
       })
-
+      
       if (response.ok) {
+        const data = await response.json()
+        
+        // Actualizar estado local
         setProposals(proposals.map(p => 
-          p.id === proposalId ? { ...p, status: 'rejected' as const } : p
+          p.id === proposalId ? { ...p, status: 'rejected', rejectionReason } : p
         ))
         
         setActionResult({
           success: true,
-          message: 'Propuesta rechazada'
+          message: data.message || 'Propuesta rechazada exitosamente'
         })
       } else {
         const errorData = await response.json()
@@ -162,7 +172,7 @@ export default function ProposalsPage() {
     } catch (error) {
       setActionResult({
         success: false,
-        message: `Error: ${error instanceof Error ? error.message : 'Desconocido'}`
+        message: 'Error de conexión: ' + (error instanceof Error ? error.message : 'Error desconocido')
       })
     } finally {
       setIsProcessing(false)
@@ -174,59 +184,34 @@ export default function ProposalsPage() {
     setActionResult(null)
     
     try {
-      const token = localStorage.getItem('admin_token')
-      
-      // Generate event data from proposal
-      const eventData = {
-        eventId: `${proposal.eventDate}_${proposal.municipality.toLowerCase()}_${proposal.title.toLowerCase().replace(/[^a-z0-9]/g, '')}`,
-        title: proposal.title.toUpperCase(),
-        date: proposal.eventDate,
-        municipality: proposal.municipality,
-        department: proposal.department,
-        organizer: proposal.organizer,
-        category: proposal.category,
-        status: 'published',
-        distances: proposal.distances,
-        website: proposal.website,
-        registrationFee: proposal.registrationFeed,
-        description: proposal.description,
-        altitude: '',
-        cover: ''
-      }
-
-      const response = await fetch('/api/hybrid-storage', {
+      const response = await makeAuthenticatedRequest('/api/proposals/publish', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          action: 'publish_proposal_as_event',
-          proposalId: proposal.id,
-          eventData
-        })
+        body: JSON.stringify({ proposalId: proposal.id })
       })
-
+      
       if (response.ok) {
-        setProposals(proposals.map(p => 
-          p.id === proposal.id ? { ...p, status: 'approved' as const } : p
-        ))
+        const data = await response.json()
         
         setActionResult({
           success: true,
-          message: 'Propuesta publicada como evento exitosamente'
+          message: data.message || 'Propuesta publicada como evento exitosamente'
         })
+        
+        // Recargar propuestas para reflejar cambios
+        setTimeout(() => {
+          loadProposals()
+        }, 1000)
       } else {
         const errorData = await response.json()
         setActionResult({
           success: false,
-          message: errorData.error || 'Error publicando evento'
+          message: errorData.error || 'Error publicando propuesta como evento'
         })
       }
     } catch (error) {
       setActionResult({
         success: false,
-        message: `Error: ${error instanceof Error ? error.message : 'Desconocido'}`
+        message: 'Error de conexión: ' + (error instanceof Error ? error.message : 'Error desconocido')
       })
     } finally {
       setIsProcessing(false)
@@ -261,6 +246,20 @@ export default function ProposalsPage() {
     filter === 'all' || proposal.status === filter
   )
 
+  // Show loading while checking authentication
+  if (loading) {
+    return (
+      <div className="container max-w-6xl mx-auto py-8">
+        <div className="text-center">Verificando autenticación...</div>
+      </div>
+    )
+  }
+
+  // Don't render anything if not authenticated (will redirect)
+  if (!user || !isAdmin) {
+    return null
+  }
+
   if (isLoading) {
     return (
       <div className="container max-w-6xl mx-auto py-8">
@@ -273,11 +272,7 @@ export default function ProposalsPage() {
     <div className="container max-w-6xl mx-auto py-8 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="outline" onClick={() => router.push('/admin')}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Volver al Panel
-          </Button>
+        <div>
           <div>
             <h1 className="text-3xl font-bold">Gestión de Propuestas</h1>
             <p className="text-muted-foreground">
@@ -363,8 +358,18 @@ export default function ProposalsPage() {
           Propuestas {filter !== 'all' && `(${filter})`}
         </h2>
         {filteredProposals.length === 0 ? (
-          <div className="p-4 border rounded-lg text-center text-muted-foreground">
-            No hay propuestas {filter !== 'all' && `${filter}`} disponibles.
+          <div className="p-8 border rounded-lg text-center">
+            <div className="space-y-4">
+              <div className="text-6xl">📝</div>
+              <h3 className="text-xl font-semibold">Sistema de Propuestas</h3>
+              <p className="text-muted-foreground max-w-md mx-auto">
+                El sistema de propuestas está disponible para implementación futura. 
+                Actualmente, los eventos se crean directamente desde el panel de administración.
+              </p>
+              <Button onClick={() => router.push('/admin')} variant="outline">
+                Volver al Panel Principal
+              </Button>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -376,7 +381,7 @@ export default function ProposalsPage() {
                     {getStatusBadge(proposal.status)}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    Enviado el {formatDate(proposal.created_at)} por {proposal.submittedBy}
+                    Enviado el {formatDate(proposal.createdAt)} por {proposal.submittedBy}
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">
@@ -520,7 +525,7 @@ export default function ProposalsPage() {
                 </div>
                 <div>
                   <Label>Costo de Inscripción</Label>
-                  <p>{selectedProposal.registrationFeed || 'No especificado'}</p>
+                  <p>{selectedProposal.registrationFee || 'No especificado'}</p>
                 </div>
               </div>
 
@@ -556,7 +561,7 @@ export default function ProposalsPage() {
 
               <div className="text-xs text-muted-foreground pt-4 border-t">
                 <p>Enviado por: {selectedProposal.submittedBy}</p>
-                <p>Fecha de envío: {formatDate(selectedProposal.created_at)}</p>
+                <p>Fecha de envío: {formatDate(selectedProposal.createdAt)}</p>
                 {selectedProposal.userAgent && (
                   <p>Navegador: {selectedProposal.userAgent}</p>
                 )}

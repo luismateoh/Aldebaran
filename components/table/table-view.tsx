@@ -1,16 +1,32 @@
-//https://github.com/shadcn-ui/ui/tree/f47bb973bebaa38cb1bda8c56076ec962516a9bb/apps/www/app/(app)/examples/tasks/components
+'use client'
 
-import { getSortedEventsData } from "@/lib/events"
-
+import { useEventsRealtime } from "@/hooks/use-events-realtime"
 import { columns } from "./columns"
 import { DataTable } from "./data-table"
 
-export default async function TableView() {
-  const eventsData = getSortedEventsData()
+export default function TableView() {
+  const { events, loading, error } = useEventsRealtime()
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <span className="ml-2">Cargando eventos...</span>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="text-center p-8 text-red-600">
+        <p>Error cargando eventos: {error}</p>
+      </div>
+    )
+  }
 
   return (
     <div>
-      <DataTable columns={columns} data={eventsData} />
+      <DataTable columns={columns} data={events} />
     </div>
   )
 }
