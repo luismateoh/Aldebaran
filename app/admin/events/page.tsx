@@ -27,6 +27,7 @@ interface Event {
   organizer: string
   category: string
   status: 'draft' | 'published' | 'cancelled'
+  draft: boolean
   distances: string[]
   createdAt: string
   lastModified: string
@@ -133,16 +134,19 @@ export default function EventsPage() {
     })
   }
 
-  const getStatusBadge = (status: Event['status']) => {
-    switch (status) {
-      case 'draft':
-        return <Badge variant="outline" className="text-yellow-600">Borrador</Badge>
+  const getStatusBadge = (event: Event) => {
+    // Prioritize draft field over status
+    if (event.draft || event.status === 'draft') {
+      return <Badge variant="outline" className="text-yellow-600">Borrador</Badge>
+    }
+    
+    switch (event.status) {
       case 'published':
         return <Badge variant="outline" className="text-green-600">Publicado</Badge>
       case 'cancelled':
         return <Badge variant="outline" className="text-red-600">Cancelado</Badge>
       default:
-        return <Badge variant="outline">{status}</Badge>
+        return <Badge variant="outline">{event.status}</Badge>
     }
   }
 
@@ -191,8 +195,12 @@ export default function EventsPage() {
   // Filtrado avanzado
   const filteredEvents = events
     .filter(event => {
-      // Filtro por estado
-      if (filter !== 'all' && event.status !== filter) return false
+      // Filtro por estado - considerar tanto status como draft
+      if (filter !== 'all') {
+        if (filter === 'draft' && !(event.status === 'draft' || event.draft)) return false
+        if (filter === 'published' && !(event.status === 'published' && !event.draft)) return false
+        if (filter === 'cancelled' && event.status !== 'cancelled') return false
+      }
       
       // Filtro por búsqueda
       if (searchTerm && !event.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
@@ -273,6 +281,7 @@ export default function EventsPage() {
           Nuevo
         </Button>
       </div>
+
 
       {/* Search and Filters - Mobile Optimized */}
       <div className="space-y-4">
@@ -397,7 +406,12 @@ export default function EventsPage() {
              status === 'draft' ? 'Borradores' : 'Cancelados'}
             {status !== 'all' && (
               <Badge variant="secondary" className="ml-2">
-                {events.filter(e => e.status === status).length}
+                {status === 'draft' ? 
+                  events.filter(e => e.status === 'draft' || e.draft).length :
+                  status === 'published' ?
+                  events.filter(e => e.status === 'published' && !e.draft).length :
+                  events.filter(e => e.status === status).length
+                }
               </Badge>
             )}
           </Button>
@@ -415,7 +429,7 @@ export default function EventsPage() {
         <Card>
           <CardContent className="p-4">
             <div className="text-2xl font-bold text-green-600">
-              {events.filter(e => e.status === 'published').length}
+              {events.filter(e => e.status === 'published' && !e.draft).length}
             </div>
             <div className="text-sm text-muted-foreground">Publicados</div>
           </CardContent>
@@ -423,7 +437,7 @@ export default function EventsPage() {
         <Card>
           <CardContent className="p-4">
             <div className="text-2xl font-bold text-yellow-600">
-              {events.filter(e => e.status === 'draft').length}
+              {events.filter(e => e.status === 'draft' || e.draft).length}
             </div>
             <div className="text-sm text-muted-foreground">Borradores</div>
           </CardContent>
@@ -457,7 +471,7 @@ export default function EventsPage() {
                   <div className="flex justify-between items-start mb-2">
                     <CardTitle className="text-lg line-clamp-2">{event.title}</CardTitle>
                     <div className="flex items-center gap-2">
-                      {getStatusBadge(event.status)}
+                      {getStatusBadge(event)}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="sm" className="h-8 w-8 p-0">

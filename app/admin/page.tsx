@@ -47,8 +47,8 @@ export default function AdminPage() {
         const data = await response.json()
         setSystemStats({
           totalEvents: data.events?.length || 0,
-          publishedEvents: data.events?.filter((e: any) => e.status === 'published').length || 0,
-          draftEvents: data.events?.filter((e: any) => e.status === 'draft').length || 0,
+          publishedEvents: data.events?.filter((e: any) => e.status === 'published' && !e.draft).length || 0,
+          draftEvents: data.events?.filter((e: any) => e.status === 'draft' || e.draft).length || 0,
           proposals: data.events?.filter((e: any) => e.status === 'proposal').length || 0,
           deletedEvents: data.events?.filter((e: any) => e.status === 'deleted').length || 0,
           status: 'connected'

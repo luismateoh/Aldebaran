@@ -10,8 +10,9 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Calendar, MapPin, Clock, DollarSign, Globe, Users, CheckCircle } from 'lucide-react'
+import { Calendar, CheckCircle, ChevronUp, Edit } from 'lucide-react'
 import { eventsService } from '@/lib/events-firebase'
+import AIEventSearch from '@/components/ai-event-search'
 
 interface EventFormData {
   title: string
@@ -52,6 +53,7 @@ export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
   const [isCommitting, setIsCommitting] = useState(false)
   const [commitResult, setCommitResult] = useState<any>(null)
   const [validationErrors, setValidationErrors] = useState<{field: string, message: string}[]>([])
+  const [showManualForm, setShowManualForm] = useState(false)
   
   const departments = [
     'Antioquia', 'Atlántico', 'Bogotá', 'Bolívar', 'Boyacá', 'Caldas', 
@@ -127,6 +129,31 @@ export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
         ? prev.distances.filter(d => d !== distance)
         : [...prev.distances, distance]
     }))
+  }
+
+  // Handle AI search results
+  const handleAIEventFound = (aiEventData: Partial<EventFormData>) => {
+    setFormData(prev => ({
+      ...prev,
+      // Only update fields that have actual data from AI
+      ...(aiEventData.title && { title: aiEventData.title }),
+      ...(aiEventData.eventDate && { eventDate: aiEventData.eventDate }),
+      ...(aiEventData.municipality && { municipality: aiEventData.municipality }),
+      ...(aiEventData.department && { department: aiEventData.department }),
+      ...(aiEventData.organizer && { organizer: aiEventData.organizer }),
+      ...(aiEventData.registrationUrl && { registrationUrl: aiEventData.registrationUrl }),
+      ...(aiEventData.description && { description: aiEventData.description }),
+      ...(aiEventData.distances && aiEventData.distances.length > 0 && { distances: aiEventData.distances }),
+      ...(aiEventData.price && { price: aiEventData.price }),
+      ...(aiEventData.category && { category: aiEventData.category }),
+      ...(aiEventData.cover && { cover: aiEventData.cover }),
+    }))
+    
+    // Clear validation errors when AI fills the form
+    setValidationErrors([])
+    
+    // Show the manual form automatically when AI finds data
+    setShowManualForm(true)
   }
 
   const sendEventByEmail = async () => {
@@ -258,237 +285,271 @@ export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Resultado de commit (solo para admin) */}
-          {!isPublic && commitResult && (
-            <div className={`p-4 rounded-lg border ${
-              commitResult.error 
-                ? 'border-red-200 bg-red-50 dark:bg-red-950/20' 
-                : 'border-green-200 bg-green-50 dark:bg-green-950/20'
-            }`}>
-              <h3 className={`font-medium ${
-                commitResult.error 
-                  ? 'text-red-900 dark:text-red-100' 
-                  : 'text-green-900 dark:text-green-100'
-              }`}>
-                {commitResult.error ? 'Error al Crear Evento' : 'Evento Creado Exitosamente'}
-              </h3>
-              <p className={`text-sm mt-1 ${
-                commitResult.error 
-                  ? 'text-red-700 dark:text-red-300' 
-                  : 'text-green-700 dark:text-green-300'
-              }`}>
-                {commitResult.message || commitResult.error}
-              </p>
-              {commitResult.eventId && (
-                <p className="text-xs mt-2 text-green-600">
-                  ID del evento: {commitResult.eventId}
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* Información Básica */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="title">Nombre del Evento *</Label>
-              <Input
-                id="title"
-                placeholder="Ej: Maratón de Bogotá"
-                value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="eventDate">Fecha del Evento *</Label>
-              <Input
-                id="eventDate"
-                type="date"
-                value={formData.eventDate}
-                onChange={(e) => setFormData(prev => ({ ...prev, eventDate: e.target.value }))}
-              />
-            </div>
-          </div>
-
-          {/* Imagen del evento */}
-          <div className="space-y-2">
-            <Label htmlFor="cover">URL de la Imagen del Evento</Label>
-            <Input
-              id="cover"
-              placeholder="https://ejemplo.com/imagen-evento.jpg"
-              value={formData.cover}
-              onChange={(e) => setFormData(prev => ({ ...prev, cover: e.target.value }))}
-            />
-          </div>
-          
-          {/* Ubicación */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="municipality">Municipio *</Label>
-              <Input
-                id="municipality"
-                placeholder="Ej: Bogotá"
-                value={formData.municipality}
-                onChange={(e) => setFormData(prev => ({ ...prev, municipality: e.target.value }))}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="department">Departamento *</Label>
-              <Select value={formData.department} onValueChange={(value: string) => setFormData(prev => ({ ...prev, department: value }))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona departamento" />
-                </SelectTrigger>
-                <SelectContent>
-                  {departments.map(dept => (
-                    <SelectItem key={dept} value={dept}>{dept}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          
-          {/* Organización */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="organizer">Organizador</Label>
-              <Input
-                id="organizer"
-                placeholder="Ej: IDRD, Alcaldía, Club..."
-                value={formData.organizer}
-                onChange={(e) => setFormData(prev => ({ ...prev, organizer: e.target.value }))}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="registrationUrl">Sitio Web / Inscripciones</Label>
-              <Input
-                id="registrationUrl"
-                placeholder="https://ejemplo.com"
-                value={formData.registrationUrl}
-                onChange={(e) => setFormData(prev => ({ ...prev, registrationUrl: e.target.value }))}
-              />
-            </div>
-          </div>
-          
-          {/* Categoría y Precio */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="category">Categoría</Label>
-              <Select value={formData.category} onValueChange={(value: string) => setFormData(prev => ({ ...prev, category: value }))}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map(cat => (
-                    <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="price">Costo de Inscripción</Label>
-              <Input
-                id="price"
-                placeholder="$50.000"
-                value={formData.price}
-                onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
-              />
-            </div>
-          </div>
-          
-          {/* Distancias */}
-          <div className="space-y-2">
-            <Label>Distancias Disponibles</Label>
-            <div className="flex flex-wrap gap-2">
-              {distanceOptions.map(distance => (
-                <Badge
-                  key={distance}
-                  variant={formData.distances.includes(distance) ? "default" : "outline"}
-                  className="cursor-pointer"
-                  onClick={() => handleDistanceToggle(distance)}
+          {/* AI Event Search (solo para admin) */}
+          {!isPublic && (
+            <div className="space-y-4">
+              <AIEventSearch onEventFound={handleAIEventFound} />
+              
+              {/* Control button for manual form */}
+              <div className="flex justify-center">
+                <Button
+                  type="button"
+                  variant={showManualForm ? "outline" : "default"}
+                  onClick={() => setShowManualForm(!showManualForm)}
+                  className="flex items-center gap-2"
                 >
-                  {distance}
-                </Badge>
-              ))}
-            </div>
-          </div>
-          
-          {/* Descripción */}
-          <div className="space-y-2">
-            <Label htmlFor="description">Descripción del Evento</Label>
-            <Textarea
-              id="description"
-              placeholder="Describe el evento, su propósito, características especiales..."
-              value={formData.description}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              rows={4}
-            />
-          </div>
-          
-          {/* Acciones */}
-          <div className="space-y-4">
-            {isPublic ? (
-              // Versión pública: solo envío por email
-              <div className="space-y-4">
-                {emailSent ? (
-                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
-                      <span className="text-green-700 font-medium">¡Propuesta enviada exitosamente!</span>
-                    </div>
-                    <p className="text-green-600 text-sm mt-1">
-                      Tu propuesta se envió por email. La revisaremos y publicaremos en 24-48 horas.
-                    </p>
-                  </div>
-                ) : (
-                  <Button 
-                    onClick={() => {
-                      const errors = validateForm()
-                      if (errors.length > 0) {
-                        setValidationErrors(errors)
-                        return
-                      }
-                      setValidationErrors([])
-                      sendEventByEmail()
-                    }} 
-                    disabled={isSending}
-                    className="w-full"
-                  >
-                    {isSending ? (
-                      <>📤 Enviando Propuesta...</>
-                    ) : (
-                      <>📧 Enviar Propuesta</>
-                    )}
-                  </Button>
-                )}
-              </div>
-            ) : (
-              // Versión admin: crear directamente en Firebase
-              <div className="space-y-4">
-                <Button 
-                  onClick={() => {
-                    const errors = validateForm()
-                    if (errors.length > 0) {
-                      setValidationErrors(errors)
-                      return
-                    }
-                    setValidationErrors([])
-                    createEventInFirebase()
-                  }} 
-                  disabled={isCommitting}
-                  className="w-full"
-                >
-                  {isCommitting ? (
-                    <>🔄 Creando Evento...</>
+                  {showManualForm ? (
+                    <>
+                      <ChevronUp className="h-4 w-4" />
+                      Ocultar Formulario Manual
+                    </>
                   ) : (
-                    <>🔥 Crear Evento en Firebase</>
+                    <>
+                      <Edit className="h-4 w-4" />
+                      Crear Evento Manualmente
+                    </>
                   )}
                 </Button>
               </div>
-            )}
-          </div>
+            </div>
+          )}
+
+          {/* Manual Form Section */}
+          {(isPublic || showManualForm) && (
+            <div className="space-y-6">
+              {/* Resultado de commit (solo para admin) */}
+              {!isPublic && commitResult && (
+                <div className={`p-4 rounded-lg border ${
+                  commitResult.error 
+                    ? 'border-red-200 bg-red-50 dark:bg-red-950/20' 
+                    : 'border-green-200 bg-green-50 dark:bg-green-950/20'
+                }`}>
+                  <h3 className={`font-medium ${
+                    commitResult.error 
+                      ? 'text-red-900 dark:text-red-100' 
+                      : 'text-green-900 dark:text-green-100'
+                  }`}>
+                    {commitResult.error ? 'Error al Crear Evento' : 'Evento Creado Exitosamente'}
+                  </h3>
+                  <p className={`text-sm mt-1 ${
+                    commitResult.error 
+                      ? 'text-red-700 dark:text-red-300' 
+                      : 'text-green-700 dark:text-green-300'
+                  }`}>
+                    {commitResult.message || commitResult.error}
+                  </p>
+                  {commitResult.eventId && (
+                    <p className="text-xs mt-2 text-green-600">
+                      ID del evento: {commitResult.eventId}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Información Básica */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="title">Nombre del Evento *</Label>
+                  <Input
+                    id="title"
+                    placeholder="Ej: Maratón de Bogotá"
+                    value={formData.title}
+                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="eventDate">Fecha del Evento *</Label>
+                  <Input
+                    id="eventDate"
+                    type="date"
+                    value={formData.eventDate}
+                    onChange={(e) => setFormData(prev => ({ ...prev, eventDate: e.target.value }))}
+                  />
+                </div>
+              </div>
+
+              {/* Imagen del evento */}
+              <div className="space-y-2">
+                <Label htmlFor="cover">URL de la Imagen del Evento</Label>
+                <Input
+                  id="cover"
+                  placeholder="https://ejemplo.com/imagen-evento.jpg"
+                  value={formData.cover}
+                  onChange={(e) => setFormData(prev => ({ ...prev, cover: e.target.value }))}
+                />
+              </div>
+              
+              {/* Ubicación */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="municipality">Municipio *</Label>
+                  <Input
+                    id="municipality"
+                    placeholder="Ej: Bogotá"
+                    value={formData.municipality}
+                    onChange={(e) => setFormData(prev => ({ ...prev, municipality: e.target.value }))}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="department">Departamento *</Label>
+                  <Select value={formData.department} onValueChange={(value: string) => setFormData(prev => ({ ...prev, department: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecciona departamento" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {departments.map(dept => (
+                        <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              {/* Organización */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="organizer">Organizador</Label>
+                  <Input
+                    id="organizer"
+                    placeholder="Ej: IDRD, Alcaldía, Club..."
+                    value={formData.organizer}
+                    onChange={(e) => setFormData(prev => ({ ...prev, organizer: e.target.value }))}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="registrationUrl">Sitio Web / Inscripciones</Label>
+                  <Input
+                    id="registrationUrl"
+                    placeholder="https://ejemplo.com"
+                    value={formData.registrationUrl}
+                    onChange={(e) => setFormData(prev => ({ ...prev, registrationUrl: e.target.value }))}
+                  />
+                </div>
+              </div>
+              
+              {/* Categoría y Precio */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="category">Categoría</Label>
+                  <Select value={formData.category} onValueChange={(value: string) => setFormData(prev => ({ ...prev, category: value }))}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map(cat => (
+                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="price">Costo de Inscripción</Label>
+                  <Input
+                    id="price"
+                    placeholder="$50.000"
+                    value={formData.price}
+                    onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
+                  />
+                </div>
+              </div>
+              
+              {/* Distancias */}
+              <div className="space-y-2">
+                <Label>Distancias Disponibles</Label>
+                <div className="flex flex-wrap gap-2">
+                  {distanceOptions.map(distance => (
+                    <Badge
+                      key={distance}
+                      variant={formData.distances.includes(distance) ? "default" : "outline"}
+                      className="cursor-pointer"
+                      onClick={() => handleDistanceToggle(distance)}
+                    >
+                      {distance}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Descripción */}
+              <div className="space-y-2">
+                <Label htmlFor="description">Descripción del Evento</Label>
+                <Textarea
+                  id="description"
+                  placeholder="Describe el evento, su propósito, características especiales..."
+                  value={formData.description}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  rows={4}
+                />
+              </div>
+              
+              {/* Acciones */}
+              <div className="space-y-4">
+                {isPublic ? (
+                  // Versión pública: solo envío por email
+                  <div className="space-y-4">
+                    {emailSent ? (
+                      <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="h-5 w-5 text-green-500" />
+                          <span className="text-green-700 font-medium">¡Propuesta enviada exitosamente!</span>
+                        </div>
+                        <p className="text-green-600 text-sm mt-1">
+                          Tu propuesta se envió por email. La revisaremos y publicaremos en 24-48 horas.
+                        </p>
+                      </div>
+                    ) : (
+                      <Button 
+                        onClick={() => {
+                          const errors = validateForm()
+                          if (errors.length > 0) {
+                            setValidationErrors(errors)
+                            return
+                          }
+                          setValidationErrors([])
+                          sendEventByEmail()
+                        }} 
+                        disabled={isSending}
+                        className="w-full"
+                      >
+                        {isSending ? (
+                          <>📤 Enviando Propuesta...</>
+                        ) : (
+                          <>📧 Enviar Propuesta</>
+                        )}
+                      </Button>
+                    )}
+                  </div>
+                ) : (
+                  // Versión admin: crear directamente en Firebase
+                  <div className="space-y-4">
+                    <Button 
+                      onClick={() => {
+                        const errors = validateForm()
+                        if (errors.length > 0) {
+                          setValidationErrors(errors)
+                          return
+                        }
+                        setValidationErrors([])
+                        createEventInFirebase()
+                      }} 
+                      disabled={isCommitting}
+                      className="w-full"
+                    >
+                      {isCommitting ? (
+                        <>🔄 Creando Evento...</>
+                      ) : (
+                        <>🔥 Crear Evento en Firebase</>
+                      )}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

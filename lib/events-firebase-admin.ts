@@ -1,6 +1,6 @@
 import { getFirestore, FieldValue, Timestamp } from 'firebase-admin/firestore'
 import './firebase-admin'
-import type { EventData } from '@/types/event'
+import type { EventData } from '@/types'
 
 const EVENTS_COLLECTION = 'events'
 
@@ -46,7 +46,7 @@ class EventsServiceAdmin {
       title: data.title || '',
       author: data.author || 'Luis Hincapie',
       publishDate: publishDate,
-      draft: data.status === 'draft',
+      draft: data.draft || data.status === 'draft',
       category: data.category || 'Running',
       tags: data.tags || [data.category?.toLowerCase() || 'running'],
       snippet: data.snippet || data.description?.substring(0, 150) || '',
