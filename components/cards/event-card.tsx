@@ -1,7 +1,6 @@
 import React from "react"
 
 import type { EventData } from "@/lib/types"
-import { capitalize, formatDate } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import SmartImage from "@/components/smart-image"
@@ -13,17 +12,20 @@ import { Icons } from "../icons"
 export default function EventCard({ event: event }: { event: EventData }) {
   const [isAttending, setIsAttending] = React.useState(false)
   const [isSaved, setIsSaved] = React.useState(false)
+  const [likesCount, setLikesCount] = React.useState((event as any).likesCount || 1)
 
-  const eventDate = new Date(event.eventDate)
+  // Fix timezone issue by creating date in local timezone
+  const eventDate = new Date(event.eventDate + 'T00:00:00')
   const dayOfWeek = eventDate.toLocaleDateString('es-ES', { weekday: 'short' }).toUpperCase()
   const dayNumber = eventDate.getDate()
   const monthYear = eventDate.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' })
+  const monthShort = eventDate.toLocaleDateString('es-ES', { month: 'short' })
 
   const handleShare = async () => {
     const shareData = {
       title: event.title,
       text: `${event.title} - ${event.municipality}, ${event.department}`,
-      url: window.location.origin + `/events/${event.id}/`
+      url: window.location.origin + `/events/${event.id || ''}/`
     }
 
     if (navigator.share) {
@@ -55,83 +57,87 @@ export default function EventCard({ event: event }: { event: EventData }) {
 
   return (
     <article
-      id={event.id}
-      className="group bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg dark:hover:shadow-gray-900/25 transition-shadow duration-300"
+      id={event.id || ''}
+      className="group bg-white dark:bg-gray-900 overflow-hidden"
       onCopy={(e) => {
         e.preventDefault()
       }}
     >
-      {/* Header with date and title */}
-      <div className="flex">
-        {/* Date section */}
-        <div className="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800 p-4 min-w-[80px] border-r border-gray-200 dark:border-gray-700">
-          <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-            {dayOfWeek}
-          </span>
-          <span className="text-2xl font-bold text-gray-900 dark:text-white leading-none mt-1">
+      {/* Card Header */}
+      <div className="flex p-4 items-start">
+        {/* Date section - siguiendo especificaciones Figma */}
+        <div className="w-[62px] text-center mr-6 flex flex-col justify-center h-[102px]">
+          <div className="text-xs font-semibold text-[#6B7280] uppercase leading-none">
+            DOM
+          </div>
+          <div className="text-2xl font-bold text-[#111827] leading-none mt-2">
             {dayNumber}
-          </span>
-          <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            {monthYear}
-          </span>
+          </div>
+          <div className="text-xs text-[#6B7280] mt-2">
+            {monthShort.toUpperCase()}
+          </div>
         </div>
 
-        {/* Content section */}
-        <div className="flex-1 p-4">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-2">
-                <Badge className="rounded-md capitalize text-xs">{event.category}</Badge>
-                <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-xs">
-                  <div className="flex items-center gap-1">
-                    <MapPin className="h-3 w-3" />
-                    <span>{event.municipality}</span>
-                  </div>
-                  {event.altitude && (
-                    <div className="flex items-center gap-1">
-                      <Icons.mountain className="h-3 w-3" />
-                      <span>{event.altitude}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-              
-              <a href={`/events/${event.id}/`} className="group-hover:underline">
-                <h2 className="font-semibold text-lg leading-tight text-gray-900 dark:text-white line-clamp-2">
-                  {event.title}
-                </h2>
-              </a>
+        {/* Vertical line separator */}
+        <div className="w-px bg-black h-[102px] mr-6"></div>
 
-              <div className="flex items-center gap-2 mt-2 text-sm text-gray-600 dark:text-gray-300">
-                {event.distances && Array.isArray(event.distances) && event.distances.length > 0 && (
-                  <div className="flex flex-wrap gap-1">
-                    {event.distances.map((distance: any, index: number) => (
-                      <Badge
-                        variant="outline"
-                        className="text-xs"
-                        key={`distance-${index}`}
-                      >
-                        {typeof distance === 'string' ? distance : distance.value || distance}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
+        {/* Details section */}
+        <div className="flex-1 flex flex-col justify-center h-[102px]">
+          {/* First row: Category badge + Location */}
+          <div className="flex items-center gap-2 mb-2">
+            <Badge className="rounded-md capitalize text-xs">
+              {event.category}
+            </Badge>
+            <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-xs">
+              <div className="flex items-center gap-1">
+                <MapPin className="h-3 w-3" />
+                <span>{event.municipality}</span>
               </div>
+              {event.altitude && (
+                <div className="flex items-center gap-1">
+                  <Icons.mountain className="h-3 w-3" />
+                  <span>{event.altitude}</span>
+                </div>
+              )}
             </div>
           </div>
+          
+          {/* Event title */}
+          <a href={`/events/${event.id || ''}/`} className="group-hover:underline">
+            <h2 className="font-semibold text-lg leading-tight text-gray-900 dark:text-white line-clamp-2">
+              {event.title}
+            </h2>
+          </a>
+
+          {/* Distance badges */}
+          {event.distances && Array.isArray(event.distances) && event.distances.length > 0 && (
+            <div className="flex items-center gap-2 mt-2 text-sm text-gray-600 dark:text-gray-300">
+              <div className="flex flex-wrap gap-1">
+                {event.distances.map((distance: any, index: number) => (
+                  <Badge
+                    variant="outline"
+                    className="text-xs"
+                    key={`distance-${index}`}
+                  >
+                    {typeof distance === 'string' ? distance : distance.value || distance}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Image section */}
-      <div className="relative h-48">
-        <a href={`/events/${event.id}/`}>
+      <div className="relative h-48 bg-gradient-to-br from-cyan-400 to-green-400 rounded-lg overflow-hidden mx-4 mb-2">
+        <a href={`/events/${event.id || ''}/`} className="absolute inset-0">
           <SmartImage
             src={event.cover || undefined}
             alt={"Imagen de " + event.title}
             width={720}
             height={360}
             className="size-full object-cover"
-            eventId={event.id}
+            eventId={event.id || ''}
             fallbackType={event.category?.includes('marathon') ? 'marathon' : 
                         event.category?.includes('trail') ? 'trail' : 'running'}
             priority
@@ -139,60 +145,36 @@ export default function EventCard({ event: event }: { event: EventData }) {
         </a>
       </div>
 
-      {/* Action buttons */}
-      <div className="grid grid-cols-4 divide-x divide-gray-200 dark:divide-gray-700 border-t border-gray-200 dark:border-gray-700">
-        {/* Like Button */}
-        <div>
-          <EventLikeButton
-            eventId={event.id}
-            initialCount={(event as any).likesCount || 0}
-            variant="ghost"
-            size="sm"
-            showCount={true}
-            className="w-full rounded-none py-3 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-center gap-2"
-          />
-        </div>
-        
-        {/* Attendance Button */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleAttendance}
-          className={`rounded-none py-3 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-center gap-2 ${
-            isAttending ? 'text-green-600 bg-green-50 dark:bg-green-900/30 dark:text-green-400' : ''
-          }`}
-        >
-          <Pin className={`h-4 w-4 ${isAttending ? 'fill-current' : ''}`} />
-          <span className="text-xs hidden sm:inline">
-            {isAttending ? 'Asisto' : 'Asistiré'}
-          </span>
-        </Button>
-
-        {/* Save/Bookmark Button */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleSaveEvent}
-          className={`rounded-none py-3 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-center gap-2 ${
-            isSaved ? 'text-blue-600 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-400' : ''
-          }`}
-        >
-          <Bookmark className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`} />
-          <span className="text-xs hidden sm:inline">
-            {isSaved ? 'Guardado' : 'Guardar'}
-          </span>
-        </Button>
-        
-        {/* Share Button */}
+      {/* Footer */}
+      <div className="flex items-center justify-end p-3 text-sm text-gray-600 dark:text-gray-400 gap-2">
         <Button
           variant="ghost"
           size="sm"
           onClick={handleShare}
-          className="rounded-none py-3 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-center gap-2"
+          className="p-1 h-auto hover:bg-gray-50 dark:hover:bg-gray-800"
         >
           <Share2 className="h-4 w-4" />
-          <span className="text-xs hidden sm:inline">Compartir</span>
         </Button>
+        
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleSaveEvent}
+          className={`p-1 h-auto hover:bg-gray-50 dark:hover:bg-gray-800 ${
+            isSaved ? 'text-blue-600 dark:text-blue-400' : ''
+          }`}
+        >
+          <Bookmark className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`} />
+        </Button>
+
+        <EventLikeButton
+          eventId={event.id || ''}
+          initialCount={(event as any).likesCount || 1}
+          variant="ghost"
+          size="sm"
+          showCount={true}
+          className="p-1 h-auto hover:bg-gray-50 dark:hover:bg-gray-800"
+        />
       </div>
     </article>
   )

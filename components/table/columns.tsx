@@ -15,7 +15,8 @@ export const columns: ColumnDef<EventData>[] = [
     header: "Fecha",
     //format date to "DD MMM YYYY"
     cell: ({ row }) => {
-      const date = new Date(row.getValue("eventDate"))
+      // Fix timezone issue by creating date in local timezone
+      const date = new Date(row.getValue("eventDate") + 'T00:00:00')
       const formattedDate = format(date, "dd MMM yyyy", { locale: es })
       const dateParts = formattedDate.split(" ")
       dateParts[1] = dateParts[1].toUpperCase()
