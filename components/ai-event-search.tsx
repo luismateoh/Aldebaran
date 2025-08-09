@@ -103,7 +103,7 @@ export default function AIEventSearch({ onEventFound }: AIEventSearchProps) {
     <Card className="mb-6">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-purple-500" />
+          <Sparkles className="size-5 text-purple-500" />
           Búsqueda Automática con IA
         </CardTitle>
         <CardDescription>
@@ -156,7 +156,7 @@ export default function AIEventSearch({ onEventFound }: AIEventSearchProps) {
             disabled={isSearching}
           />
           <Label htmlFor="enable-web-search" className="flex items-center gap-2 text-sm">
-            <Globe className="h-4 w-4" />
+            <Globe className="size-4" />
             Habilitar búsqueda web inteligente
           </Label>
         </div>
@@ -170,12 +170,12 @@ export default function AIEventSearch({ onEventFound }: AIEventSearchProps) {
           >
             {isSearching ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="size-4 animate-spin" />
                 Buscando con IA...
               </>
             ) : (
               <>
-                <Search className="h-4 w-4" />
+                <Search className="size-4" />
                 {enableWebSearch ? 'Buscar con IA + Web' : 'Buscar con IA'}
               </>
             )}
@@ -193,7 +193,7 @@ export default function AIEventSearch({ onEventFound }: AIEventSearchProps) {
         {/* Error Display */}
         {error && (
           <Alert className="border-red-200 bg-red-50">
-            <AlertTriangle className="h-4 w-4" />
+            <AlertTriangle className="size-4" />
             <AlertDescription className="text-red-700">
               {error}
             </AlertDescription>
@@ -204,7 +204,7 @@ export default function AIEventSearch({ onEventFound }: AIEventSearchProps) {
         {searchResult && (
           <div className="space-y-4">
             <Alert className="border-green-200 bg-green-50">
-              <CheckCircle className="h-4 w-4" />
+              <CheckCircle className="size-4" />
               <AlertDescription className="text-green-700">
                 ¡IA encontró información! Revisa los datos y haz clic en "Usar Datos" para completar el formulario.
               </AlertDescription>
@@ -221,13 +221,13 @@ export default function AIEventSearch({ onEventFound }: AIEventSearchProps) {
                     <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
                       {searchResult.eventData?.eventDate && (
                         <div className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
+                          <Calendar className="size-3" />
                           {new Date(searchResult.eventData.eventDate).toLocaleDateString('es-CO')}
                         </div>
                       )}
                       {searchResult.eventData?.municipality && (
                         <div className="flex items-center gap-1">
-                          <MapPin className="h-3 w-3" />
+                          <MapPin className="size-3" />
                           {searchResult.eventData.municipality}
                         </div>
                       )}
@@ -260,7 +260,7 @@ export default function AIEventSearch({ onEventFound }: AIEventSearchProps) {
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline flex items-center gap-1"
                       >
-                        <ExternalLink className="h-3 w-3" />
+                        <ExternalLink className="size-3" />
                         Sitio de registro
                       </a>
                     </div>
@@ -285,7 +285,7 @@ export default function AIEventSearch({ onEventFound }: AIEventSearchProps) {
                 size="lg"
                 className="bg-green-600 hover:bg-green-700"
               >
-                <CheckCircle className="h-4 w-4 mr-2" />
+                <CheckCircle className="size-4 mr-2" />
                 Usar Estos Datos
               </Button>
             </div>

@@ -146,7 +146,7 @@ export default function SettingsPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 border-2 border-current border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="size-8 border-2 border-current border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p>Verificando autenticación...</p>
         </div>
       </div>
@@ -178,9 +178,9 @@ export default function SettingsPage() {
       {alert && (
         <Alert className={`mt-6 ${alert.type === 'error' ? 'border-red-200' : 'border-green-200'}`}>
           {alert.type === 'error' ? (
-            <AlertCircle className="h-4 w-4" />
+            <AlertCircle className="size-4" />
           ) : (
-            <CheckCircle className="h-4 w-4" />
+            <CheckCircle className="size-4" />
           )}
           <AlertDescription>{alert.message}</AlertDescription>
         </Alert>
@@ -196,18 +196,18 @@ export default function SettingsPage() {
               </p>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" onClick={handleResetSettings}>
-                  <RotateCcw className="h-4 w-4 mr-2" />
+                  <RotateCcw className="size-4 mr-2" />
                   Restablecer
                 </Button>
                 <Button size="sm" onClick={handleSaveSettings} disabled={isSaving}>
                   {isSaving ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
+                      <div className="size-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
                       Guardando...
                     </>
                   ) : (
                     <>
-                      <Save className="h-4 w-4 mr-2" />
+                      <Save className="size-4 mr-2" />
                       Guardar Cambios
                     </>
                   )}
@@ -220,7 +220,7 @@ export default function SettingsPage() {
 
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <div className="w-6 h-6 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
+          <div className="size-6 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
           Cargando configuración...
         </div>
       ) : (
@@ -229,7 +229,7 @@ export default function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Globe className="h-5 w-5" />
+                <Globe className="size-5" />
                 Configuración del Sitio
               </CardTitle>
               <CardDescription>
@@ -279,7 +279,7 @@ export default function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Brain className="h-5 w-5" />
+                <Brain className="size-5" />
                 Configuración de IA
               </CardTitle>
               <CardDescription>
@@ -307,7 +307,7 @@ export default function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5" />
+                <Settings className="size-5" />
                 Configuración de Eventos
               </CardTitle>
               <CardDescription>
@@ -394,7 +394,7 @@ export default function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5" />
+                <Shield className="size-5" />
                 Configuración de Seguridad
               </CardTitle>
               <CardDescription>
@@ -434,7 +434,7 @@ export default function SettingsPage() {
           <Card className="border-green-200 bg-green-50 dark:bg-green-950/20">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-green-800 dark:text-green-200">
-                <CheckCircle className="h-5 w-5" />
+                <CheckCircle className="size-5" />
                 Sistema Configurado
               </CardTitle>
             </CardHeader>

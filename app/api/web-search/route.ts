@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { UI_CONSTANTS } from '@/lib/constants'
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,12 +12,17 @@ export async function POST(request: NextRequest) {
     console.log(`🔍 Buscando información en: ${url}`)
     
     // Usar WebFetch para obtener contenido de la página
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), UI_CONSTANTS.SEARCH_TIMEOUT)
+    
     const response = await fetch(url, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
       },
-      timeout: 10000 // 10 segundos timeout
+      signal: controller.signal
     })
+    
+    clearTimeout(timeoutId)
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`)

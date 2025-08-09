@@ -90,12 +90,12 @@ export default function EventCard({ event: event }: { event: EventData }) {
             </Badge>
             <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-xs">
               <div className="flex items-center gap-1">
-                <MapPin className="h-3 w-3" />
+                <MapPin className="size-3" />
                 <span>{event.municipality}</span>
               </div>
               {event.altitude && (
                 <div className="flex items-center gap-1">
-                  <Icons.mountain className="h-3 w-3" />
+                  <Icons.mountain className="size-3" />
                   <span>{event.altitude}</span>
                 </div>
               )}
@@ -153,7 +153,7 @@ export default function EventCard({ event: event }: { event: EventData }) {
           onClick={handleShare}
           className="p-1 h-auto hover:bg-gray-50 dark:hover:bg-gray-800"
         >
-          <Share2 className="h-4 w-4" />
+          <Share2 className="size-4" />
         </Button>
         
         <Button
@@ -164,7 +164,7 @@ export default function EventCard({ event: event }: { event: EventData }) {
             isSaved ? 'text-blue-600 dark:text-blue-400' : ''
           }`}
         >
-          <Bookmark className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`} />
+          <Bookmark className={`size-4 ${isSaved ? 'fill-current' : ''}`} />
         </Button>
 
         <EventLikeButton

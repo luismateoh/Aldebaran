@@ -448,7 +448,7 @@ ${eventData.description}`
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
+            <Calendar className="size-5" />
             Información del Evento
           </CardTitle>
         </CardHeader>
@@ -669,7 +669,7 @@ ${eventData.description}`
               disabled={isSaving}
               className="flex-1"
             >
-              <Save className="h-4 w-4 mr-2" />
+              <Save className="size-4 mr-2" />
               {isSaving ? 'Guardando...' : 'Guardar Cambios'}
             </Button>
 
@@ -680,7 +680,7 @@ ${eventData.description}`
                 variant="secondary"
                 className="flex-1"
               >
-                <Check className="h-4 w-4 mr-2" />
+                <Check className="size-4 mr-2" />
                 {isSaving ? 'Publicando...' : 'Publicar Evento'}
               </Button>
             )}
@@ -734,7 +734,7 @@ ${eventData.description}`
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="text-sm text-muted-foreground">
-              <p>Edita directamente el frontmatter y contenido markdown. Los cambios se aplicarán al formulario cuando hagas clic en "Aplicar Cambios".</p>
+              <p>Edita directamente el frontmatter y contenido markdown. Los cambios se aplicarán al formulario cuando hagas clic en &quot;Aplicar Cambios&quot;.</p>
             </div>
             <Textarea
               value={markdownContent}

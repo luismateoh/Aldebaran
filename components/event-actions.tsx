@@ -81,66 +81,72 @@ export default function EventActions({
   }
 
   const handleGoToWebsite = () => {
-    if (event.website) {
-      window.open(event.website, '_blank', 'noopener,noreferrer')
+    const websiteUrl = event.website || event.registrationUrl
+    if (websiteUrl) {
+      window.open(websiteUrl, '_blank', 'noopener,noreferrer')
     }
   }
 
   const isHorizontal = variant === 'horizontal'
 
+  const buttonSize = variant === 'vertical' ? 'xs' : 'sm'
+  const iconSize = variant === 'vertical' ? 'size-3' : 'size-4'
+  const textSize = variant === 'vertical' ? 'text-xs' : 'text-sm'
+
   return (
     <div className={cn(
-      "flex gap-2",
+      "flex gap-1",
       isHorizontal ? "flex-row flex-wrap" : "flex-col",
       className
     )}>
       {/* Botón de Like */}
-      <EventLikeButton
-        eventId={event.id}
-        variant="outline"
-        size="sm"
-        showCount={true}
-      />
+      {event.id && (
+        <EventLikeButton
+          eventId={event.id}
+          variant="outline"
+          size={buttonSize as any}
+          showCount={true}
+          className={variant === 'vertical' ? 'h-7 px-2 py-0.5 text-xs' : ''}
+        />
+      )}
 
       {/* Botón de Asistencia - solo para eventos pasados o actuales */}
-      {event.eventDate && new Date(event.eventDate) <= new Date() && (
+      {event.id && event.eventDate && new Date(event.eventDate) <= new Date() && (
         <EventAttendanceButton
           eventId={event.id}
           eventTitle={event.title}
           eventDate={event.eventDate}
+          className={variant === 'vertical' ? 'h-7 px-2 py-0.5 text-xs' : ''}
         />
       )}
 
       {/* Botón de Compartir */}
       <Button
         variant="outline"
-        size="sm"
+        size={buttonSize as any}
         onClick={handleShare}
-        className="flex items-center gap-1.5"
-      >
-        {copied ? (
-          <>
-            <Check className="h-4 w-4 text-green-500" />
-            <span className="text-sm">¡Copiado!</span>
-          </>
-        ) : (
-          <>
-            <Share2 className="h-4 w-4" />
-            <span className="text-sm">Compartir</span>
-          </>
+        className={cn(
+          "flex items-center justify-center gap-1",
+          variant === 'vertical' && 'h-7 px-2 py-0.5'
         )}
+      >
+        <Share2 className={iconSize} />
+        <span className={textSize}>Compartir</span>
       </Button>
 
       {/* Botón de Agregar al Calendario */}
       {event.eventDate && (
         <Button
           variant="outline"
-          size="sm"
+          size={buttonSize as any}
           onClick={handleAddToCalendar}
-          className="flex items-center gap-1.5"
+          className={cn(
+            "flex items-center justify-center gap-1",
+            variant === 'vertical' && 'h-7 px-2 py-0.5'
+          )}
         >
-          <Calendar className="h-4 w-4" />
-          <span className="text-sm">Calendario</span>
+          <Calendar className={iconSize} />
+          <span className={textSize}>Calendario</span>
         </Button>
       )}
 
@@ -148,25 +154,31 @@ export default function EventActions({
       {event.municipality && event.department && (
         <Button
           variant="outline"
-          size="sm"
+          size={buttonSize as any}
           onClick={handleViewLocation}
-          className="flex items-center gap-1.5"
+          className={cn(
+            "flex items-center justify-center gap-1",
+            variant === 'vertical' && 'h-7 px-2 py-0.5'
+          )}
         >
-          <MapPin className="h-4 w-4" />
-          <span className="text-sm">Ubicación</span>
+          <MapPin className={iconSize} />
+          <span className={textSize}>Ubicación</span>
         </Button>
       )}
 
       {/* Botón de Sitio Web */}
-      {event.website && event.website.trim() && (
+      {(event.website || event.registrationUrl) && (
         <Button
           variant="outline"
-          size="sm"
+          size={buttonSize as any}
           onClick={handleGoToWebsite}
-          className="flex items-center gap-1.5"
+          className={cn(
+            "flex items-center justify-center gap-1",
+            variant === 'vertical' && 'h-7 px-2 py-0.5'
+          )}
         >
-          <ExternalLink className="h-4 w-4" />
-          <span className="text-sm">Sitio Web</span>
+          <ExternalLink className={iconSize} />
+          <span className={textSize}>Sitio Web</span>
         </Button>
       )}
     </div>

@@ -158,7 +158,7 @@ export default function AdministratorsPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 border-2 border-current border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="size-8 border-2 border-current border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p>Verificando autenticación...</p>
         </div>
       </div>
@@ -188,9 +188,9 @@ export default function AdministratorsPage() {
       {alert && (
         <Alert className={`mt-6 ${alert.type === 'error' ? 'border-red-200' : 'border-green-200'}`}>
           {alert.type === 'error' ? (
-            <AlertCircle className="h-4 w-4" />
+            <AlertCircle className="size-4" />
           ) : (
-            <CheckCircle className="h-4 w-4" />
+            <CheckCircle className="size-4" />
           )}
           <AlertDescription>{alert.message}</AlertDescription>
         </Alert>
@@ -200,7 +200,7 @@ export default function AdministratorsPage() {
       <Card className="mt-6">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <UserPlus className="h-5 w-5" />
+            <UserPlus className="size-5" />
             Agregar Nuevo Administrador
           </CardTitle>
           <CardDescription>
@@ -227,12 +227,12 @@ export default function AdministratorsPage() {
               >
                 {isAddingAdmin ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
+                    <div className="size-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
                     Agregando...
                   </>
                 ) : (
                   <>
-                    <UserPlus className="h-4 w-4 mr-2" />
+                    <UserPlus className="size-4 mr-2" />
                     Agregar
                   </>
                 )}
@@ -241,7 +241,7 @@ export default function AdministratorsPage() {
           </div>
           
           <Alert>
-            <Shield className="h-4 w-4" />
+            <Shield className="size-4" />
             <AlertDescription>
               <strong>Importante:</strong> Los administradores tendrán acceso completo al sistema, 
               incluyendo la creación, edición y eliminación de eventos, así como la gestión de otros administradores.
@@ -254,7 +254,7 @@ export default function AdministratorsPage() {
       <Card className="mt-6">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5" />
+            <Shield className="size-5" />
             Administradores Actuales
           </CardTitle>
           <CardDescription>
@@ -264,7 +264,7 @@ export default function AdministratorsPage() {
         <CardContent>
           {isLoadingAdmins ? (
             <div className="flex items-center justify-center py-8">
-              <div className="w-6 h-6 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
+              <div className="size-6 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
               Cargando administradores...
             </div>
           ) : (
@@ -276,11 +276,11 @@ export default function AdministratorsPage() {
                       <img 
                         src={admin.photoURL} 
                         alt={admin.displayName || admin.email}
-                        className="w-10 h-10 rounded-full"
+                        className="size-10 rounded-full"
                       />
                     ) : (
-                      <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
-                        <User className="h-5 w-5" />
+                      <div className="size-10 bg-muted rounded-full flex items-center justify-center">
+                        <User className="size-5" />
                       </div>
                     )}
                     <div>
@@ -294,7 +294,7 @@ export default function AdministratorsPage() {
                         )}
                       </div>
                       <p className="text-sm text-muted-foreground flex items-center gap-1">
-                        <Mail className="h-3 w-3" />
+                        <Mail className="size-3" />
                         {admin.email}
                       </p>
                       <p className="text-xs text-muted-foreground">
@@ -316,7 +316,7 @@ export default function AdministratorsPage() {
                         onClick={() => handleRemoveAdmin(admin.email)}
                         className="text-red-600 hover:text-red-700 hover:border-red-300"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="size-4" />
                       </Button>
                     )}
                   </div>
@@ -337,7 +337,7 @@ export default function AdministratorsPage() {
       <Card className="mt-6 border-yellow-200 bg-yellow-50 dark:bg-yellow-950/20">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-yellow-800 dark:text-yellow-200">
-            <AlertCircle className="h-5 w-5" />
+            <AlertCircle className="size-5" />
             Desarrollo en Progreso
           </CardTitle>
         </CardHeader>

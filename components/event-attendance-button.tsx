@@ -126,18 +126,18 @@ export default function EventAttendanceButton({
 
   const buttonContent = isAttended ? (
     <>
-      <CheckCircle2 className="h-4 w-4 text-green-500" />
+      <CheckCircle2 className="size-4 text-green-500" />
       <span className="text-sm font-medium">Completado</span>
       {currentInteraction.rating && (
         <Badge variant="secondary" className="ml-1">
-          <Star className="h-3 w-3 mr-1 fill-yellow-400 text-yellow-400" />
+          <Star className="size-3 mr-1 fill-yellow-400 text-yellow-400" />
           {currentInteraction.rating}
         </Badge>
       )}
     </>
   ) : (
     <>
-      <Trophy className="h-4 w-4" />
+      <Trophy className="size-4" />
       <span className="text-sm">Marcar como Asistido</span>
     </>
   )
@@ -161,7 +161,7 @@ export default function EventAttendanceButton({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Award className="h-5 w-5 text-yellow-500" />
+            <Award className="size-5 text-yellow-500" />
             {eventTitle ? `Marcar "${eventTitle}"` : 'Marcar Evento'}
           </DialogTitle>
         </DialogHeader>
@@ -172,7 +172,7 @@ export default function EventAttendanceButton({
               type="checkbox"
               checked={formData.attended}
               onChange={(e) => setFormData(prev => ({ ...prev, attended: e.target.checked }))}
-              className="h-4 w-4"
+              className="size-4"
               id="attended"
             />
             <Label htmlFor="attended" className="text-sm font-medium">
@@ -184,7 +184,7 @@ export default function EventAttendanceButton({
             <>
               <div>
                 <Label className="flex items-center gap-1">
-                  <Calendar className="h-4 w-4" />
+                  <Calendar className="size-4" />
                   Fecha de participación
                 </Label>
                 <Input
@@ -197,7 +197,7 @@ export default function EventAttendanceButton({
 
               <div>
                 <Label className="flex items-center gap-1">
-                  <Star className="h-4 w-4" />
+                  <Star className="size-4" />
                   Calificación (opcional)
                 </Label>
                 <Select
@@ -250,7 +250,7 @@ export default function EventAttendanceButton({
                 className="flex items-center gap-1.5"
               >
                 {loading && (
-                  <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
+                  <div className="size-3 border border-current border-t-transparent rounded-full animate-spin" />
                 )}
                 Guardar
               </Button>

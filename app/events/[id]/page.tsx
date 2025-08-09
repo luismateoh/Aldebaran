@@ -7,13 +7,11 @@ import { eventsService } from "@/lib/events-firebase"
 import { EventData } from "@/lib/types"
 import { capitalize } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
-import AddToCalendar from "@/components/add-to-calendar"
-import CountDownTimer from "@/components/count-down-timer"
 import EventComments from "@/components/event-comments"
-import EventActions from "@/components/event-actions"
 import InteractiveSection from "@/components/interactive-section"
 import SeeAllEventsCta from "@/components/see-all-events-cta"
 import SmartImage from "@/components/smart-image"
+import DynamicEventCard from "@/components/dynamic-event-card"
 
 type Params = {
   id: string
@@ -93,183 +91,68 @@ export default async function Event({ params }: Props) {
   const eventDate = parseEventDate(eventData.eventDate)
 
   return (
-    <section className="container relative max-w-screen-md py-5 md:py-10">
+    <section className="container relative max-w-7xl py-5 md:py-10">
       <InteractiveSection>
-        <div>
-          <article className="prose max-w-none dark:prose-invert">
-            <Badge className="rounded-md capitalize">
+        {/* Title */}
+        <h1 data-main-title className="mb-8 font-heading text-3xl md:text-4xl lg:text-5xl">
+          {capitalize(eventData.title.toUpperCase())}
+        </h1>
+
+        {/* Two Column Layout */}
+        <div className="grid gap-8 lg:grid-cols-4">
+          {/* Left Sidebar with Dynamic Title */}
+          <div className="lg:col-span-1">
+            <DynamicEventCard eventData={eventData} eventDate={eventDate} />
+          </div>
+
+          {/* Main Content - Right Column */}
+          <div className="lg:col-span-3">
+            {/* Category Badge */}
+            <Badge className="mb-6 rounded-md capitalize">
               {eventData.category}
             </Badge>
+            
+            {/* Event Image */}
             <SmartImage
               src={eventData.cover || undefined}
               alt={eventData.title}
-              width={800}
-              height={360}
-              className="my-6 w-full overflow-hidden rounded-xl"
+              width={1200}
+              height={400}
+              className="mb-6 h-[400px] w-full overflow-hidden rounded-xl object-cover"
               eventId={eventData.id}
               fallbackType={eventData.category?.includes('marathon') ? 'marathon' : 
                           eventData.category?.includes('trail') ? 'trail' : 'running'}
               priority
             />
-            {/* Event Title */}
-            <h1 className="my-4 font-heading text-3xl md:text-4xl">
-              {capitalize(eventData.title.toUpperCase())}
-            </h1>
 
-            {/* Event Meta */}
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:grid-rows-8 sm:gap-4">
-              {/* Event Distances */}
-              <div className="col-span-2 row-span-1 flex flex-wrap items-center justify-between gap-2 overflow-hidden rounded-lg border bg-card p-3 align-middle text-card-foreground shadow-sm sm:col-span-2 sm:row-span-2 sm:p-4">
-                <h2 className="m-0 pr-2 font-light">Distancias</h2>
-
-                <div className="flex flex-wrap gap-2">
-                  {/* Manejar distances como array */}
-                  {eventData.distances && Array.isArray(eventData.distances) ? (
-                    eventData.distances
-                      .sort((a: any, b: any) => {
-                        const aValue = typeof a === 'string' ? parseFloat(a) : parseFloat(a.value || '0')
-                        const bValue = typeof b === 'string' ? parseFloat(b) : parseFloat(b.value || '0')
-                        return aValue - bValue
-                      })
-                      .map((distance: any, index: number) => (
-                        <Badge
-                          className="rounded-md text-xl sm:text-2xl"
-                          key={`distance-${index}`}
-                        >
-                          {typeof distance === 'string' ? distance : distance.value || distance}
-                        </Badge>
-                      ))
-                  ) : eventData.distance ? (
-                    <Badge className="rounded-md text-xl sm:text-2xl">
-                      {eventData.distance}
-                    </Badge>
-                  ) : (
-                    <Badge className="rounded-md text-xl sm:text-2xl">
-                      10k
-                    </Badge>
-                  )}
-                </div>
-              </div>
+            {/* Event Description */}
+            <div className="mb-8 space-y-4">
+              <h2 className="text-2xl font-bold">
+                Información del Evento
+              </h2>
               
-              {/* Event Date */}
-              <div className="col-span-2 row-span-1 overflow-hidden rounded-lg border bg-card p-3 text-card-foreground shadow-sm sm:col-start-3 sm:row-span-4 sm:flex-row sm:items-center sm:p-4">
-                <div className="flex flex-row flex-wrap items-center justify-between gap-2 sm:h-full sm:flex-col sm:items-start">
-                  <span className="text-2xl font-medium text-accent-foreground sm:flex sm:flex-col md:text-3xl">
-                    {formatDate(eventDate, "dd MMMM yyyy", {
-                      locale: es,
-                    })
-                      .split(" ")
-                      .map((word, index) => (
-                        <span key={index} className="capitalize sm:text-4xl">
-                          {capitalize(word)}{" "}
-                        </span>
-                      ))}
-                  </span>
-                  <AddToCalendar
-                    title={eventData.title.toUpperCase()}
-                    description={
-                      eventData.registrationUrl
-                        ? `Más información en <a href="${eventData.registrationUrl}">${eventData.registrationUrl}</a>`
-                        : ""
-                    }
-                    location={`${eventData.municipality}, ${eventData.department}`}
-                    evenDate={eventData.eventDate}
-                    organizer={eventData.organizer || 'Sin especificar'}
-                    website={eventData.registrationUrl || ''}
-                  />
-                  
-                  {/* Botones de acción del evento */}
-                  <div className="mt-6 border-t pt-4">
-                    <EventActions
-                      event={eventData}
-                      variant="horizontal"
-                      className="justify-center sm:justify-start"
-                    />
-                  </div>
-                </div>
-              </div>
-              
-              {/* Event Location */}
-              <div className="row-span-1 flex flex-col flex-wrap justify-center overflow-hidden text-ellipsis rounded-lg border bg-card p-3 text-card-foreground shadow-sm sm:row-span-2 sm:p-4">
-                <h2 className="m-0 font-light">Ubicación</h2>
-                <div className="flex flex-wrap items-baseline align-middle">
-                  <span className="truncate pr-2 text-2xl font-medium capitalize sm:text-3xl">
-                    {eventData.municipality}
-                  </span>
-                  <span className="capitalisze text-xl font-medium">
-                    {eventData.department}
-                  </span>
-                </div>
-              </div>
-              
-              {/* Event Altitude */}
-              {eventData.altitude && (
-                <div className="row-span-1 flex flex-col flex-wrap justify-center overflow-hidden rounded-lg border bg-card p-3 text-card-foreground shadow-sm sm:row-span-2 sm:p-4">
-                  <h2 className="m-0 font-light">Altura</h2>
-                  <span className="text-3xl font-medium">
-                    {eventData.altitude}
-                  </span>
-                </div>
-              )}
-              
-              {/* Event Organizer */}
-              {eventData.organizer && (
-                <div className="col-span-2 flex flex-col flex-wrap justify-center overflow-hidden rounded-lg border bg-card p-3 text-card-foreground shadow-sm sm:row-span-2 sm:p-4">
-                  <h2 className="m-0 font-light">Organiza</h2>
-                  <span className="text-2xl font-medium">
-                    {eventData.organizer}
-                  </span>
-                </div>
-              )}
-              
-              {/* Event Registration */}
-              {eventData.price && (
-                <div className="col-span-1 flex flex-col flex-wrap justify-center overflow-hidden rounded-lg border bg-card p-3 text-card-foreground shadow-sm sm:col-span-2 sm:row-span-2 sm:p-4">
-                  <h2 className="m-0 font-light">Costo</h2>
-                  <span className="text-2xl font-medium">
-                    Desde {eventData.price}
-                  </span>
-                </div>
-              )}
-              
-              {/* Event Website */}
-              {eventData.registrationUrl && (
-                <div className="flex flex-col flex-wrap justify-center overflow-hidden rounded-lg border bg-card p-3 text-card-foreground shadow-sm sm:col-span-1 sm:row-span-2 sm:p-4">
-                  <h2 className="m-0 font-light">Sitio</h2>
-                  <Link
-                    className="text-2xl font-medium"
-                    href={eventData.registrationUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Web
-                  </Link>
-                </div>
-              )}
-              
-              {/* Event Temporizer */}
-              <div className="col-span-2 flex flex-col justify-center gap-1 overflow-hidden rounded-lg border bg-card p-3 text-card-foreground shadow-sm sm:col-span-3 sm:row-span-2 sm:p-4">
-                <h2 className="m-0 font-light">Faltan</h2>
-                <CountDownTimer
-                  targetDate={eventDate.getTime()}
-                />
+              <div className="prose prose-base max-w-none dark:prose-invert">
+                {contentHtml ? (
+                  contentHtml.split('\n').map((paragraph, index) => (
+                    paragraph.trim() && <p key={index} className="mb-4 leading-relaxed text-foreground">{paragraph}</p>
+                  ))
+                ) : (
+                  <p className="leading-relaxed text-foreground">
+                    {eventData.snippet || 'Información no disponible.'}
+                  </p>
+                )}
               </div>
             </div>
 
-            <hr className="my-6" />
-            
-            {/* Event Content */}
-            <div className="break-words prose prose-lg max-w-none dark:prose-invert">
-              {contentHtml.split('\n').map((paragraph, index) => (
-                <p key={index}>{paragraph}</p>
-              ))}
-            </div>
-          </article>
+            {/* Comments Section */}
+            <EventComments eventId={params.id} />
+          </div>
+        </div>
+
+        {/* CTA Section */}
+        <div className="mt-12">
           <SeeAllEventsCta />
         </div>
-        
-        {/* Comentarios de la comunidad */}
-        <EventComments eventId={params.id} />
       </InteractiveSection>
     </section>
   )

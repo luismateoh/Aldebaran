@@ -68,7 +68,7 @@ export default function BatchOperations() {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Archive className="h-5 w-5" />
+          <Archive className="size-5" />
           Operaciones por Lotes
         </CardTitle>
         <CardDescription>
@@ -86,9 +86,9 @@ export default function BatchOperations() {
           }`}>
             <div className="flex items-center gap-2">
               {result.success ? (
-                <CheckCircle className="h-5 w-5" />
+                <CheckCircle className="size-5" />
               ) : (
-                <AlertTriangle className="h-5 w-5" />
+                <AlertTriangle className="size-5" />
               )}
               <div>
                 <p className="font-medium">
@@ -110,7 +110,7 @@ export default function BatchOperations() {
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <h3 className="font-medium flex items-center gap-2">
-                <FileText className="h-4 w-4" />
+                <FileText className="size-4" />
                 Marcar Todos como Draft
               </h3>
               <p className="text-sm text-muted-foreground mt-1">
@@ -128,12 +128,12 @@ export default function BatchOperations() {
                 >
                   {loading ? (
                     <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      <Loader2 className="size-4 mr-2 animate-spin" />
                       Procesando...
                     </>
                   ) : (
                     <>
-                      <Archive className="h-4 w-4 mr-2" />
+                      <Archive className="size-4 mr-2" />
                       Marcar como Draft
                     </>
                   )}
@@ -143,7 +143,7 @@ export default function BatchOperations() {
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle className="flex items-center gap-2">
-                    <AlertTriangle className="h-5 w-5 text-orange-500" />
+                    <AlertTriangle className="size-5 text-orange-500" />
                     Confirmar Operación
                   </DialogTitle>
                   <DialogDescription>

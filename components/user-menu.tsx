@@ -52,8 +52,8 @@ export function UserMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-9 w-9 rounded-full">
-          <Avatar className="h-8 w-8 border-2 border-border/50 hover:border-border transition-colors">
+        <Button variant="ghost" className="relative size-9 rounded-full">
+          <Avatar className="size-8 border-2 border-border/50 hover:border-border transition-colors">
             <AvatarImage 
               src={user.photoURL || undefined} 
               alt={user.displayName || user.email || 'Usuario'} 
@@ -68,7 +68,7 @@ export function UserMenu() {
       <DropdownMenuContent className="w-72" align="end" forceMount>
         <DropdownMenuLabel className="font-normal p-3">
           <div className="flex items-center space-x-3">
-            <Avatar className="h-10 w-10">
+            <Avatar className="size-10">
               <AvatarImage 
                 src={user.photoURL || undefined} 
                 alt={user.displayName || user.email || 'Usuario'} 
@@ -87,7 +87,7 @@ export function UserMenu() {
               </p>
               {isAdmin && (
                 <div className="flex items-center gap-1 mt-1">
-                  <Shield className="h-3 w-3 text-green-600" />
+                  <Shield className="size-3 text-green-600" />
                   <span className="text-xs text-green-600 font-medium">
                     Administrador
                   </span>
@@ -102,7 +102,7 @@ export function UserMenu() {
           onClick={() => router.push('/perfil')}
           className="cursor-pointer px-3 py-2 focus:bg-purple-50 dark:focus:bg-purple-950/50"
         >
-          <User className="mr-2 h-4 w-4 text-purple-600" />
+          <User className="mr-2 size-4 text-purple-600" />
           <span className="font-medium">Mi Perfil</span>
         </DropdownMenuItem>
         
@@ -112,7 +112,7 @@ export function UserMenu() {
               onClick={() => router.push('/admin')}
               className="cursor-pointer px-3 py-2 focus:bg-blue-50 dark:focus:bg-blue-950/50"
             >
-              <Settings className="mr-2 h-4 w-4 text-blue-600" />
+              <Settings className="mr-2 size-4 text-blue-600" />
               <span className="font-medium">Panel de Admin</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -126,12 +126,12 @@ export function UserMenu() {
           className="cursor-pointer px-3 py-2 text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950/50"
           disabled={isLoggingOut}
         >
-          <LogOut className="mr-2 h-4 w-4" />
+          <LogOut className="mr-2 size-4" />
           <span className="font-medium">
             {isLoggingOut ? 'Cerrando sesión...' : 'Cerrar sesión'}
           </span>
           {isLoggingOut && (
-            <div className="ml-auto w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            <div className="ml-auto size-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
           )}
         </DropdownMenuItem>
       </DropdownMenuContent>

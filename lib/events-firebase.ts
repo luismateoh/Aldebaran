@@ -16,8 +16,9 @@ import {
 } from 'firebase/firestore'
 import { db } from './firebase'
 import type { FirebaseEventData, EventData } from '../types'
+import { FIREBASE_COLLECTIONS, UI_CONSTANTS } from './constants'
 
-const EVENTS_COLLECTION = 'events'
+const EVENTS_COLLECTION = FIREBASE_COLLECTIONS.EVENTS
 
 export class EventsService {
   private eventsRef = collection(db, EVENTS_COLLECTION)
@@ -206,17 +207,18 @@ export class EventsService {
     return {
       id: doc.id,
       title: data.title || '',
-      author: data.author || 'Luis Hincapie',
+      description: data.description || '',
+      author: data.author || UI_CONSTANTS.DEFAULT_AUTHOR,
       publishDate: data.publishDate || new Date().toISOString().split('T')[0],
       draft: data.draft || data.status === 'draft',
       category: data.category || 'Running',
       tags: data.tags || [data.category?.toLowerCase() || 'running'],
-      snippet: data.snippet || data.description?.substring(0, 150) || '',
-      altitude: data.altitude || '1000m',
+      snippet: data.snippet || data.description?.substring(0, UI_CONSTANTS.MAX_SNIPPET_LENGTH) || '',
+      altitude: data.altitude || UI_CONSTANTS.DEFAULT_ALTITUDE,
       eventDate: eventDate,
       organizer: data.organizer || '',
       registrationDeadline: data.registrationDeadline || '',
-      registrationFeed: data.registrationFeed || data.registrationFee || data.price || '',
+      registrationFee: data.registrationFee || data.price || '',
       website: data.website || '',
       distances: data.distances || [],
       cover: data.cover || '',

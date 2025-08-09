@@ -63,7 +63,8 @@ export async function POST(request: NextRequest) {
         email,
         displayName: null, // Will be updated when user logs in
         photoURL: null,
-        role: role as 'admin' | 'super_admin'
+        role: role as 'admin' | 'super_admin',
+        addedBy: authResult.user.email
       }, authResult.user.email)
 
       return NextResponse.json({

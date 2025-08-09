@@ -191,7 +191,7 @@ export default function EventComments({ eventId }: CommentsProps) {
   return (
     <div className="mt-8 space-y-6">
       <div className="flex items-center gap-2">
-        <MessageCircle className="h-6 w-6" />
+        <MessageCircle className="size-6" />
         <h3 className="text-2xl font-bold">Comentarios de la Comunidad</h3>
         <Badge className="bg-secondary text-secondary-foreground">{comments.length}</Badge>
       </div>
@@ -208,13 +208,13 @@ export default function EventComments({ eventId }: CommentsProps) {
         <CardContent>
           {authLoading ? (
             <div className="text-center py-4">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
+              <div className="animate-spin rounded-full size-6 border-b-2 border-primary mx-auto"></div>
               <p className="mt-2 text-sm text-muted-foreground">Cargando...</p>
             </div>
           ) : !user ? (
             <div className="text-center py-6 space-y-4">
-              <div className="rounded-full bg-primary/10 w-12 h-12 flex items-center justify-center mx-auto">
-                <LogIn className="h-6 w-6 text-primary" />
+              <div className="rounded-full bg-primary/10 size-12 flex items-center justify-center mx-auto">
+                <LogIn className="size-6 text-primary" />
               </div>
               <div>
                 <h4 className="font-medium mb-2">Inicia sesión para comentar</h4>
@@ -222,7 +222,7 @@ export default function EventComments({ eventId }: CommentsProps) {
                   Necesitas tener una cuenta para participar en la conversación
                 </p>
                 <Button onClick={signInWithGoogleForComments} className="w-full">
-                  <LogIn className="h-4 w-4 mr-2" />
+                  <LogIn className="size-4 mr-2" />
                   Iniciar sesión con Google
                 </Button>
               </div>
@@ -230,7 +230,7 @@ export default function EventComments({ eventId }: CommentsProps) {
           ) : (
             <form onSubmit={submitComment} className="space-y-4">
               <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
-                <Avatar className="w-8 h-8">
+                <Avatar className="size-8">
                   <AvatarImage src={user.photoURL || undefined} />
                   <AvatarFallback className="text-xs font-medium">
                     {getInitials(user.displayName || user.email || 'U')}
@@ -262,7 +262,7 @@ export default function EventComments({ eventId }: CommentsProps) {
                   <>Publicando...</>
                 ) : (
                   <>
-                    <Send className="h-4 w-4 mr-2" />
+                    <Send className="size-4 mr-2" />
                     Publicar Comentario
                   </>
                 )}
@@ -276,13 +276,13 @@ export default function EventComments({ eventId }: CommentsProps) {
       <div className="space-y-4">
         {isLoading ? (
           <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+            <div className="animate-spin rounded-full size-8 border-b-2 border-primary mx-auto"></div>
             <p className="mt-2 text-muted-foreground">Cargando comentarios...</p>
           </div>
         ) : comments.length === 0 ? (
           <Card>
             <CardContent className="text-center py-8">
-              <MessageCircle className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <MessageCircle className="size-12 mx-auto text-muted-foreground mb-4" />
               <p className="text-muted-foreground">
                 ¡Sé el primero en comentar sobre este evento!
               </p>
@@ -294,7 +294,7 @@ export default function EventComments({ eventId }: CommentsProps) {
               <CardContent className="pt-4">
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <Avatar className="h-8 w-8">
+                    <Avatar className="size-8">
                       <AvatarImage src={comment.photoURL || undefined} />
                       <AvatarFallback className="text-xs font-medium">
                         {getInitials(comment.author)}
@@ -309,14 +309,14 @@ export default function EventComments({ eventId }: CommentsProps) {
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                      <Clock className="h-3 w-3" />
+                      <Clock className="size-3" />
                       {formatDate(comment.createdAt || comment.timestamp || new Date())}
                     </div>
                     {isAdmin && (
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <MoreHorizontal className="h-4 w-4" />
+                          <Button variant="ghost" size="sm" className="size-8 p-0">
+                            <MoreHorizontal className="size-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
@@ -326,7 +326,7 @@ export default function EventComments({ eventId }: CommentsProps) {
                               setEditContent(comment.content)
                             }}
                           >
-                            <Edit3 className="h-4 w-4 mr-2" />
+                            <Edit3 className="size-4 mr-2" />
                             Editar
                           </DropdownMenuItem>
                           <DropdownMenuItem
@@ -334,12 +334,12 @@ export default function EventComments({ eventId }: CommentsProps) {
                           >
                             {comment.hidden ? (
                               <>
-                                <Eye className="h-4 w-4 mr-2" />
+                                <Eye className="size-4 mr-2" />
                                 Mostrar
                               </>
                             ) : (
                               <>
-                                <EyeOff className="h-4 w-4 mr-2" />
+                                <EyeOff className="size-4 mr-2" />
                                 Ocultar
                               </>
                             )}
@@ -348,7 +348,7 @@ export default function EventComments({ eventId }: CommentsProps) {
                             onClick={() => handleDeleteComment(comment)}
                             className="text-red-600"
                           >
-                            <Trash2 className="h-4 w-4 mr-2" />
+                            <Trash2 className="size-4 mr-2" />
                             Eliminar
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -389,7 +389,7 @@ export default function EventComments({ eventId }: CommentsProps) {
               onClick={handleEditComment}
               disabled={!editContent.trim()}
             >
-              <Edit3 className="h-4 w-4 mr-2" />
+              <Edit3 className="size-4 mr-2" />
               Guardar Cambios
             </Button>
           </DialogFooter>

@@ -281,7 +281,7 @@ export default function ProposalsPage() {
           </div>
         </div>
         <Button onClick={loadProposals} disabled={isLoading}>
-          <RefreshCw className="h-4 w-4 mr-2" />
+          <RefreshCw className="size-4 mr-2" />
           Actualizar
         </Button>
       </div>
@@ -387,20 +387,20 @@ export default function ProposalsPage() {
                 <CardContent className="pt-0">
                   <div className="space-y-2 text-sm text-muted-foreground mb-4">
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4" />
+                      <Calendar className="size-4" />
                       {formatDate(proposal.eventDate)}
                     </div>
                     <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4" />
+                      <MapPin className="size-4" />
                       {proposal.municipality}, {proposal.department}
                     </div>
                     <div className="flex items-center gap-2">
-                      <User className="h-4 w-4" />
+                      <User className="size-4" />
                       {proposal.organizer || 'No especificado'}
                     </div>
                     {proposal.website && (
                       <div className="flex items-center gap-2">
-                        <ExternalLink className="h-4 w-4" />
+                        <ExternalLink className="size-4" />
                         <a href={proposal.website} target="_blank" rel="noopener noreferrer" 
                            className="text-blue-600 hover:underline">
                           {proposal.website}
@@ -440,7 +440,7 @@ export default function ProposalsPage() {
                           size="sm"
                           className="flex-1"
                         >
-                          <Check className="h-4 w-4 mr-1" />
+                          <Check className="size-4 mr-1" />
                           Aprobar
                         </Button>
                         <Button
@@ -450,7 +450,7 @@ export default function ProposalsPage() {
                           size="sm"
                           className="flex-1"
                         >
-                          <X className="h-4 w-4 mr-1" />
+                          <X className="size-4 mr-1" />
                           Rechazar
                         </Button>
                       </>
@@ -470,7 +470,7 @@ export default function ProposalsPage() {
                       variant="outline"
                       size="sm"
                     >
-                      <Edit className="h-4 w-4 mr-1" />
+                      <Edit className="size-4 mr-1" />
                       Ver Detalle
                     </Button>
                   </div>
@@ -497,7 +497,7 @@ export default function ProposalsPage() {
                   </div>
                 </div>
                 <Button variant="outline" onClick={() => setSelectedProposal(null)}>
-                  <X className="h-4 w-4" />
+                  <X className="size-4" />
                 </Button>
               </div>
             </CardHeader>
@@ -579,7 +579,7 @@ export default function ProposalsPage() {
                       disabled={isProcessing}
                       className="flex-1"
                     >
-                      <Check className="h-4 w-4 mr-2" />
+                      <Check className="size-4 mr-2" />
                       Aprobar
                     </Button>
                     <Button
@@ -591,7 +591,7 @@ export default function ProposalsPage() {
                       variant="outline"
                       className="flex-1"
                     >
-                      <X className="h-4 w-4 mr-2" />
+                      <X className="size-4 mr-2" />
                       Rechazar
                     </Button>
                   </>

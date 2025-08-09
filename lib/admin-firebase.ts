@@ -192,7 +192,7 @@ class AdminService {
     }
   }
 
-  async saveSystemSettings(settings: Omit<SystemSettings, 'id' | 'lastUpdatedAt'>, updatedByEmail: string): Promise<void> {
+  async saveSystemSettings(settings: Omit<SystemSettings, 'id' | 'lastUpdatedAt' | 'lastUpdatedBy'>, updatedByEmail: string): Promise<void> {
     try {
       const settingsDocRef = doc(db, SETTINGS_COLLECTION, SETTINGS_DOC_ID)
       const settingsData: Omit<SystemSettings, 'id'> = {

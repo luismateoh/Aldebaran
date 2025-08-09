@@ -277,7 +277,7 @@ export default function EventsPage() {
           </div>
         </div>
         <Button onClick={handleCreateEvent} size="sm">
-          <Plus className="h-4 w-4 mr-2" />
+          <Plus className="size-4 mr-2" />
           Nuevo
         </Button>
       </div>
@@ -287,7 +287,7 @@ export default function EventsPage() {
       <div className="space-y-4">
         {/* Search Bar */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4" />
           <Input
             placeholder="Buscar eventos por título, municipio u organizador..."
             value={searchTerm}
@@ -360,7 +360,7 @@ export default function EventsPage() {
             onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
             className="text-xs"
           >
-            <SortAsc className={`h-3 w-3 mr-1 ${sortOrder === 'desc' ? 'rotate-180' : ''}`} />
+            <SortAsc className={`size-3 mr-1 ${sortOrder === 'desc' ? 'rotate-180' : ''}`} />
             {sortOrder === 'asc' ? 'A-Z' : 'Z-A'}
           </Button>
 
@@ -474,34 +474,34 @@ export default function EventsPage() {
                       {getStatusBadge(event)}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <MoreHorizontal className="h-4 w-4" />
+                          <Button variant="ghost" size="sm" className="size-8 p-0">
+                            <MoreHorizontal className="size-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => handleEditEvent(event.id)}>
-                            <Edit className="mr-2 h-4 w-4" />
+                            <Edit className="mr-2 size-4" />
                             <span>Editar</span>
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleDuplicateEvent(event.id)}>
-                            <Copy className="mr-2 h-4 w-4" />
+                            <Copy className="mr-2 size-4" />
                             <span>Duplicar</span>
                           </DropdownMenuItem>
                           {event.status !== 'published' && (
                             <DropdownMenuItem onClick={() => handleUpdateStatus(event.id, 'published')}>
-                              <Check className="mr-2 h-4 w-4" />
+                              <Check className="mr-2 size-4" />
                               <span>Publicar</span>
                             </DropdownMenuItem>
                           )}
                           {event.status !== 'draft' && (
                             <DropdownMenuItem onClick={() => handleUpdateStatus(event.id, 'draft')}>
-                              <Edit className="mr-2 h-4 w-4" />
+                              <Edit className="mr-2 size-4" />
                               <span>Pasar a Borrador</span>
                             </DropdownMenuItem>
                           )}
                           {event.status !== 'cancelled' && (
                             <DropdownMenuItem onClick={() => handleUpdateStatus(event.id, 'cancelled')}>
-                              <Ban className="mr-2 h-4 w-4" />
+                              <Ban className="mr-2 size-4" />
                               <span>Cancelar</span>
                             </DropdownMenuItem>
                           )}
@@ -513,15 +513,15 @@ export default function EventsPage() {
                 <CardContent className="pt-0">
                   <div className="space-y-2 text-sm text-muted-foreground mb-4">
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4" />
+                      <Calendar className="size-4" />
                       {formatDate(event.eventDate)}
                     </div>
                     <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4" />
+                      <MapPin className="size-4" />
                       {event.municipality}, {event.department}
                     </div>
                     <div className="flex items-center gap-2">
-                      <User className="h-4 w-4" />
+                      <User className="size-4" />
                       {event.organizer || 'No especificado'}
                     </div>
                   </div>
@@ -545,7 +545,7 @@ export default function EventsPage() {
                     variant="outline"
                     onClick={() => handleEditEvent(event.id)}
                   >
-                    <Edit className="h-4 w-4 mr-2" />
+                    <Edit className="size-4 mr-2" />
                     Editar Evento
                   </Button>
                 </CardContent>

@@ -69,11 +69,15 @@ async function markAllEventsAsDraft(): Promise<{ success: boolean, updatedCount:
     
     // Obtener todos los eventos desde Firestore directamente
     const eventsSnapshot = await adminDb.collection('events').get()
-    const allEvents = eventsSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      draft: doc.data().draft || false
-    }))
+    const allEvents = eventsSnapshot.docs.map(doc => {
+      const data = doc.data()
+      return {
+        id: doc.id,
+        title: data.title || 'Sin título',
+        draft: data.draft || false,
+        ...data
+      }
+    })
     console.log(`📊 Procesando ${allEvents.length} eventos`)
     
     let updatedCount = 0

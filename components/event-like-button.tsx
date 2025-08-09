@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Heart } from 'lucide-react'
 import { useAuth } from '@/lib/auth-context'
 import { useAuthApi } from '@/hooks/use-auth-api'
+import { LoginModal } from '@/components/login-modal'
 import { cn } from '@/lib/utils'
 
 interface EventLikeButtonProps {
@@ -26,12 +27,12 @@ export default function EventLikeButton({
   showCount = true,
   className
 }: EventLikeButtonProps) {
-  const { user, signInWithGoogleForComments } = useAuth()
+  const { user } = useAuth()
   const { makeAuthenticatedRequest } = useAuthApi()
   const [liked, setLiked] = useState(initialLiked)
   const [likesCount, setLikesCount] = useState(initialCount)
   const [isLoading, setIsLoading] = useState(false)
-  const [showLoginPrompt, setShowLoginPrompt] = useState(false)
+  const [showLoginModal, setShowLoginModal] = useState(false)
 
   useEffect(() => {
     loadLikeStatus()
@@ -53,7 +54,7 @@ export default function EventLikeButton({
 
   const handleLikeClick = async () => {
     if (!user) {
-      setShowLoginPrompt(true)
+      setShowLoginModal(true)
       return
     }
 
@@ -79,63 +80,42 @@ export default function EventLikeButton({
     }
   }
 
-  const handleSignIn = async () => {
-    try {
-      await signInWithGoogleForComments()
-      setShowLoginPrompt(false)
-    } catch (error) {
-      console.error('Error signing in:', error)
-    }
-  }
-
-  if (showLoginPrompt) {
-    return (
-      <div className="flex flex-col gap-2 p-2 border rounded-md bg-muted/50">
-        <p className="text-xs text-muted-foreground">
-          Inicia sesión para dar like a este evento
-        </p>
-        <div className="flex gap-2">
-          <Button size="sm" onClick={handleSignIn}>
-            Iniciar Sesión
-          </Button>
-          <Button 
-            size="sm" 
-            variant="ghost" 
-            onClick={() => setShowLoginPrompt(false)}
-          >
-            Cancelar
-          </Button>
-        </div>
-      </div>
-    )
-  }
 
   return (
-    <Button
-      variant={variant}
-      size={size}
-      onClick={handleLikeClick}
-      disabled={isLoading}
-      className={cn(
-        "flex items-center gap-1.5 transition-colors",
-        liked && "text-red-500 hover:text-red-600",
-        className
-      )}
-    >
-      <Heart 
+    <>
+      <Button
+        variant={variant}
+        size={size}
+        onClick={handleLikeClick}
+        disabled={isLoading}
         className={cn(
-          "h-4 w-4 transition-all",
-          liked && "fill-red-500"
-        )} 
-      />
-      {showCount && (
-        <span className="text-sm font-medium">
-          {likesCount}
+          "flex items-center gap-1.5 transition-colors",
+          liked && "text-red-500 hover:text-red-600",
+          className
+        )}
+      >
+        <Heart 
+          className={cn(
+            "size-4 transition-all",
+            liked && "fill-red-500"
+          )} 
+        />
+        {showCount && (
+          <span className="text-sm font-medium">
+            {likesCount}
+          </span>
+        )}
+        <span className="sr-only">
+          {liked ? 'Quitar de favoritos' : 'Agregar a favoritos'}
         </span>
-      )}
-      <span className="sr-only">
-        {liked ? 'Quitar de favoritos' : 'Agregar a favoritos'}
-      </span>
-    </Button>
+      </Button>
+
+      <LoginModal 
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        title="Inicia sesión para dar like a este evento"
+        description="Necesitas una cuenta para poder guardar eventos como favoritos y recibir notificaciones."
+      />
+    </>
   )
 }

@@ -1,100 +1,96 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Lock, Mail, AlertCircle } from 'lucide-react'
+import Image from "next/image"
+import { Trophy } from "lucide-react"
+import { ModernLoginForm } from "@/components/modern-login-form"
 
 export default function LoginPage() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
   const router = useRouter()
-  const { user, isAdmin, signInWithGoogle } = useAuth()
+  const { user, isAdmin } = useAuth()
 
-  // Redirect if already authenticated and admin
+  // Redirect if already authenticated
   useEffect(() => {
-    if (user && isAdmin) {
-      router.push('/admin')
+    if (user) {
+      if (isAdmin) {
+        router.push('/admin')
+      } else {
+        router.push('/perfil')
+      }
     }
   }, [user, isAdmin, router])
 
-  const handleGoogleSignIn = async () => {
-    try {
-      setIsLoading(true)
-      setError('')
-      
-      await signInWithGoogle()
-      
-      // The useEffect above will handle the redirect
-    } catch (error: any) {
-      console.error('Error signing in:', error)
-      setError(error.message || 'Error al iniciar sesión. Intenta de nuevo.')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   // Show loading state while checking auth
-  if (user && isAdmin) {
+  if (user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Card className="w-full max-w-md">
-          <CardContent className="p-6 text-center">
-            <p>Redirigiendo al panel de administración...</p>
-          </CardContent>
-        </Card>
+      <div className="min-h-svh flex items-center justify-center">
+        <div className="text-center">
+          <div className="size-8 border-2 border-current border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p>Redirigiendo...</p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="flex items-center justify-center gap-2">
-            <Lock className="h-6 w-6" />
-            Panel de Administración
-          </CardTitle>
-          <CardDescription>
-            Inicia sesión con tu cuenta de Google para acceder al panel de gestión de Aldebaran
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {error && (
-              <div className="flex items-start gap-2 text-sm text-red-600 bg-red-50 dark:bg-red-950/20 p-3 rounded-lg">
-                <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                <span>{error}</span>
+    <div className="grid min-h-svh lg:grid-cols-2">
+      <div className="flex flex-col gap-4 p-6 md:p-10">
+        <div className="flex justify-center gap-2 md:justify-start">
+          <a href="/" className="flex items-center gap-2 font-medium">
+            <div className="flex size-8 items-center justify-center">
+              <Image
+                src="/favicon-light.svg"
+                alt="Aldebaran"
+                width={32}
+                height={32}
+                className="dark:hidden"
+              />
+              <Image
+                src="/favicon-dark.svg"
+                alt="Aldebaran"
+                width={32}
+                height={32}
+                className="hidden dark:block"
+              />
+            </div>
+            <span className="text-xl font-bold">Aldebaran</span>
+          </a>
+        </div>
+        <div className="flex flex-1 items-center justify-center">
+          <div className="w-full max-w-xs">
+            <ModernLoginForm />
+          </div>
+        </div>
+      </div>
+      <div className="bg-muted relative hidden lg:block">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800">
+          <div className="absolute inset-0 bg-black/20" />
+          <div className="relative h-full flex flex-col justify-center items-center text-white p-8">
+            <div className="text-center space-y-6 max-w-md">
+              <Trophy className="size-16 mx-auto text-white/90" />
+              <h2 className="text-3xl font-bold">
+                Descubre eventos de running en Colombia
+              </h2>
+              <p className="text-lg text-white/80">
+                Aldebaran es la plataforma más completa para encontrar carreras, 
+                maratones y eventos de atletismo en todo el país.
+              </p>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="bg-white/10 backdrop-blur rounded-lg p-3">
+                  <div className="font-semibold">+500</div>
+                  <div className="text-white/70">Eventos</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur rounded-lg p-3">
+                  <div className="font-semibold">32</div>
+                  <div className="text-white/70">Departamentos</div>
+                </div>
               </div>
-            )}
-
-            <Button 
-              onClick={handleGoogleSignIn}
-              className="w-full flex items-center justify-center gap-2" 
-              disabled={isLoading}
-              variant="outline"
-            >
-              {isLoading ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                  Iniciando sesión...
-                </>
-              ) : (
-                <>
-                  <Mail className="h-4 w-4" />
-                  Iniciar sesión con Google
-                </>
-              )}
-            </Button>
+            </div>
           </div>
-
-          <div className="mt-6 text-center text-sm text-muted-foreground">
-            <p>Panel de gestión para Aldebaran</p>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }

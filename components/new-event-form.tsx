@@ -33,7 +33,7 @@ interface NewEventFormProps {
 }
 
 export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
-  const searchParams = !isPublic ? useSearchParams() : null
+  const searchParams = useSearchParams()
   const [formData, setFormData] = useState<EventFormData>({
     title: '',
     eventDate: '',
@@ -67,7 +67,7 @@ export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
 
   // Load template from URL parameters (only for admin)
   useEffect(() => {
-    if (isPublic || !searchParams) return
+    if (isPublic) return
     
     const templateTitle = searchParams.get('title')
     const templateCategory = searchParams.get('category')
@@ -274,7 +274,7 @@ export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-6 w-6" />
+            <Calendar className="size-6" />
             {isPublic ? 'Proponer Evento de Atletismo' : 'Crear Nuevo Evento de Atletismo'}
           </CardTitle>
           <CardDescription>
@@ -300,12 +300,12 @@ export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
                 >
                   {showManualForm ? (
                     <>
-                      <ChevronUp className="h-4 w-4" />
+                      <ChevronUp className="size-4" />
                       Ocultar Formulario Manual
                     </>
                   ) : (
                     <>
-                      <Edit className="h-4 w-4" />
+                      <Edit className="size-4" />
                       Crear Evento Manualmente
                     </>
                   )}
@@ -494,7 +494,7 @@ export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
                     {emailSent ? (
                       <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
                         <div className="flex items-center gap-2">
-                          <CheckCircle className="h-5 w-5 text-green-500" />
+                          <CheckCircle className="size-5 text-green-500" />
                           <span className="text-green-700 font-medium">¡Propuesta enviada exitosamente!</span>
                         </div>
                         <p className="text-green-600 text-sm mt-1">

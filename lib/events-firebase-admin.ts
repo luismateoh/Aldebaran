@@ -1,4 +1,4 @@
-import { getFirestore, FieldValue, Timestamp } from 'firebase-admin/firestore'
+import { getFirestore, FieldValue, Timestamp, CollectionReference, DocumentData } from 'firebase-admin/firestore'
 import './firebase-admin'
 import type { EventData } from '@/types'
 
@@ -6,7 +6,7 @@ const EVENTS_COLLECTION = 'events'
 
 class EventsServiceAdmin {
   private db: ReturnType<typeof getFirestore>
-  private eventsRef: ReturnType<typeof getFirestore>['collection']
+  private eventsRef: CollectionReference<DocumentData>
 
   constructor() {
     this.db = getFirestore()

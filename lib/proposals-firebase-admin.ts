@@ -1,4 +1,4 @@
-import { getFirestore, FieldValue, Timestamp } from 'firebase-admin/firestore'
+import { getFirestore, FieldValue, Timestamp, CollectionReference, DocumentData } from 'firebase-admin/firestore'
 import './firebase-admin'
 
 const PROPOSALS_COLLECTION = 'proposals'
@@ -29,7 +29,7 @@ export interface ProposalData {
 
 class ProposalsServiceAdmin {
   private db: ReturnType<typeof getFirestore>
-  private proposalsRef: ReturnType<typeof getFirestore>['collection']
+  private proposalsRef: CollectionReference<DocumentData>
 
   constructor() {
     this.db = getFirestore()

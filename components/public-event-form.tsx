@@ -11,10 +11,25 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Send, Calendar, MapPin, User, Globe, Users, Zap, CheckCircle, Rocket } from 'lucide-react'
 
-export default function ProposeEventPage() {
+interface EventFormData {
+  title: string
+  eventDate: string
+  municipality: string
+  department: string
+  organizer: string
+  website: string
+  description: string
+  distances: string[]
+  registrationFee: string
+  category: string
+  submittedBy: string
+  submitterEmail: string
+}
+
+export default function PublicEventForm() {
   const router = useRouter()
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<EventFormData>({
     title: '',
     eventDate: '',
     municipality: '',
@@ -22,7 +37,7 @@ export default function ProposeEventPage() {
     organizer: '',
     website: '',
     description: '',
-    distances: [] as string[],
+    distances: [],
     registrationFee: '',
     category: 'Running',
     submittedBy: '',
@@ -129,45 +144,7 @@ export default function ProposeEventPage() {
   }
 
   return (
-    <div className="container max-w-4xl mx-auto py-8 space-y-6">
-      {/* Header */}
-      <div className="text-center space-y-4">
-        <div className="size-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-          <Send className="size-10 text-muted-foreground" />
-        </div>
-        <h1 className="text-4xl font-bold">Proponer Nuevo Evento</h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          ¿Conoces un evento de atletismo que debería estar en Aldebaran? Compártelo con la comunidad y ayúdanos a mantener actualizado el calendario más completo de Colombia.
-        </p>
-        
-        {/* Benefits Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-8">
-          <div className="text-center p-6 border rounded-lg bg-card">
-            <div className="size-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
-              <Users className="size-6 text-primary-foreground" />
-            </div>
-            <h3 className="font-semibold text-foreground">Para la Comunidad</h3>
-            <p className="text-sm text-muted-foreground">Tu propuesta ayuda a miles de corredores</p>
-          </div>
-          
-          <div className="text-center p-6 border rounded-lg bg-card">
-            <div className="size-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
-              <Zap className="size-6 text-primary-foreground" />
-            </div>
-            <h3 className="font-semibold text-foreground">Revisión Rápida</h3>
-            <p className="text-sm text-muted-foreground">Revisamos y publicamos en 24-48 horas</p>
-          </div>
-          
-          <div className="text-center p-6 border rounded-lg bg-card">
-            <div className="size-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
-              <CheckCircle className="size-6 text-primary-foreground" />
-            </div>
-            <h3 className="font-semibold text-foreground">Siempre Actualizado</h3>
-            <p className="text-sm text-muted-foreground">Información verificada y confiable</p>
-          </div>
-        </div>
-      </div>
-
+    <>
       {/* Submit Result */}
       {submitResult && (
         <div className={`border rounded-lg p-4 ${
@@ -388,7 +365,6 @@ export default function ProposeEventPage() {
               </div>
             </div>
 
-
             {/* Submit Button */}
             <div className="flex gap-4 pt-6 border-t">
               <Button
@@ -403,38 +379,6 @@ export default function ProposeEventPage() {
           </form>
         </CardContent>
       </Card>
-
-      {/* Process Information - Outside the form */}
-      <div className="bg-muted border rounded-lg p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="size-10 bg-primary rounded-full flex items-center justify-center">
-            <Rocket className="size-5 text-primary-foreground" />
-          </div>
-          <h3 className="text-lg font-semibold text-foreground">¿Qué pasa después?</h3>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-3">
-            <div className="flex items-start gap-3">
-              <div className="size-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold">1</div>
-              <p className="text-sm text-foreground"><strong>Revisión:</strong> Verificamos la información en 24-48 horas</p>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="size-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold">2</div>
-              <p className="text-sm text-foreground"><strong>Aprobación:</strong> Te notificamos el estado de tu propuesta</p>
-            </div>
-          </div>
-          <div className="space-y-3">
-            <div className="flex items-start gap-3">
-              <div className="size-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold">3</div>
-              <p className="text-sm text-foreground"><strong>Publicación:</strong> El evento aparece en Aldebaran</p>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="size-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold">4</div>
-              <p className="text-sm text-foreground"><strong>Comunidad:</strong> Miles de corredores lo descubren</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    </>
   )
 }

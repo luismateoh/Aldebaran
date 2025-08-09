@@ -212,7 +212,7 @@ export default function AdminPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 border-2 border-current border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="size-8 border-2 border-current border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p>Verificando autenticación...</p>
         </div>
       </div>
@@ -234,7 +234,7 @@ export default function AdminPage() {
             Dashboard de gestión de eventos Aldebaran
           </p>
           <Badge variant="outline" className="text-xs w-fit">
-            <User className="h-3 w-3 mr-1" />
+            <User className="size-3 mr-1" />
             {user.email}
           </Badge>
         </div>
@@ -246,7 +246,7 @@ export default function AdminPage() {
             size="sm"
             className="h-12 text-xs flex flex-col gap-1"
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="size-4" />
             Nuevo Evento
           </Button>
           
@@ -256,7 +256,7 @@ export default function AdminPage() {
             variant="outline"
             className="h-12 text-xs flex flex-col gap-1 border-blue-200 text-blue-700 hover:bg-blue-50"
           >
-            <Zap className="h-4 w-4" />
+            <Zap className="size-4" />
             Templates
           </Button>
           
@@ -266,7 +266,7 @@ export default function AdminPage() {
             variant="outline"
             className="h-12 text-xs flex flex-col gap-1"
           >
-            <Search className="h-4 w-4" />
+            <Search className="size-4" />
             Buscar
           </Button>
           
@@ -276,10 +276,10 @@ export default function AdminPage() {
             variant="outline"
             className="h-12 text-xs flex flex-col gap-1 relative"
           >
-            <Mail className="h-4 w-4" />
+            <Mail className="size-4" />
             Propuestas
             {systemStats?.proposals > 0 && (
-              <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center">
+              <div className="absolute -top-1 -right-1 size-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center">
                 {systemStats.proposals}
               </div>
             )}
@@ -291,7 +291,7 @@ export default function AdminPage() {
             variant="outline"
             className="h-12 text-xs flex flex-col gap-1"
           >
-            <FileText className="h-4 w-4" />
+            <FileText className="size-4" />
             Borradores
           </Button>
         </div>
@@ -302,7 +302,7 @@ export default function AdminPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <Calendar className="h-5 w-5 text-blue-500" />
+              <Calendar className="size-5 text-blue-500" />
               <div>
                 <p className="text-sm text-muted-foreground">Total</p>
                 <p className="text-2xl font-bold">
@@ -316,7 +316,7 @@ export default function AdminPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <CheckCircle className="h-5 w-5 text-green-500" />
+              <CheckCircle className="size-5 text-green-500" />
               <div>
                 <p className="text-sm text-muted-foreground">Publicados</p>
                 <p className="text-2xl font-bold">
@@ -330,7 +330,7 @@ export default function AdminPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <FileText className="h-5 w-5 text-yellow-500" />
+              <FileText className="size-5 text-yellow-500" />
               <div>
                 <p className="text-sm text-muted-foreground">Borradores</p>
                 <p className="text-2xl font-bold">
@@ -344,7 +344,7 @@ export default function AdminPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <Mail className="h-5 w-5 text-blue-500" />
+              <Mail className="size-5 text-blue-500" />
               <div>
                 <p className="text-sm text-muted-foreground">Propuestas</p>
                 <p className="text-2xl font-bold">
@@ -358,7 +358,7 @@ export default function AdminPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <AlertCircle className="h-5 w-5 text-red-500" />
+              <AlertCircle className="size-5 text-red-500" />
               <div>
                 <p className="text-sm text-muted-foreground">Eliminados</p>
                 <p className="text-2xl font-bold">
@@ -376,7 +376,7 @@ export default function AdminPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Database className="h-5 w-5" />
+              <Database className="size-5" />
               Firebase
             </CardTitle>
             <CardDescription>Base de datos y autenticación</CardDescription>
@@ -384,7 +384,7 @@ export default function AdminPage() {
           <CardContent>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className={`w-3 h-3 rounded-full ${
+                <div className={`size-3 rounded-full ${
                   firebaseConfig?.configured ? 'bg-green-500' : 'bg-red-500'
                 }`} />
                 <div>
@@ -403,9 +403,9 @@ export default function AdminPage() {
                 variant="outline"
               >
                 {testingFirebase ? (
-                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                  <div className="size-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
                 ) : (
-                  <Settings className="h-4 w-4" />
+                  <Settings className="size-4" />
                 )}
               </Button>
             </div>
@@ -416,7 +416,7 @@ export default function AdminPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Mail className="h-5 w-5" />
+              <Mail className="size-5" />
               EmailJS
             </CardTitle>
             <CardDescription>Notificaciones por correo</CardDescription>
@@ -424,7 +424,7 @@ export default function AdminPage() {
           <CardContent>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className={`w-3 h-3 rounded-full ${
+                <div className={`size-3 rounded-full ${
                   isLoadingEmailConfig ? 'bg-gray-400' :
                   emailConfig?.configured ? 'bg-green-500' : 'bg-red-500'
                 }`} />
@@ -445,9 +445,9 @@ export default function AdminPage() {
                 variant="outline"
               >
                 {testingEmail ? (
-                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                  <div className="size-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
                 ) : (
-                  <Send className="h-4 w-4" />
+                  <Send className="size-4" />
                 )}
               </Button>
             </div>
@@ -458,7 +458,7 @@ export default function AdminPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Brain className="h-5 w-5" />
+              <Brain className="size-5" />
               IA (Groq)
             </CardTitle>
             <CardDescription>Mejora automática de eventos</CardDescription>
@@ -466,7 +466,7 @@ export default function AdminPage() {
           <CardContent>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className={`w-3 h-3 rounded-full ${
+                <div className={`size-3 rounded-full ${
                   aiConfig?.configured ? 'bg-green-500' : 'bg-red-500'
                 }`} />
                 <div>
@@ -485,9 +485,9 @@ export default function AdminPage() {
                 variant="outline"
               >
                 {testingAi ? (
-                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                  <div className="size-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
                 ) : (
-                  <Brain className="h-4 w-4" />
+                  <Brain className="size-4" />
                 )}
               </Button>
             </div>
@@ -501,7 +501,7 @@ export default function AdminPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
+              <Calendar className="size-5" />
               Gestión de Eventos
             </CardTitle>
             <CardDescription>
@@ -513,7 +513,7 @@ export default function AdminPage() {
               onClick={() => router.push('/admin/events/new')}
               className="w-full justify-start"
             >
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="size-4 mr-2" />
               Crear Nuevo Evento
             </Button>
             
@@ -522,7 +522,7 @@ export default function AdminPage() {
               className="w-full justify-start" 
               variant="outline"
             >
-              <PenTool className="h-4 w-4 mr-2" />
+              <PenTool className="size-4 mr-2" />
               Administrar Eventos
             </Button>
           </CardContent>
@@ -532,7 +532,7 @@ export default function AdminPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Mail className="h-5 w-5" />
+              <Mail className="size-5" />
               Propuestas de Eventos
             </CardTitle>
             <CardDescription>
@@ -544,7 +544,7 @@ export default function AdminPage() {
               onClick={() => router.push('/admin/proposals')}
               className="w-full justify-start"
             >
-              <Mail className="h-4 w-4 mr-2" />
+              <Mail className="size-4 mr-2" />
               Gestionar Propuestas
               {systemStats?.proposals > 0 && (
                 <Badge variant="destructive" className="ml-auto">
@@ -558,7 +558,7 @@ export default function AdminPage() {
               className="w-full justify-start" 
               variant="outline"
             >
-              <AlertCircle className="h-4 w-4 mr-2" />
+              <AlertCircle className="size-4 mr-2" />
               Revisar Pendientes
             </Button>
           </CardContent>
@@ -571,7 +571,7 @@ export default function AdminPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <UserPlus className="h-5 w-5" />
+              <UserPlus className="size-5" />
               Administradores
             </CardTitle>
             <CardDescription>
@@ -584,7 +584,7 @@ export default function AdminPage() {
               className="w-full justify-start"
               variant="outline"
             >
-              <UserPlus className="h-4 w-4 mr-2" />
+              <UserPlus className="size-4 mr-2" />
               Gestionar Administradores
             </Button>
             
@@ -598,7 +598,7 @@ export default function AdminPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Settings className="h-5 w-5" />
+              <Settings className="size-5" />
               Configuración
             </CardTitle>
             <CardDescription>
@@ -611,7 +611,7 @@ export default function AdminPage() {
               className="w-full justify-start"
               variant="outline"
             >
-              <Settings className="h-4 w-4 mr-2" />
+              <Settings className="size-4 mr-2" />
               Configuración Avanzada
             </Button>
             

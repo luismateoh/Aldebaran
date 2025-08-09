@@ -121,7 +121,7 @@ export default function EventTemplates({ onSelectTemplate }: EventTemplatesProps
     <div className="space-y-6">
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-bold flex items-center justify-center gap-2">
-          <Zap className="h-6 w-6 text-blue-500" />
+          <Zap className="size-6 text-blue-500" />
           Templates de Eventos
         </h2>
         <p className="text-muted-foreground">
@@ -150,15 +150,15 @@ export default function EventTemplates({ onSelectTemplate }: EventTemplatesProps
               {/* Información rápida */}
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2 text-muted-foreground">
-                  <MapPin className="h-4 w-4" />
+                  <MapPin className="size-4" />
                   <span>Distancias: {template.distances.join(', ')}</span>
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
-                  <Clock className="h-4 w-4" />
+                  <Clock className="size-4" />
                   <span>{template.duration}</span>
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
-                  <Users className="h-4 w-4" />
+                  <Users className="size-4" />
                   <span>{template.price}</span>
                 </div>
               </div>
@@ -186,7 +186,7 @@ export default function EventTemplates({ onSelectTemplate }: EventTemplatesProps
                       size="sm"
                       onClick={() => setSelectedTemplate(key)}
                     >
-                      <Copy className="h-4 w-4 mr-2" />
+                      <Copy className="size-4 mr-2" />
                       Usar Template
                     </Button>
                   </DialogTrigger>
@@ -194,7 +194,7 @@ export default function EventTemplates({ onSelectTemplate }: EventTemplatesProps
                   <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                     <DialogHeader>
                       <DialogTitle className="flex items-center gap-2">
-                        <Calendar className="h-5 w-5" />
+                        <Calendar className="size-5" />
                         {template.title}
                       </DialogTitle>
                       <DialogDescription>
@@ -253,7 +253,7 @@ export default function EventTemplates({ onSelectTemplate }: EventTemplatesProps
                           className="flex-1"
                           onClick={() => handleUseTemplate(key, template)}
                         >
-                          <CheckCircle className="h-4 w-4 mr-2" />
+                          <CheckCircle className="size-4 mr-2" />
                           Crear con este Template
                         </Button>
                       </div>
@@ -269,7 +269,7 @@ export default function EventTemplates({ onSelectTemplate }: EventTemplatesProps
       {/* Instrucciones móviles */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 md:hidden">
         <div className="flex items-start gap-3">
-          <Zap className="h-5 w-5 text-blue-600 mt-0.5" />
+          <Zap className="size-5 text-blue-600 mt-0.5" />
           <div>
             <h4 className="font-semibold text-blue-900 mb-1">Optimizado para Móvil</h4>
             <p className="text-sm text-blue-700">

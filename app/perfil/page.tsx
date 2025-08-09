@@ -81,7 +81,7 @@ export default function UserProfilePage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 border-2 border-current border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="size-8 border-2 border-current border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p>Cargando perfil...</p>
         </div>
       </div>
@@ -105,7 +105,7 @@ export default function UserProfilePage() {
       <Card>
         <CardContent className="pt-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <Avatar className="w-20 h-20">
+            <Avatar className="size-20">
               <AvatarImage src={user.photoURL || undefined} />
               <AvatarFallback className="text-lg font-semibold">
                 {getInitials(user.displayName || user.email || 'Usuario')}
@@ -120,22 +120,22 @@ export default function UserProfilePage() {
               
               <div className="flex flex-wrap gap-2">
                 <Badge variant="secondary">
-                  <User className="w-3 h-3 mr-1" />
+                  <User className="size-3 mr-1" />
                   {userProfile?.runnerProfile?.level || 'Principiante'}
                 </Badge>
                 <Badge variant="outline">
-                  <Heart className="w-3 h-3 mr-1" />
+                  <Heart className="size-3 mr-1" />
                   {stats.totalEventsLiked} eventos favoritos
                 </Badge>
                 <Badge variant="outline">
-                  <Trophy className="w-3 h-3 mr-1" />
+                  <Trophy className="size-3 mr-1" />
                   {stats.totalEventsAttended} eventos completados
                 </Badge>
               </div>
             </div>
             
             <Button variant="outline" size="sm" onClick={() => router.push('/configuracion')}>
-              <Settings className="w-4 h-4 mr-2" />
+              <Settings className="size-4 mr-2" />
               Configuración
             </Button>
           </div>
@@ -147,7 +147,7 @@ export default function UserProfilePage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
-              <Heart className="w-5 h-5 text-red-500" />
+              <Heart className="size-5 text-red-500" />
               <div>
                 <p className="text-sm text-muted-foreground">Favoritos</p>
                 <p className="text-2xl font-bold">{stats.totalEventsLiked}</p>
@@ -159,7 +159,7 @@ export default function UserProfilePage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
-              <Trophy className="w-5 h-5 text-yellow-500" />
+              <Trophy className="size-5 text-yellow-500" />
               <div>
                 <p className="text-sm text-muted-foreground">Completados</p>
                 <p className="text-2xl font-bold">{stats.totalEventsAttended}</p>
@@ -171,7 +171,7 @@ export default function UserProfilePage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-blue-500" />
+              <BookOpen className="size-5 text-blue-500" />
               <div>
                 <p className="text-sm text-muted-foreground">Comentarios</p>
                 <p className="text-2xl font-bold">{stats.totalCommentsPosted}</p>
@@ -183,7 +183,7 @@ export default function UserProfilePage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
-              <Star className="w-5 h-5 text-purple-500" />
+              <Star className="size-5 text-purple-500" />
               <div>
                 <p className="text-sm text-muted-foreground">Categoría Fav</p>
                 <p className="text-lg font-semibold">{stats.favoriteCategory}</p>
@@ -197,23 +197,23 @@ export default function UserProfilePage() {
       <Tabs defaultValue="favorites" className="w-full">
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="favorites">
-            <Heart className="w-4 h-4 mr-2" />
+            <Heart className="size-4 mr-2" />
             Favoritos
           </TabsTrigger>
           <TabsTrigger value="upcoming">
-            <Calendar className="w-4 h-4 mr-2" />
+            <Calendar className="size-4 mr-2" />
             Próximos
           </TabsTrigger>
           <TabsTrigger value="past">
-            <Trophy className="w-4 h-4 mr-2" />
+            <Trophy className="size-4 mr-2" />
             Completados
           </TabsTrigger>
           <TabsTrigger value="goals">
-            <Target className="w-4 h-4 mr-2" />
+            <Target className="size-4 mr-2" />
             Metas
           </TabsTrigger>
           <TabsTrigger value="stats">
-            <BarChart3 className="w-4 h-4 mr-2" />
+            <BarChart3 className="size-4 mr-2" />
             Stats
           </TabsTrigger>
         </TabsList>
@@ -222,14 +222,14 @@ export default function UserProfilePage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Heart className="w-5 h-5 text-red-500" />
+                <Heart className="size-5 text-red-500" />
                 Eventos Favoritos ({likedEvents.length})
               </CardTitle>
             </CardHeader>
             <CardContent>
               {likedEvents.length === 0 ? (
                 <div className="text-center py-8">
-                  <Heart className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                  <Heart className="size-12 mx-auto text-muted-foreground mb-4" />
                   <p className="text-muted-foreground">
                     Aún no tienes eventos favoritos
                   </p>
@@ -242,7 +242,7 @@ export default function UserProfilePage() {
                 </div>
               ) : loadingEvents ? (
                 <div className="text-center py-8">
-                  <div className="w-8 h-8 border-2 border-current border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                  <div className="size-8 border-2 border-current border-t-transparent rounded-full animate-spin mx-auto mb-4" />
                   <p>Cargando eventos favoritos...</p>
                 </div>
               ) : (
@@ -256,11 +256,11 @@ export default function UserProfilePage() {
                             <h3 className="font-semibold text-lg mb-1">{event.title}</h3>
                             <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
                               <div className="flex items-center gap-1">
-                                <Calendar className="w-4 h-4" />
+                                <Calendar className="size-4" />
                                 {event.eventDate}
                               </div>
                               <div className="flex items-center gap-1">
-                                <MapPin className="w-4 h-4" />
+                                <MapPin className="size-4" />
                                 {event.municipality}, {event.department}
                               </div>
                             </div>
@@ -293,13 +293,13 @@ export default function UserProfilePage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-blue-500" />
+                <Calendar className="size-5 text-blue-500" />
                 Próximos Eventos
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-center py-8">
-                <Calendar className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                <Calendar className="size-12 mx-auto text-muted-foreground mb-4" />
                 <p className="text-muted-foreground">
                   No hay eventos próximos marcados
                 </p>
@@ -315,13 +315,13 @@ export default function UserProfilePage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Trophy className="w-5 h-5 text-yellow-500" />
+                <Trophy className="size-5 text-yellow-500" />
                 Eventos Completados
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-center py-8">
-                <Trophy className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                <Trophy className="size-12 mx-auto text-muted-foreground mb-4" />
                 <p className="text-muted-foreground">
                   No hay eventos completados registrados
                 </p>
@@ -342,7 +342,7 @@ export default function UserProfilePage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5 text-purple-500" />
+                  <BarChart3 className="size-5 text-purple-500" />
                   Estadísticas Detalladas
                 </CardTitle>
               </CardHeader>

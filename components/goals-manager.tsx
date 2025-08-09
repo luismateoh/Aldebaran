@@ -193,7 +193,7 @@ export default function GoalsManager({ className }: GoalsManagerProps) {
     return (
       <Card>
         <CardContent className="p-6 text-center">
-          <Target className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+          <Target className="size-12 mx-auto text-muted-foreground mb-4" />
           <p className="text-muted-foreground">
             Inicia sesión para gestionar tus metas
           </p>
@@ -206,14 +206,14 @@ export default function GoalsManager({ className }: GoalsManagerProps) {
     <div className={className}>
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-lg font-semibold flex items-center gap-2">
-          <Target className="w-5 h-5" />
+          <Target className="size-5" />
           Mis Metas ({goals.length})
         </h3>
         
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button size="sm" onClick={resetForm}>
-              <Plus className="w-4 h-4 mr-1" />
+              <Plus className="size-4 mr-1" />
               Nueva Meta
             </Button>
           </DialogTrigger>
@@ -316,7 +316,7 @@ export default function GoalsManager({ className }: GoalsManagerProps) {
                 </Button>
                 <Button type="submit" size="sm" disabled={loading}>
                   {loading && (
-                    <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin mr-2" />
+                    <div className="size-3 border border-current border-t-transparent rounded-full animate-spin mr-2" />
                   )}
                   {editingGoal ? 'Actualizar' : 'Crear'}
                 </Button>
@@ -328,13 +328,13 @@ export default function GoalsManager({ className }: GoalsManagerProps) {
 
       {loading && goals.length === 0 ? (
         <div className="text-center py-8">
-          <div className="w-8 h-8 border-2 border-current border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="size-8 border-2 border-current border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p>Cargando metas...</p>
         </div>
       ) : goals.length === 0 ? (
         <Card>
           <CardContent className="p-6 text-center">
-            <Target className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+            <Target className="size-12 mx-auto text-muted-foreground mb-4" />
             <p className="text-muted-foreground mb-2">
               Aún no tienes metas definidas
             </p>
@@ -363,14 +363,14 @@ export default function GoalsManager({ className }: GoalsManagerProps) {
                       size="sm"
                       onClick={() => handleEdit(goal)}
                     >
-                      <Edit className="w-3 h-3" />
+                      <Edit className="size-3" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => goal.id && handleDelete(goal.id)}
                     >
-                      <Trash2 className="w-3 h-3" />
+                      <Trash2 className="size-3" />
                     </Button>
                   </div>
                 </div>
@@ -390,7 +390,7 @@ export default function GoalsManager({ className }: GoalsManagerProps) {
                   )}
                   {goal.targetDate && (
                     <Badge variant="outline">
-                      <Calendar className="w-3 h-3 mr-1" />
+                      <Calendar className="size-3 mr-1" />
                       {new Date(goal.targetDate).toLocaleDateString()}
                     </Badge>
                   )}

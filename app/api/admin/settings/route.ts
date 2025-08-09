@@ -77,11 +77,20 @@ export async function POST(request: NextRequest) {
       ...settings
     }
 
-    // Remove fields that shouldn't be updated via this endpoint
-    const { id, lastUpdatedBy, lastUpdatedAt, ...settingsToSave } = updatedSettings
+    // Remove fields that shouldn't be updated via this endpoint and filter undefined values
+    const { id, lastUpdatedBy, lastUpdatedAt, ...allSettings } = updatedSettings
+    
+    // Filter out undefined values and ensure type compatibility
+    const settingsToSave: Record<string, any> = {}
+    Object.keys(allSettings).forEach(key => {
+      const value = (allSettings as any)[key]
+      if (value !== undefined) {
+        settingsToSave[key] = value
+      }
+    })
 
-    // Save to Firestore
-    await adminServiceServer.updateSystemSettings(settingsToSave, authResult.user.email)
+    // Save to Firestore - cast to the expected type since we've filtered out undefined values
+    await adminServiceServer.updateSystemSettings(settingsToSave as Omit<SystemSettings, 'id' | 'lastUpdatedAt' | 'lastUpdatedBy'>, authResult.user.email)
     
     return NextResponse.json({
       success: true,
