@@ -132,8 +132,8 @@ export default function ProposeEventPage() {
     <div className="container max-w-4xl mx-auto py-8 space-y-6">
       {/* Header */}
       <div className="text-center space-y-4">
-        <div className="size-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-          <Send className="size-10 text-muted-foreground" />
+        <div className="size-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Calendar className="size-10 text-primary" />
         </div>
         <h1 className="text-4xl font-bold">Proponer Nuevo Evento</h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -404,33 +404,46 @@ export default function ProposeEventPage() {
         </CardContent>
       </Card>
 
-      {/* Process Information - Outside the form */}
-      <div className="bg-muted border rounded-lg p-6">
-        <div className="flex items-center gap-3 mb-4">
+      {/* Process Information - Timeline */}
+      <div className="border rounded-lg p-6">
+        <div className="flex items-center gap-3 mb-6">
           <div className="size-10 bg-primary rounded-full flex items-center justify-center">
             <Rocket className="size-5 text-primary-foreground" />
           </div>
           <h3 className="text-lg font-semibold text-foreground">¿Qué pasa después?</h3>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-3">
-            <div className="flex items-start gap-3">
-              <div className="size-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold">1</div>
-              <p className="text-sm text-foreground"><strong>Revisión:</strong> Verificamos la información en 24-48 horas</p>
+        <div className="relative">
+          {/* Vertical Timeline Line */}
+          <div className="absolute left-3 top-0 bottom-0 w-0.5 bg-border"></div>
+          
+          <div className="space-y-6">
+            <div className="flex items-start gap-4">
+              <div className="relative z-10 size-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold">1</div>
+              <div>
+                <h4 className="font-semibold text-foreground">Revisión</h4>
+                <p className="text-sm text-muted-foreground">Verificamos la información en 24-48 horas</p>
+              </div>
             </div>
-            <div className="flex items-start gap-3">
-              <div className="size-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold">2</div>
-              <p className="text-sm text-foreground"><strong>Aprobación:</strong> Te notificamos el estado de tu propuesta</p>
+            <div className="flex items-start gap-4">
+              <div className="relative z-10 size-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold">2</div>
+              <div>
+                <h4 className="font-semibold text-foreground">Aprobación</h4>
+                <p className="text-sm text-muted-foreground">Te notificamos el estado de tu propuesta</p>
+              </div>
             </div>
-          </div>
-          <div className="space-y-3">
-            <div className="flex items-start gap-3">
-              <div className="size-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold">3</div>
-              <p className="text-sm text-foreground"><strong>Publicación:</strong> El evento aparece en Aldebaran</p>
+            <div className="flex items-start gap-4">
+              <div className="relative z-10 size-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold">3</div>
+              <div>
+                <h4 className="font-semibold text-foreground">Publicación</h4>
+                <p className="text-sm text-muted-foreground">El evento aparece en Aldebaran</p>
+              </div>
             </div>
-            <div className="flex items-start gap-3">
-              <div className="size-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold">4</div>
-              <p className="text-sm text-foreground"><strong>Comunidad:</strong> Miles de corredores lo descubren</p>
+            <div className="flex items-start gap-4">
+              <div className="relative z-10 size-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold">4</div>
+              <div>
+                <h4 className="font-semibold text-foreground">Comunidad</h4>
+                <p className="text-sm text-muted-foreground">Miles de corredores lo descubren</p>
+              </div>
             </div>
           </div>
         </div>

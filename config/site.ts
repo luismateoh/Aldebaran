@@ -8,7 +8,7 @@ export const siteConfig = {
   mainNav: [
     {
       title: "Proponer Evento",
-      href: "/proponer-evento",
+      href: "/propose-event",
     },
   ],
   links: {

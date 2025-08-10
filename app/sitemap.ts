@@ -27,7 +27,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Static pages
     const staticUrls = [
       {
-        url: `${SITE_URL}/proponer`,
+        url: `${SITE_URL}/propose-event`,
         lastModified: new Date(),
         changeFrequency: 'monthly' as const,
         priority: 0.6,
