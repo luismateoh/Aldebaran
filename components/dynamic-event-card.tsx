@@ -57,10 +57,10 @@ export default function DynamicEventCard({ eventData, eventDate }: DynamicEventC
         )}
         
         <div className="mb-4 space-y-2">
-          <div className="text-xl font-bold uppercase">
+          <div className="text-xl font-bold uppercase text-foreground">
             {formatDate(eventDate, "EEE", { locale: es })}
           </div>
-          <div className="text-4xl font-bold">
+          <div className="text-4xl font-bold text-foreground">
             {formatDate(eventDate, "dd", { locale: es })}
           </div>
           <div className="text-base font-medium uppercase text-muted-foreground">

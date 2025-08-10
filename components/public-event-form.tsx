@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Send, Calendar, MapPin, User, Globe, Users, Zap, CheckCircle, Rocket } from 'lucide-react'
+import { NaturalDatePicker } from '@/components/natural-date-picker'
 
 interface EventFormData {
   title: string
@@ -203,16 +204,14 @@ export default function PublicEventForm() {
                 />
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="eventDate">Fecha del Evento *</Label>
-                <Input
-                  id="eventDate"
-                  type="date"
-                  required
-                  value={formData.eventDate}
-                  onChange={(e) => setFormData(prev => ({ ...prev, eventDate: e.target.value }))}
-                />
-              </div>
+              <NaturalDatePicker
+                label="Fecha del Evento"
+                value={formData.eventDate}
+                onChange={(value) => setFormData(prev => ({ ...prev, eventDate: value }))}
+                placeholder="Ej: mañana, próximo sábado, 15 de marzo"
+                required
+                helpText="El evento se realizará el"
+              />
             </div>
 
             {/* Location */}

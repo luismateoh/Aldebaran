@@ -65,7 +65,7 @@ export default function LoginPage() {
         </div>
       </div>
       <div className="bg-muted relative hidden lg:block">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800">
+        <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 via-blue-600 to-red-600">
           <div className="absolute inset-0 bg-black/20" />
           <div className="relative h-full flex flex-col justify-center items-center text-white p-8">
             <div className="text-center space-y-6 max-w-md">
