@@ -123,6 +123,45 @@ export default function EventsPage() {
     }
   }
 
+  const handleDeleteEvent = async (eventId: string, eventTitle: string) => {
+    // Confirmación antes de eliminar
+    const confirmed = window.confirm(
+      `¿Estás seguro de que quieres eliminar permanentemente el evento "${eventTitle}"?\n\nEsta acción no se puede deshacer.`
+    )
+
+    if (!confirmed) return
+
+    try {
+      setActionResult(null)
+      
+      const response = await makeAuthenticatedRequest(`/api/events/delete?id=${eventId}`, {
+        method: 'DELETE'
+      })
+
+      if (response.ok) {
+        // Remove from local state
+        setEvents(events.filter(event => event.id !== eventId))
+        
+        // Show success message
+        setActionResult({
+          success: true,
+          message: `Evento "${eventTitle}" eliminado permanentemente`
+        })
+      } else {
+        const errorData = await response.json()
+        setActionResult({
+          success: false,
+          message: errorData.error || 'Error eliminando evento'
+        })
+      }
+    } catch (error) {
+      setActionResult({
+        success: false,
+        message: `Error: ${error instanceof Error ? error.message : 'Desconocido'}`
+      })
+    }
+  }
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     if (isNaN(date.getTime())) return 'Fecha inválida'
@@ -245,7 +284,7 @@ export default function EventsPage() {
   // Show loading while checking authentication
   if (loading) {
     return (
-      <div className="container max-w-6xl mx-auto py-8">
+      <div className="container mx-auto max-w-6xl py-8">
         <div className="text-center">Verificando autenticación...</div>
       </div>
     )
@@ -258,26 +297,26 @@ export default function EventsPage() {
 
   if (isLoading) {
     return (
-      <div className="container max-w-6xl mx-auto py-8">
+      <div className="container mx-auto max-w-6xl py-8">
         <div className="text-center">Cargando eventos...</div>
       </div>
     )
   }
 
   return (
-    <div className="container max-w-6xl mx-auto py-8 space-y-6">
+    <div className="container mx-auto max-w-6xl space-y-6 py-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold">Gestión de Eventos</h1>
+            <h1 className="text-2xl font-bold sm:text-3xl">Gestión de Eventos</h1>
             <p className="text-sm text-muted-foreground">
               {filteredEvents.length} de {events.length} eventos
             </p>
           </div>
         </div>
         <Button onClick={handleCreateEvent} size="sm">
-          <Plus className="size-4 mr-2" />
+          <Plus className="mr-2 size-4" />
           Nuevo
         </Button>
       </div>
@@ -287,7 +326,7 @@ export default function EventsPage() {
       <div className="space-y-4">
         {/* Search Bar */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4" />
+          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Buscar eventos por título, municipio u organizador..."
             value={searchTerm}
@@ -297,7 +336,7 @@ export default function EventsPage() {
         </div>
 
         {/* Filters - Collapsible on mobile */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-6">
           {/* Status Filter */}
           <Select value={filter} onValueChange={(value: any) => setFilter(value)}>
             <SelectTrigger className="text-xs">
@@ -360,7 +399,7 @@ export default function EventsPage() {
             onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
             className="text-xs"
           >
-            <SortAsc className={`size-3 mr-1 ${sortOrder === 'desc' ? 'rotate-180' : ''}`} />
+            <SortAsc className={`mr-1 size-3 ${sortOrder === 'desc' ? 'rotate-180' : ''}`} />
             {sortOrder === 'asc' ? 'A-Z' : 'Z-A'}
           </Button>
 
@@ -419,7 +458,7 @@ export default function EventsPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Card>
           <CardContent className="p-4">
             <div className="text-2xl font-bold">{events.length}</div>
@@ -464,12 +503,12 @@ export default function EventsPage() {
             </AlertDescription>
           </Alert>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {filteredEvents.map((event) => (
-              <Card key={event.id} className="hover:shadow-md transition-shadow">
+              <Card key={event.id} className="transition-shadow hover:shadow-md">
                 <CardHeader className="pb-3">
-                  <div className="flex justify-between items-start mb-2">
-                    <CardTitle className="text-lg line-clamp-2">{event.title}</CardTitle>
+                  <div className="mb-2 flex items-start justify-between">
+                    <CardTitle className="line-clamp-2 text-lg">{event.title}</CardTitle>
                     <div className="flex items-center gap-2">
                       {getStatusBadge(event)}
                       <DropdownMenu>
@@ -505,13 +544,20 @@ export default function EventsPage() {
                               <span>Cancelar</span>
                             </DropdownMenuItem>
                           )}
+                          <DropdownMenuItem 
+                            onClick={() => handleDeleteEvent(event.id, event.title)}
+                            className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                          >
+                            <Trash className="mr-2 size-4" />
+                            <span>Eliminar Permanentemente</span>
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <div className="space-y-2 text-sm text-muted-foreground mb-4">
+                  <div className="mb-4 space-y-2 text-sm text-muted-foreground">
                     <div className="flex items-center gap-2">
                       <Calendar className="size-4" />
                       {formatDate(event.eventDate)}
@@ -527,7 +573,7 @@ export default function EventsPage() {
                   </div>
 
                   {/* Distances */}
-                  <div className="flex flex-wrap gap-1 mb-4">
+                  <div className="mb-4 flex flex-wrap gap-1">
                     {event.distances.slice(0, 3).map((distance, index) => (
                       <Badge key={index} variant="secondary" className="text-xs">
                         {distance}
@@ -545,7 +591,7 @@ export default function EventsPage() {
                     variant="outline"
                     onClick={() => handleEditEvent(event.id)}
                   >
-                    <Edit className="size-4 mr-2" />
+                    <Edit className="mr-2 size-4" />
                     Editar Evento
                   </Button>
                 </CardContent>

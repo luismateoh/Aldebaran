@@ -130,7 +130,7 @@ export default function EventAttendanceButton({
       <span className="text-sm font-medium">Completado</span>
       {currentInteraction.rating && (
         <Badge variant="secondary" className="ml-1">
-          <Star className="size-3 mr-1 fill-yellow-400 text-yellow-400" />
+          <Star className="mr-1 size-3 fill-yellow-400 text-yellow-400" />
           {currentInteraction.rating}
         </Badge>
       )}
@@ -191,7 +191,7 @@ export default function EventAttendanceButton({
                   type="date"
                   value={formData.completedDate}
                   onChange={(e) => setFormData(prev => ({ ...prev, completedDate: e.target.value }))}
-                  className="text-sm mt-2"
+                  className="mt-2 text-sm"
                 />
               </div>
 
@@ -223,11 +223,11 @@ export default function EventAttendanceButton({
                   value={formData.notes}
                   onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
                   placeholder="¿Cómo fue tu experiencia? ¿Lograste tu objetivo?"
-                  className="text-sm mt-2"
+                  className="mt-2 text-sm"
                   rows={3}
                   maxLength={500}
                 />
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="mt-1 text-xs text-muted-foreground">
                   Comparte tu experiencia en el evento
                 </p>
               </div>
@@ -250,7 +250,7 @@ export default function EventAttendanceButton({
                 className="flex items-center gap-1.5"
               >
                 {loading && (
-                  <div className="size-3 border border-current border-t-transparent rounded-full animate-spin" />
+                  <div className="size-3 animate-spin rounded-full border border-current border-t-transparent" />
                 )}
                 Guardar
               </Button>

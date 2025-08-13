@@ -148,7 +148,7 @@ export default function PublicEventForm() {
     <>
       {/* Submit Result */}
       {submitResult && (
-        <div className={`border rounded-lg p-4 ${
+        <div className={`rounded-lg border p-4 ${
           submitResult.success 
             ? "border-border bg-muted text-foreground" 
             : "border-destructive bg-destructive/10 text-destructive"
@@ -192,7 +192,7 @@ export default function PublicEventForm() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Basic Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="title">Nombre del Evento *</Label>
                 <Input
@@ -215,7 +215,7 @@ export default function PublicEventForm() {
             </div>
 
             {/* Location */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="municipality">Municipio *</Label>
                 <Input
@@ -247,7 +247,7 @@ export default function PublicEventForm() {
             </div>
 
             {/* Organization */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="organizer">Organizador</Label>
                 <Input
@@ -271,7 +271,7 @@ export default function PublicEventForm() {
             </div>
 
             {/* Category and Fee */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="category">Categoría</Label>
                 <Select 
@@ -303,7 +303,7 @@ export default function PublicEventForm() {
             {/* Distances */}
             <div className="space-y-2">
               <Label>Distancias Disponibles *</Label>
-              <p className="text-sm text-muted-foreground mb-3">
+              <p className="mb-3 text-sm text-muted-foreground">
                 Seleccione al menos una distancia que estará disponible en el evento
               </p>
               <div className="flex flex-wrap gap-2">
@@ -338,7 +338,7 @@ export default function PublicEventForm() {
             </div>
 
             {/* Contact Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="submittedBy">Su Nombre</Label>
                 <Input
@@ -365,13 +365,13 @@ export default function PublicEventForm() {
             </div>
 
             {/* Submit Button */}
-            <div className="flex gap-4 pt-6 border-t">
+            <div className="flex gap-4 border-t pt-6">
               <Button
                 type="submit"
                 disabled={isSubmitting}
                 className="flex-1"
               >
-                <Send className="size-4 mr-2" />
+                <Send className="mr-2 size-4" />
                 {isSubmitting ? 'Enviando Propuesta...' : 'Enviar Propuesta'}
               </Button>
             </div>

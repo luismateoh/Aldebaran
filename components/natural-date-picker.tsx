@@ -183,13 +183,13 @@ export function NaturalDatePicker({
               type="button"
               variant="ghost"
               size="sm"
-              className="absolute right-0 top-0 h-full px-3 hover:bg-transparent z-10"
+              className="absolute right-0 top-0 z-10 h-full px-3 hover:bg-transparent"
             >
               <CalendarIcon className="size-4 text-muted-foreground" />
               <span className="sr-only">Seleccionar fecha</span>
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 z-50" align="end" side="bottom">
+          <PopoverContent className="z-50 w-auto p-0" align="end" side="bottom">
             <Calendar
               mode="single"
               selected={date}
@@ -209,7 +209,7 @@ export function NaturalDatePicker({
             </span>
           ) : (
             <span className="text-destructive">
-              No se pudo interpretar "{inputValue}". Intenta con "ayer", "mañana" o una fecha específica.
+              No se pudo interpretar &ldquo;{inputValue}&rdquo;. Intenta con &ldquo;ayer&rdquo;, &ldquo;mañana&rdquo; o una fecha específica.
             </span>
           )}
         </div>

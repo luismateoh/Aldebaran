@@ -193,7 +193,7 @@ export default function GoalsManager({ className }: GoalsManagerProps) {
     return (
       <Card>
         <CardContent className="p-6 text-center">
-          <Target className="size-12 mx-auto text-muted-foreground mb-4" />
+          <Target className="mx-auto mb-4 size-12 text-muted-foreground" />
           <p className="text-muted-foreground">
             Inicia sesión para gestionar tus metas
           </p>
@@ -204,8 +204,8 @@ export default function GoalsManager({ className }: GoalsManagerProps) {
 
   return (
     <div className={className}>
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-lg font-semibold flex items-center gap-2">
+      <div className="mb-6 flex items-center justify-between">
+        <h3 className="flex items-center gap-2 text-lg font-semibold">
           <Target className="size-5" />
           Mis Metas ({goals.length})
         </h3>
@@ -213,7 +213,7 @@ export default function GoalsManager({ className }: GoalsManagerProps) {
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button size="sm" onClick={resetForm}>
-              <Plus className="size-4 mr-1" />
+              <Plus className="mr-1 size-4" />
               Nueva Meta
             </Button>
           </DialogTrigger>
@@ -316,7 +316,7 @@ export default function GoalsManager({ className }: GoalsManagerProps) {
                 </Button>
                 <Button type="submit" size="sm" disabled={loading}>
                   {loading && (
-                    <div className="size-3 border border-current border-t-transparent rounded-full animate-spin mr-2" />
+                    <div className="mr-2 size-3 animate-spin rounded-full border border-current border-t-transparent" />
                   )}
                   {editingGoal ? 'Actualizar' : 'Crear'}
                 </Button>
@@ -327,15 +327,15 @@ export default function GoalsManager({ className }: GoalsManagerProps) {
       </div>
 
       {loading && goals.length === 0 ? (
-        <div className="text-center py-8">
-          <div className="size-8 border-2 border-current border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+        <div className="py-8 text-center">
+          <div className="mx-auto mb-4 size-8 animate-spin rounded-full border-2 border-current border-t-transparent" />
           <p>Cargando metas...</p>
         </div>
       ) : goals.length === 0 ? (
         <Card>
           <CardContent className="p-6 text-center">
-            <Target className="size-12 mx-auto text-muted-foreground mb-4" />
-            <p className="text-muted-foreground mb-2">
+            <Target className="mx-auto mb-4 size-12 text-muted-foreground" />
+            <p className="mb-2 text-muted-foreground">
               Aún no tienes metas definidas
             </p>
             <p className="text-sm text-muted-foreground">
@@ -348,7 +348,7 @@ export default function GoalsManager({ className }: GoalsManagerProps) {
           {goals.map((goal) => (
             <Card key={goal.id}>
               <CardContent className="p-4">
-                <div className="flex justify-between items-start mb-3">
+                <div className="mb-3 flex items-start justify-between">
                   <div className="flex items-center gap-2">
                     <span className="text-lg">{getCategoryIcon(goal.category)}</span>
                     <h4 className="font-semibold">{goal.title}</h4>
@@ -375,7 +375,7 @@ export default function GoalsManager({ className }: GoalsManagerProps) {
                   </div>
                 </div>
                 
-                <p className="text-sm text-muted-foreground mb-3">
+                <p className="mb-3 text-sm text-muted-foreground">
                   {goal.description}
                 </p>
                 
@@ -390,7 +390,7 @@ export default function GoalsManager({ className }: GoalsManagerProps) {
                   )}
                   {goal.targetDate && (
                     <Badge variant="outline">
-                      <Calendar className="size-3 mr-1" />
+                      <Calendar className="mr-1 size-3" />
                       {new Date(goal.targetDate).toLocaleDateString()}
                     </Badge>
                   )}

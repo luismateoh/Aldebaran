@@ -41,8 +41,8 @@ export default function GiscusComments({ eventId }: GiscusCommentsProps) {
 
   return (
     <div className="mt-8">
-      <h3 className="text-2xl font-bold mb-4">💬 Comentarios de la Comunidad</h3>
-      <p className="text-muted-foreground mb-4">
+      <h3 className="mb-4 text-2xl font-bold">💬 Comentarios de la Comunidad</h3>
+      <p className="mb-4 text-muted-foreground">
         Comparte tu experiencia, haz preguntas o conecta con otros corredores
       </p>
       <div id="giscus-comments" className="giscus-comments" />

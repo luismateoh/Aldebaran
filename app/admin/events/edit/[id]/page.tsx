@@ -12,6 +12,9 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
+import { NaturalDatePicker } from '@/components/natural-date-picker'
+import { MunicipalityAutocomplete } from '@/components/municipality-autocomplete'
+import { getAltitude } from '@/lib/colombia-altitudes'
 import { Save, Calendar, MapPin, User, Globe, DollarSign, Check } from 'lucide-react'
 
 interface EventData {
@@ -120,6 +123,46 @@ export default function EditEventPage() {
         ...prev,
         distances: newDistances
       }
+    })
+  }
+
+  // Handle municipality change and auto-set altitude
+  const handleMunicipalityChange = (municipality: string) => {
+    if (!eventData) return
+    
+    setEventData(prev => {
+      if (!prev) return prev
+      const newData = { ...prev, municipality }
+      
+      // Auto-set altitude if municipality and department are available
+      if (municipality && prev.department) {
+        const altitude = getAltitude(municipality, prev.department)
+        if (altitude) {
+          newData.altitude = `${altitude}m`
+        }
+      }
+      
+      return newData
+    })
+  }
+
+  // Handle department change and auto-set altitude
+  const handleDepartmentChange = (department: string) => {
+    if (!eventData) return
+    
+    setEventData(prev => {
+      if (!prev) return prev
+      const newData = { ...prev, department }
+      
+      // Auto-set altitude if municipality and department are available
+      if (prev.municipality && department) {
+        const altitude = getAltitude(prev.municipality, department)
+        if (altitude) {
+          newData.altitude = `${altitude}m`
+        }
+      }
+      
+      return newData
     })
   }
 
@@ -386,7 +429,7 @@ ${eventData.description}`
   // Show loading while checking authentication
   if (loading) {
     return (
-      <div className="container max-w-4xl mx-auto py-8">
+      <div className="container mx-auto max-w-4xl py-8">
         <div className="text-center">Verificando autenticación...</div>
       </div>
     )
@@ -399,7 +442,7 @@ ${eventData.description}`
 
   if (isLoading) {
     return (
-      <div className="container max-w-4xl mx-auto py-8">
+      <div className="container mx-auto max-w-4xl py-8">
         <div className="text-center">Cargando evento...</div>
       </div>
     )
@@ -407,7 +450,7 @@ ${eventData.description}`
 
   if (!eventData) {
     return (
-      <div className="container max-w-4xl mx-auto py-8">
+      <div className="container mx-auto max-w-4xl py-8">
         <div className="mt-4">
           <p>Evento no encontrado</p>
         </div>
@@ -416,7 +459,7 @@ ${eventData.description}`
   }
 
   return (
-    <div className="container max-w-4xl mx-auto py-8 space-y-6">
+    <div className="container mx-auto max-w-4xl space-y-6 py-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -437,7 +480,7 @@ ${eventData.description}`
 
       {/* Save Result */}
       {saveResult && (
-        <div className={`border rounded-lg p-4 ${saveResult.error ? "border-red-200 bg-red-50" : "border-green-200 bg-green-50"}`}>
+        <div className={`rounded-lg border p-4 ${saveResult.error ? "border-red-200 bg-red-50" : "border-green-200 bg-green-50"}`}>
           <p className={saveResult.error ? "text-red-700" : "text-green-700"}>
             {saveResult.message}
           </p>
@@ -454,7 +497,7 @@ ${eventData.description}`
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Basic Information */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="title">Nombre del Evento *</Label>
               <Input
@@ -464,33 +507,33 @@ ${eventData.description}`
               />
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="date">Fecha del Evento *</Label>
-              <Input
-                id="date"
-                type="date"
-                value={eventData.eventDate}
-                onChange={(e) => setEventData(prev => prev ? { ...prev, eventDate: e.target.value } : null)}
-              />
-            </div>
+            <NaturalDatePicker
+              label="Fecha del Evento"
+              value={eventData.eventDate}
+              onChange={(value) => setEventData(prev => prev ? { ...prev, eventDate: value } : null)}
+              placeholder="Ej: mañana, próximo sábado, 15 de marzo"
+              required
+              helpText="El evento se realizará el"
+            />
           </div>
 
           {/* Location */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="municipality">Municipio *</Label>
-              <Input
-                id="municipality"
-                value={eventData.municipality}
-                onChange={(e) => setEventData(prev => prev ? { ...prev, municipality: e.target.value } : null)}
-              />
-            </div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <MunicipalityAutocomplete
+              value={eventData.municipality}
+              onChange={handleMunicipalityChange}
+              onDepartmentChange={handleDepartmentChange}
+              department={eventData.department}
+              placeholder="Escriba el nombre del municipio"
+              required
+              label="Municipio"
+            />
             
             <div className="space-y-2">
               <Label htmlFor="department">Departamento *</Label>
               <Select 
                 value={eventData.department} 
-                onValueChange={(value) => setEventData(prev => prev ? { ...prev, department: value } : null)}
+                onValueChange={handleDepartmentChange}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -502,10 +545,25 @@ ${eventData.description}`
                 </SelectContent>
               </Select>
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="altitude">Altitud</Label>
+              <Input
+                id="altitude"
+                placeholder="Ej: 2600m"
+                value={eventData.altitude}
+                onChange={(e) => setEventData(prev => prev ? { ...prev, altitude: e.target.value } : null)}
+                className="bg-muted"
+                title="Se completa automáticamente al seleccionar municipio"
+              />
+              <p className="text-xs text-muted-foreground">
+                Se completa automáticamente al seleccionar el municipio
+              </p>
+            </div>
           </div>
 
           {/* Organization */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="organizer">Organizador</Label>
               <Input
@@ -526,7 +584,7 @@ ${eventData.description}`
           </div>
 
           {/* Category and Fee */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="category">Categoría</Label>
               <Select 
@@ -550,16 +608,6 @@ ${eventData.description}`
                 id="registrationFee"
                 value={eventData.registrationFee}
                 onChange={(e) => setEventData(prev => prev ? { ...prev, registrationFee: e.target.value } : null)}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="altitude">Altitud</Label>
-              <Input
-                id="altitude"
-                placeholder="2640m"
-                value={eventData.altitude}
-                onChange={(e) => setEventData(prev => prev ? { ...prev, altitude: e.target.value } : null)}
               />
             </div>
           </div>
@@ -606,12 +654,12 @@ ${eventData.description}`
               onChange={(e) => setEventData(prev => prev ? { ...prev, cover: e.target.value } : null)}
             />
             {eventData.cover && (
-              <div className="mt-2 border rounded-md p-2">
-                <p className="text-xs text-muted-foreground mb-1">Vista previa de imagen:</p>
+              <div className="mt-2 rounded-md border p-2">
+                <p className="mb-1 text-xs text-muted-foreground">Vista previa de imagen:</p>
                 <img 
                   src={eventData.cover} 
                   alt="Vista previa de portada" 
-                  className="h-24 object-cover rounded"
+                  className="h-24 rounded object-cover"
                   onError={(e) => (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x400?text=Error+cargando+imagen'}
                 />
               </div>
@@ -619,7 +667,7 @@ ${eventData.description}`
           </div>
 
           {/* Status Switch */}
-          <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/50">
+          <div className="flex items-center justify-between rounded-lg border bg-muted/50 p-4">
             <div className="space-y-1">
               <Label className="text-base font-medium">Estado del Evento</Label>
               <p className="text-sm text-muted-foreground">
@@ -647,7 +695,7 @@ ${eventData.description}`
           </div>
 
           {/* Actions */}
-          <div className="flex gap-4 pt-6 border-t">
+          <div className="flex gap-4 border-t pt-6">
             <Button onClick={enhanceWithAI} disabled={isGenerating || !eventData} variant="outline">
               {isGenerating ? (
                 <>🔄 Generando...</>
@@ -669,7 +717,7 @@ ${eventData.description}`
               disabled={isSaving}
               className="flex-1"
             >
-              <Save className="size-4 mr-2" />
+              <Save className="mr-2 size-4" />
               {isSaving ? 'Guardando...' : 'Guardar Cambios'}
             </Button>
 
@@ -680,7 +728,7 @@ ${eventData.description}`
                 variant="secondary"
                 className="flex-1"
               >
-                <Check className="size-4 mr-2" />
+                <Check className="mr-2 size-4" />
                 {isSaving ? 'Publicando...' : 'Publicar Evento'}
               </Button>
             )}
@@ -705,7 +753,7 @@ ${eventData.description}`
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <pre className="whitespace-pre-wrap bg-muted p-4 rounded text-sm overflow-auto max-h-96">
+            <pre className="max-h-96 overflow-auto whitespace-pre-wrap rounded bg-muted p-4 text-sm">
               {generatedEvent}
             </pre>
           </CardContent>

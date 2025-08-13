@@ -10,7 +10,7 @@ export default function TableView() {
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full size-8 border-b-2 border-primary"></div>
+        <div className="size-8 animate-spin rounded-full border-b-2 border-primary"></div>
         <span className="ml-2">Cargando eventos...</span>
       </div>
     )
@@ -18,7 +18,7 @@ export default function TableView() {
 
   if (error) {
     return (
-      <div className="text-center p-8 text-red-600">
+      <div className="p-8 text-center text-red-600">
         <p>Error cargando eventos: {error}</p>
       </div>
     )

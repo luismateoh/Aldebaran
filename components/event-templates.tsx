@@ -119,8 +119,8 @@ export default function EventTemplates({ onSelectTemplate }: EventTemplatesProps
 
   return (
     <div className="space-y-6">
-      <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold flex items-center justify-center gap-2">
+      <div className="space-y-2 text-center">
+        <h2 className="flex items-center justify-center gap-2 text-2xl font-bold">
           <Zap className="size-6 text-blue-500" />
           Templates de Eventos
         </h2>
@@ -129,12 +129,12 @@ export default function EventTemplates({ onSelectTemplate }: EventTemplatesProps
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {Object.entries(eventTemplates).map(([key, template]) => (
-          <Card key={key} className="hover:shadow-lg transition-shadow cursor-pointer group">
+          <Card key={key} className="group cursor-pointer transition-shadow hover:shadow-lg">
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
-                <CardTitle className="text-lg group-hover:text-blue-600 transition-colors">
+                <CardTitle className="text-lg transition-colors group-hover:text-blue-600">
                   {template.title}
                 </CardTitle>
                 <Badge variant="outline" className="text-xs">
@@ -178,7 +178,7 @@ export default function EventTemplates({ onSelectTemplate }: EventTemplatesProps
               </div>
 
               {/* Acción */}
-              <div className="pt-2 border-t">
+              <div className="border-t pt-2">
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button 
@@ -186,12 +186,12 @@ export default function EventTemplates({ onSelectTemplate }: EventTemplatesProps
                       size="sm"
                       onClick={() => setSelectedTemplate(key)}
                     >
-                      <Copy className="size-4 mr-2" />
+                      <Copy className="mr-2 size-4" />
                       Usar Template
                     </Button>
                   </DialogTrigger>
                   
-                  <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                  <DialogContent className="max-h-[80vh] max-w-2xl overflow-y-auto">
                     <DialogHeader>
                       <DialogTitle className="flex items-center gap-2">
                         <Calendar className="size-5" />
@@ -206,7 +206,7 @@ export default function EventTemplates({ onSelectTemplate }: EventTemplatesProps
                       {/* Información del template */}
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <h4 className="font-semibold mb-2">Detalles</h4>
+                          <h4 className="mb-2 font-semibold">Detalles</h4>
                           <div className="space-y-1 text-sm">
                             <p><strong>Categoría:</strong> {template.category}</p>
                             <p><strong>Distancias:</strong> {template.distances.join(', ')}</p>
@@ -216,7 +216,7 @@ export default function EventTemplates({ onSelectTemplate }: EventTemplatesProps
                         </div>
                         
                         <div>
-                          <h4 className="font-semibold mb-2">Organizadores Sugeridos</h4>
+                          <h4 className="mb-2 font-semibold">Organizadores Sugeridos</h4>
                           <div className="space-y-1">
                             {template.organizers.map(org => (
                               <Badge key={org} variant="outline" className="block w-fit">
@@ -229,15 +229,15 @@ export default function EventTemplates({ onSelectTemplate }: EventTemplatesProps
 
                       {/* Descripción completa */}
                       <div>
-                        <h4 className="font-semibold mb-2">Descripción</h4>
-                        <p className="text-sm text-muted-foreground bg-muted p-3 rounded">
+                        <h4 className="mb-2 font-semibold">Descripción</h4>
+                        <p className="rounded bg-muted p-3 text-sm text-muted-foreground">
                           {template.description}
                         </p>
                       </div>
 
                       {/* Tags completos */}
                       <div>
-                        <h4 className="font-semibold mb-2">Características</h4>
+                        <h4 className="mb-2 font-semibold">Características</h4>
                         <div className="flex flex-wrap gap-2">
                           {template.tags.map(tag => (
                             <Badge key={tag} variant="secondary">
@@ -248,12 +248,12 @@ export default function EventTemplates({ onSelectTemplate }: EventTemplatesProps
                       </div>
 
                       {/* Acción final */}
-                      <div className="flex gap-2 pt-4 border-t">
+                      <div className="flex gap-2 border-t pt-4">
                         <Button 
                           className="flex-1"
                           onClick={() => handleUseTemplate(key, template)}
                         >
-                          <CheckCircle className="size-4 mr-2" />
+                          <CheckCircle className="mr-2 size-4" />
                           Crear con este Template
                         </Button>
                       </div>
@@ -267,11 +267,11 @@ export default function EventTemplates({ onSelectTemplate }: EventTemplatesProps
       </div>
 
       {/* Instrucciones móviles */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 md:hidden">
+      <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 md:hidden">
         <div className="flex items-start gap-3">
-          <Zap className="size-5 text-blue-600 mt-0.5" />
+          <Zap className="mt-0.5 size-5 text-blue-600" />
           <div>
-            <h4 className="font-semibold text-blue-900 mb-1">Optimizado para Móvil</h4>
+            <h4 className="mb-1 font-semibold text-blue-900">Optimizado para Móvil</h4>
             <p className="text-sm text-blue-700">
               Toca cualquier template para ver los detalles y usar la plantilla. 
               Todos los campos se autocompletarán para acelerar la creación.

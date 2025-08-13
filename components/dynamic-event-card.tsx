@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react'
 import { formatDate } from "date-fns"
 import { es } from "date-fns/locale"
 import Link from "next/link"
-import { capitalize } from "@/lib/utils"
 import EventActions from "@/components/event-actions"
 import CountDownTimer from "@/components/count-down-timer"
 import { Badge } from "@/components/ui/badge"
@@ -17,9 +16,10 @@ interface DynamicEventCardProps {
 
 export default function DynamicEventCard({ eventData, eventDate }: DynamicEventCardProps) {
   const [showTitle, setShowTitle] = useState(false)
+  const [isSticky, setIsSticky] = useState(true)
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
+    const titleObserver = new IntersectionObserver(
       ([entry]) => {
         // Show small title when main title is not visible
         setShowTitle(!entry.isIntersecting)
@@ -30,28 +30,48 @@ export default function DynamicEventCard({ eventData, eventDate }: DynamicEventC
       }
     )
 
+    const commentsObserver = new IntersectionObserver(
+      ([entry]) => {
+        // Stop being sticky when comments section is visible
+        setIsSticky(!entry.isIntersecting)
+      },
+      {
+        threshold: 0,
+        rootMargin: '0px 0px 0px 0px'
+      }
+    )
+
     // Observe the main title that should exist in the parent
     const mainTitle = document.querySelector('h1[data-main-title]')
     if (mainTitle) {
-      observer.observe(mainTitle)
+      titleObserver.observe(mainTitle)
+    }
+
+    // Observe the comments section
+    const commentsSection = document.querySelector('[data-comments-section]')
+    if (commentsSection) {
+      commentsObserver.observe(commentsSection)
     }
 
     return () => {
       if (mainTitle) {
-        observer.unobserve(mainTitle)
+        titleObserver.unobserve(mainTitle)
+      }
+      if (commentsSection) {
+        commentsObserver.unobserve(commentsSection)
       }
     }
   }, [])
 
   return (
-    <div className="sticky top-20 z-10 space-y-4">
+    <div className={`${isSticky ? 'sticky top-20' : 'relative'} z-10 space-y-4`}>
       {/* Event Title & Date Card */}
       <div className="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
         {/* Dynamic Title - only shows when main title is not visible */}
         {showTitle && (
           <div className="mb-4 transition-opacity duration-200 ease-in-out">
             <h3 className="text-xl font-bold">
-              {capitalize(eventData.title)}
+              {eventData.title.toUpperCase()}
             </h3>
           </div>
         )}
@@ -101,10 +121,6 @@ export default function DynamicEventCard({ eventData, eventDate }: DynamicEventC
       <div className="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
         <h3 className="mb-3 text-base font-semibold">Detalles</h3>
         <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Fecha:</span>
-            <span className="font-medium">{formatDate(eventDate, "MMMM dd, yyyy", { locale: es })}</span>
-          </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">Ubicación:</span>
             <span className="font-medium">{eventData.municipality}, {eventData.department}</span>
@@ -164,19 +180,6 @@ export default function DynamicEventCard({ eventData, eventDate }: DynamicEventC
             <div className="flex justify-between">
               <span className="text-muted-foreground">Altitud:</span>
               <span className="font-medium">{eventData.altitude}</span>
-            </div>
-          )}
-          
-          {eventData.tags && eventData.tags.length > 0 && (
-            <div className="pt-2">
-              <div className="mb-2 text-muted-foreground">Etiquetas:</div>
-              <div className="flex flex-wrap gap-1">
-                {eventData.tags.map((tag, index) => (
-                  <Badge key={index} variant="outline" className="text-xs">
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
             </div>
           )}
         </div>

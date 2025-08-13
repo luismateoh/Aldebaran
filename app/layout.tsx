@@ -13,6 +13,7 @@ import { SiteHeader } from "@/components/site-header"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/lib/auth-context"
+import { Toaster } from "@/components/ui/sonner"
 
 export const metadata: Metadata = {
   title: {
@@ -65,6 +66,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
               <TailwindIndicator />
               <Footer />
               <ScrollToTop />
+              <Toaster />
             </AuthProvider>
           </ThemeProvider>
           <Analytics />

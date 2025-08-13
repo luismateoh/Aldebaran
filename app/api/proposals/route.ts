@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { proposalsServiceAdmin } from '@/lib/proposals-firebase-admin'
 import { verifyAdminToken } from '@/lib/auth-server'
+import nodemailer from 'nodemailer'
 
 // GET - Obtener todas las propuestas (solo admin)
 export async function GET(request: NextRequest) {
@@ -67,6 +68,15 @@ export async function POST(request: NextRequest) {
 
     console.log(`✅ API /api/proposals - Propuesta creada: ${newProposal.id}`)
 
+    // Enviar email de notificación al admin
+    try {
+      await sendProposalNotificationEmail(newProposal)
+      console.log('✅ Email de notificación enviado')
+    } catch (emailError) {
+      console.error('❌ Error enviando email:', emailError)
+      // No fallar la creación de la propuesta por un error de email
+    }
+
     return NextResponse.json({ 
       success: true,
       proposal: newProposal,
@@ -80,4 +90,60 @@ export async function POST(request: NextRequest) {
       details: error instanceof Error ? error.message : 'Error desconocido'
     }, { status: 500 })
   }
+}
+
+// Función para enviar email de notificación
+async function sendProposalNotificationEmail(proposal: any) {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.NEXT_PUBLIC_ADMIN_EMAIL,
+      pass: process.env.GMAIL_APP_PASSWORD // Necesitarás generar una contraseña de aplicación
+    }
+  })
+
+  const emailBody = `
+🏃‍♂️ NUEVA PROPUESTA DE EVENTO - ALDEBARAN
+
+📝 INFORMACIÓN BÁSICA:
+• Título: ${proposal.title}
+• Fecha: ${proposal.eventDate}
+• Ciudad: ${proposal.municipality}, ${proposal.department}
+• Organizador: ${proposal.organizer || 'No especificado'}
+• Categoría: ${proposal.category}
+
+💰 DETALLES ECONÓMICOS:
+• Costo: ${proposal.registrationFee || 'No especificado'}
+• Sitio web: ${proposal.website || 'No especificado'}
+
+🏃‍♀️ DISTANCIAS:
+${proposal.distances?.length ? proposal.distances.map((d: string) => `• ${d}`).join('\n') : '• No especificadas'}
+
+📋 DESCRIPCIÓN:
+${proposal.description || 'Sin descripción proporcionada'}
+
+👤 INFORMACIÓN DEL REMITENTE:
+• Nombre: ${proposal.submittedBy || 'Usuario anónimo'}
+• Email: ${proposal.submitterEmail || 'No proporcionado'}
+• IP: ${proposal.ipAddress}
+
+---
+💡 Esta propuesta fue enviada desde el formulario público de Aldebaran.
+⏰ Fecha de envío: ${new Date().toLocaleString('es-CO')}
+🆔 ID de propuesta: ${proposal.id}
+
+Para procesar este evento:
+1. Ve a https://aldebaran-run.vercel.app/admin/proposals
+2. Revisa y aprueba la propuesta
+3. El evento será publicado automáticamente
+  `
+
+  const mailOptions = {
+    from: process.env.NEXT_PUBLIC_ADMIN_EMAIL,
+    to: process.env.NEXT_PUBLIC_ADMIN_EMAIL,
+    subject: `🏃‍♂️ Nueva Propuesta: ${proposal.title}`,
+    text: emailBody
+  }
+
+  await transporter.sendMail(mailOptions)
 }

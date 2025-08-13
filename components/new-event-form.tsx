@@ -13,6 +13,10 @@ import { Badge } from '@/components/ui/badge'
 import { Calendar, CheckCircle, ChevronUp, Edit } from 'lucide-react'
 import { eventsService } from '@/lib/events-firebase'
 import AIEventSearch from '@/components/ai-event-search'
+import { NaturalDatePicker } from '@/components/natural-date-picker'
+import { MunicipalityAutocomplete } from '@/components/municipality-autocomplete'
+import { getAltitude } from '@/lib/colombia-altitudes'
+import { toast } from "sonner"
 
 interface EventFormData {
   title: string
@@ -26,6 +30,7 @@ interface EventFormData {
   price: string
   category: string
   cover: string
+  altitude: string
 }
 
 interface NewEventFormProps {
@@ -45,13 +50,13 @@ export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
     distances: [],
     price: '',
     category: 'Running',
-    cover: ''
+    cover: '',
+    altitude: ''
   })
   
   const [isSending, setIsSending] = useState(false)
   const [emailSent, setEmailSent] = useState(false)
   const [isCommitting, setIsCommitting] = useState(false)
-  const [commitResult, setCommitResult] = useState<any>(null)
   const [validationErrors, setValidationErrors] = useState<{field: string, message: string}[]>([])
   const [showManualForm, setShowManualForm] = useState(false)
   
@@ -131,6 +136,32 @@ export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
     }))
   }
 
+  // Handle municipality change and auto-set altitude
+  const handleMunicipalityChange = (municipality: string) => {
+    setFormData(prev => ({ ...prev, municipality }))
+    
+    // Auto-set altitude if municipality and department are available
+    if (municipality && formData.department) {
+      const altitude = getAltitude(municipality, formData.department)
+      if (altitude) {
+        setFormData(prev => ({ ...prev, altitude: `${altitude}m` }))
+      }
+    }
+  }
+
+  // Handle department change and auto-set altitude
+  const handleDepartmentChange = (department: string) => {
+    setFormData(prev => ({ ...prev, department }))
+    
+    // Auto-set altitude if municipality and department are available
+    if (formData.municipality && department) {
+      const altitude = getAltitude(formData.municipality, department)
+      if (altitude) {
+        setFormData(prev => ({ ...prev, altitude: `${altitude}m` }))
+      }
+    }
+  }
+
   // Handle AI search results
   const handleAIEventFound = (aiEventData: Partial<EventFormData>) => {
     setFormData(prev => ({
@@ -147,7 +178,16 @@ export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
       ...(aiEventData.price && { price: aiEventData.price }),
       ...(aiEventData.category && { category: aiEventData.category }),
       ...(aiEventData.cover && { cover: aiEventData.cover }),
+      ...(aiEventData.altitude && { altitude: aiEventData.altitude }),
     }))
+    
+    // Auto-set altitude if municipality and department are provided from AI
+    if (aiEventData.municipality && aiEventData.department) {
+      const altitude = getAltitude(aiEventData.municipality, aiEventData.department)
+      if (altitude) {
+        setFormData(prev => ({ ...prev, altitude: `${altitude}m` }))
+      }
+    }
     
     // Clear validation errors when AI fills the form
     setValidationErrors([])
@@ -203,7 +243,8 @@ export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
         distances: [],
         price: '',
         category: 'Running',
-        cover: ''
+        cover: '',
+        altitude: ''
       })
     } catch (error) {
       console.error('Error sending proposal:', error)
@@ -215,7 +256,6 @@ export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
   
   const createEventInFirebase = async () => {
     setIsCommitting(true)
-    setCommitResult(null)
 
     try {
       const eventData = {
@@ -230,7 +270,7 @@ export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
         price: formData.price,
         category: formData.category,
         cover: formData.cover,
-        altitude: '1000m', // Valor por defecto
+        altitude: formData.altitude || '1000m', // Use form altitude or default
         tags: [formData.category.toLowerCase()],
         status: 'published' as const,
         featured: false
@@ -238,11 +278,7 @@ export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
 
       const result = await eventsService.createEvent(eventData)
       
-      setCommitResult({
-        success: true,
-        message: 'Evento creado exitosamente en Firebase',
-        eventId: result.id
-      })
+      toast.success(`Evento creado exitosamente en Firebase (ID: ${result.id})`)
 
       // Limpiar formulario después del commit exitoso
       setFormData({
@@ -256,21 +292,18 @@ export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
         distances: [],
         price: '',
         category: 'Running',
-        cover: ''
+        cover: '',
+        altitude: ''
       })
     } catch (error) {
-      setCommitResult({
-        success: false,
-        error: 'Error al crear evento en Firebase',
-        details: error instanceof Error ? error.message : 'Error desconocido'
-      })
+      toast.error(`Error al crear evento en Firebase: ${error instanceof Error ? error.message : 'Error desconocido'}`)
     } finally {
       setIsCommitting(false)
     }
   }
   
   return (
-    <div className={isPublic ? "" : "container max-w-4xl mx-auto py-8"}>
+    <div className={isPublic ? "" : "container mx-auto max-w-4xl py-8"}>
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -317,37 +350,9 @@ export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
           {/* Manual Form Section */}
           {(isPublic || showManualForm) && (
             <div className="space-y-6">
-              {/* Resultado de commit (solo para admin) */}
-              {!isPublic && commitResult && (
-                <div className={`p-4 rounded-lg border ${
-                  commitResult.error 
-                    ? 'border-red-200 bg-red-50 dark:bg-red-950/20' 
-                    : 'border-green-200 bg-green-50 dark:bg-green-950/20'
-                }`}>
-                  <h3 className={`font-medium ${
-                    commitResult.error 
-                      ? 'text-red-900 dark:text-red-100' 
-                      : 'text-green-900 dark:text-green-100'
-                  }`}>
-                    {commitResult.error ? 'Error al Crear Evento' : 'Evento Creado Exitosamente'}
-                  </h3>
-                  <p className={`text-sm mt-1 ${
-                    commitResult.error 
-                      ? 'text-red-700 dark:text-red-300' 
-                      : 'text-green-700 dark:text-green-300'
-                  }`}>
-                    {commitResult.message || commitResult.error}
-                  </p>
-                  {commitResult.eventId && (
-                    <p className="text-xs mt-2 text-green-600">
-                      ID del evento: {commitResult.eventId}
-                    </p>
-                  )}
-                </div>
-              )}
 
               {/* Información Básica */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="title">Nombre del Evento *</Label>
                   <Input
@@ -358,15 +363,14 @@ export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
                   />
                 </div>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="eventDate">Fecha del Evento *</Label>
-                  <Input
-                    id="eventDate"
-                    type="date"
-                    value={formData.eventDate}
-                    onChange={(e) => setFormData(prev => ({ ...prev, eventDate: e.target.value }))}
-                  />
-                </div>
+                <NaturalDatePicker
+                  label="Fecha del Evento"
+                  value={formData.eventDate}
+                  onChange={(value) => setFormData(prev => ({ ...prev, eventDate: value }))}
+                  placeholder="Ej: mañana, próximo sábado, 15 de marzo"
+                  required
+                  helpText="El evento se realizará el"
+                />
               </div>
 
               {/* Imagen del evento */}
@@ -381,20 +385,20 @@ export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
               </div>
               
               {/* Ubicación */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="municipality">Municipio *</Label>
-                  <Input
-                    id="municipality"
-                    placeholder="Ej: Bogotá"
-                    value={formData.municipality}
-                    onChange={(e) => setFormData(prev => ({ ...prev, municipality: e.target.value }))}
-                  />
-                </div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <MunicipalityAutocomplete
+                  value={formData.municipality}
+                  onChange={handleMunicipalityChange}
+                  onDepartmentChange={handleDepartmentChange}
+                  department={formData.department}
+                  placeholder="Escriba el nombre del municipio"
+                  required
+                  label="Municipio"
+                />
                 
                 <div className="space-y-2">
                   <Label htmlFor="department">Departamento *</Label>
-                  <Select value={formData.department} onValueChange={(value: string) => setFormData(prev => ({ ...prev, department: value }))}>
+                  <Select value={formData.department} onValueChange={handleDepartmentChange}>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecciona departamento" />
                     </SelectTrigger>
@@ -405,10 +409,25 @@ export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
                     </SelectContent>
                   </Select>
                 </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="altitude">Altitud</Label>
+                  <Input
+                    id="altitude"
+                    placeholder="Ej: 2600m"
+                    value={formData.altitude}
+                    onChange={(e) => setFormData(prev => ({ ...prev, altitude: e.target.value }))}
+                    className="bg-muted"
+                    title="Se completa automáticamente al seleccionar municipio"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Se completa automáticamente al seleccionar el municipio
+                  </p>
+                </div>
               </div>
               
               {/* Organización */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="organizer">Organizador</Label>
                   <Input
@@ -431,7 +450,7 @@ export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
               </div>
               
               {/* Categoría y Precio */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="category">Categoría</Label>
                   <Select value={formData.category} onValueChange={(value: string) => setFormData(prev => ({ ...prev, category: value }))}>
@@ -492,12 +511,12 @@ export default function NewEventForm({ isPublic = false }: NewEventFormProps) {
                   // Versión pública: solo envío por email
                   <div className="space-y-4">
                     {emailSent ? (
-                      <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                      <div className="rounded-lg border border-green-200 bg-green-50 p-4">
                         <div className="flex items-center gap-2">
                           <CheckCircle className="size-5 text-green-500" />
-                          <span className="text-green-700 font-medium">¡Propuesta enviada exitosamente!</span>
+                          <span className="font-medium text-green-700">¡Propuesta enviada exitosamente!</span>
                         </div>
-                        <p className="text-green-600 text-sm mt-1">
+                        <p className="mt-1 text-sm text-green-600">
                           Tu propuesta se envió por email. La revisaremos y publicaremos en 24-48 horas.
                         </p>
                       </div>

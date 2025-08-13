@@ -16,7 +16,7 @@ export default function NewEventFormWrapper({ isPublic = false }: NewEventFormWr
 
   // For admin version, wrap with Suspense for searchParams
   return (
-    <Suspense fallback={<div className="text-center py-8">Cargando formulario...</div>}>
+    <Suspense fallback={<div className="py-8 text-center">Cargando formulario...</div>}>
       <NewEventForm isPublic={false} />
     </Suspense>
   )

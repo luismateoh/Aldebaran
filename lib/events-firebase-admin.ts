@@ -210,6 +210,48 @@ class EventsServiceAdmin {
       throw error
     }
   }
+
+  // Get events statistics for connection testing
+  async getEventsStats(): Promise<any> {
+    try {
+      console.log('📊 Obteniendo estadísticas de eventos...')
+      
+      const snapshot = await this.eventsRef.get()
+      const totalEvents = snapshot.size
+      
+      let publishedEvents = 0
+      let draftEvents = 0
+      let cancelledEvents = 0
+      
+      snapshot.forEach(doc => {
+        const data = doc.data()
+        const status = data.status || 'published'
+        const isDraft = data.draft || status === 'draft'
+        
+        if (status === 'cancelled') {
+          cancelledEvents++
+        } else if (isDraft || status === 'draft') {
+          draftEvents++
+        } else {
+          publishedEvents++
+        }
+      })
+      
+      const stats = {
+        totalEvents,
+        publishedEvents,
+        draftEvents,
+        cancelledEvents,
+        lastCheck: new Date().toISOString()
+      }
+      
+      console.log('✅ Estadísticas obtenidas:', stats)
+      return stats
+    } catch (error) {
+      console.error('❌ Error getting events stats:', error)
+      throw error
+    }
+  }
 }
 
 // Export singleton instance

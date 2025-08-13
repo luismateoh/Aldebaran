@@ -206,7 +206,7 @@ export default function AIEventSearch({ onEventFound }: AIEventSearchProps) {
             <Alert className="border-green-200 bg-green-50">
               <CheckCircle className="size-4" />
               <AlertDescription className="text-green-700">
-                ¡IA encontró información! Revisa los datos y haz clic en "Usar Datos" para completar el formulario.
+                ¡IA encontró información! Revisa los datos y haz clic en &ldquo;Usar Datos&rdquo; para completar el formulario.
               </AlertDescription>
             </Alert>
 
@@ -215,10 +215,10 @@ export default function AIEventSearch({ onEventFound }: AIEventSearchProps) {
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="font-semibold text-lg">
+                    <h3 className="text-lg font-semibold">
                       {searchResult.eventData?.title || 'Sin título'}
                     </h3>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
+                    <div className="mt-1 flex items-center gap-4 text-sm text-muted-foreground">
                       {searchResult.eventData?.eventDate && (
                         <div className="flex items-center gap-1">
                           <Calendar className="size-3" />
@@ -258,7 +258,7 @@ export default function AIEventSearch({ onEventFound }: AIEventSearchProps) {
                         href={searchResult.eventData.registrationUrl} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline flex items-center gap-1"
+                        className="flex items-center gap-1 text-blue-600 hover:underline"
                       >
                         <ExternalLink className="size-3" />
                         Sitio de registro
@@ -270,7 +270,7 @@ export default function AIEventSearch({ onEventFound }: AIEventSearchProps) {
                 {searchResult.eventData?.description && (
                   <div className="mt-4">
                     <strong>Descripción:</strong>
-                    <p className="text-sm text-muted-foreground mt-1 line-clamp-3">
+                    <p className="mt-1 line-clamp-3 text-sm text-muted-foreground">
                       {searchResult.eventData.description}
                     </p>
                   </div>
@@ -285,7 +285,7 @@ export default function AIEventSearch({ onEventFound }: AIEventSearchProps) {
                 size="lg"
                 className="bg-green-600 hover:bg-green-700"
               >
-                <CheckCircle className="size-4 mr-2" />
+                <CheckCircle className="mr-2 size-4" />
                 Usar Estos Datos
               </Button>
             </div>

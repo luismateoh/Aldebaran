@@ -11,6 +11,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Send, Calendar, MapPin, User, Globe, Users, Zap, CheckCircle, Rocket } from 'lucide-react'
 import { NaturalDatePicker } from '@/components/natural-date-picker'
+import { MunicipalityAutocomplete } from '@/components/municipality-autocomplete'
+import { toast } from "sonner"
 
 export default function ProposeEventPage() {
   const router = useRouter()
@@ -31,7 +33,6 @@ export default function ProposeEventPage() {
   })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitResult, setSubmitResult] = useState<{success?: boolean, message: string} | null>(null)
 
   const departments = [
     'Amazonas', 'Antioquia', 'Arauca', 'Atlántico', 'Bogotá', 'Bolívar', 'Boyacá', 
@@ -63,23 +64,16 @@ export default function ProposeEventPage() {
     
     // Validaciones básicas
     if (!formData.title || !formData.eventDate || !formData.municipality || !formData.department) {
-      setSubmitResult({
-        success: false,
-        message: 'Por favor complete todos los campos obligatorios (título, fecha, municipio y departamento)'
-      })
+      toast.error('Por favor complete todos los campos obligatorios (título, fecha, municipio y departamento)')
       return
     }
 
     if (formData.distances.length === 0) {
-      setSubmitResult({
-        success: false,
-        message: 'Por favor seleccione al menos una distancia'
-      })
+      toast.error('Por favor seleccione al menos una distancia')
       return
     }
 
     setIsSubmitting(true)
-    setSubmitResult(null)
 
     try {
       const response = await fetch('/api/proposals', {
@@ -93,10 +87,7 @@ export default function ProposeEventPage() {
       const result = await response.json()
 
       if (response.ok) {
-        setSubmitResult({
-          success: true,
-          message: result.message || 'Propuesta enviada exitosamente. Será revisada por nuestro equipo.'
-        })
+        toast.success(result.message || 'Propuesta enviada exitosamente. Será revisada por nuestro equipo.')
         
         // Limpiar formulario
         setFormData({
@@ -114,53 +105,47 @@ export default function ProposeEventPage() {
           submitterEmail: ''
         })
       } else {
-        setSubmitResult({
-          success: false,
-          message: result.error || 'Error enviando propuesta'
-        })
+        toast.error(result.error || 'Error enviando propuesta')
       }
     } catch (error) {
-      setSubmitResult({
-        success: false,
-        message: 'Error de conexión. Por favor intente nuevamente.'
-      })
+      toast.error('Error de conexión. Por favor intente nuevamente.')
     } finally {
       setIsSubmitting(false)
     }
   }
 
   return (
-    <div className="container max-w-4xl mx-auto py-8 space-y-6">
+    <div className="container mx-auto max-w-4xl space-y-6 py-8">
       {/* Header */}
-      <div className="text-center space-y-4">
-        <div className="size-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+      <div className="space-y-4 text-center">
+        <div className="mx-auto mb-4 flex size-20 items-center justify-center rounded-full bg-primary/10">
           <Calendar className="size-10 text-primary" />
         </div>
         <h1 className="text-4xl font-bold">Proponer Nuevo Evento</h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+        <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
           ¿Conoces un evento de atletismo que debería estar en Aldebaran? Compártelo con la comunidad y ayúdanos a mantener actualizado el calendario más completo de Colombia.
         </p>
         
         {/* Benefits Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-8">
-          <div className="text-center p-6 border rounded-lg bg-card">
-            <div className="size-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
+        <div className="my-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="rounded-lg border bg-card p-6 text-center">
+            <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-primary">
               <Users className="size-6 text-primary-foreground" />
             </div>
             <h3 className="font-semibold text-foreground">Para la Comunidad</h3>
             <p className="text-sm text-muted-foreground">Tu propuesta ayuda a miles de corredores</p>
           </div>
           
-          <div className="text-center p-6 border rounded-lg bg-card">
-            <div className="size-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
+          <div className="rounded-lg border bg-card p-6 text-center">
+            <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-primary">
               <Zap className="size-6 text-primary-foreground" />
             </div>
             <h3 className="font-semibold text-foreground">Revisión Rápida</h3>
             <p className="text-sm text-muted-foreground">Revisamos y publicamos en 24-48 horas</p>
           </div>
           
-          <div className="text-center p-6 border rounded-lg bg-card">
-            <div className="size-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
+          <div className="rounded-lg border bg-card p-6 text-center">
+            <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-primary">
               <CheckCircle className="size-6 text-primary-foreground" />
             </div>
             <h3 className="font-semibold text-foreground">Siempre Actualizado</h3>
@@ -168,38 +153,6 @@ export default function ProposeEventPage() {
           </div>
         </div>
       </div>
-
-      {/* Submit Result */}
-      {submitResult && (
-        <div className={`border rounded-lg p-4 ${
-          submitResult.success 
-            ? "border-border bg-muted text-foreground" 
-            : "border-destructive bg-destructive/10 text-destructive"
-        }`}>
-          <p>{submitResult.message}</p>
-          {submitResult.success && (
-            <div className="mt-3 space-x-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => router.push('/')}
-              >
-                Ver Eventos
-              </Button>
-              <Button 
-                variant="default" 
-                size="sm"
-                onClick={() => {
-                  setSubmitResult(null)
-                  window.scrollTo({ top: 0, behavior: 'smooth' })
-                }}
-              >
-                Proponer Otro Evento
-              </Button>
-            </div>
-          )}
-        </div>
-      )}
 
       {/* Proposal Form */}
       <Card>
@@ -215,7 +168,7 @@ export default function ProposeEventPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Basic Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="title">Nombre del Evento *</Label>
                 <Input
@@ -238,23 +191,23 @@ export default function ProposeEventPage() {
             </div>
 
             {/* Location */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="municipality">Municipio *</Label>
-                <Input
-                  id="municipality"
-                  required
-                  value={formData.municipality}
-                  onChange={(e) => setFormData(prev => ({ ...prev, municipality: e.target.value }))}
-                  placeholder="Ej: Medellín"
-                />
-              </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <MunicipalityAutocomplete
+                value={formData.municipality}
+                onChange={(value) => setFormData(prev => ({ ...prev, municipality: value }))}
+                onDepartmentChange={(department) => setFormData(prev => ({ ...prev, department }))}
+                department={formData.department}
+                placeholder="Ej: Medellín"
+                required
+                label="Municipio"
+                id="municipality"
+              />
               
               <div className="space-y-2">
                 <Label htmlFor="department">Departamento *</Label>
                 <Select 
                   value={formData.department} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, department: value }))}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, department: value, municipality: '' }))}
                   required
                 >
                   <SelectTrigger>
@@ -270,7 +223,7 @@ export default function ProposeEventPage() {
             </div>
 
             {/* Organization */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="organizer">Organizador</Label>
                 <Input
@@ -294,7 +247,7 @@ export default function ProposeEventPage() {
             </div>
 
             {/* Category and Fee */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="category">Categoría</Label>
                 <Select 
@@ -326,7 +279,7 @@ export default function ProposeEventPage() {
             {/* Distances */}
             <div className="space-y-2">
               <Label>Distancias Disponibles *</Label>
-              <p className="text-sm text-muted-foreground mb-3">
+              <p className="mb-3 text-sm text-muted-foreground">
                 Seleccione al menos una distancia que estará disponible en el evento
               </p>
               <div className="flex flex-wrap gap-2">
@@ -361,7 +314,7 @@ export default function ProposeEventPage() {
             </div>
 
             {/* Contact Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="submittedBy">Su Nombre</Label>
                 <Input
@@ -382,20 +335,20 @@ export default function ProposeEventPage() {
                   placeholder="juan@ejemplo.com"
                 />
                 <p className="text-xs text-muted-foreground">
-                  Para contactarle en caso de necesitar más información
+                  Te contactaremos si necesitamos más información y te notificaremos cuando tu evento sea aprobado y publicado
                 </p>
               </div>
             </div>
 
 
             {/* Submit Button */}
-            <div className="flex gap-4 pt-6 border-t">
+            <div className="flex gap-4 border-t pt-6">
               <Button
                 type="submit"
                 disabled={isSubmitting}
                 className="flex-1"
               >
-                <Send className="size-4 mr-2" />
+                <Send className="mr-2 size-4" />
                 {isSubmitting ? 'Enviando Propuesta...' : 'Enviar Propuesta'}
               </Button>
             </div>
@@ -404,41 +357,41 @@ export default function ProposeEventPage() {
       </Card>
 
       {/* Process Information - Timeline */}
-      <div className="border rounded-lg p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="size-10 bg-primary rounded-full flex items-center justify-center">
+      <div className="rounded-lg border p-6">
+        <div className="mb-6 flex items-center gap-3">
+          <div className="flex size-10 items-center justify-center rounded-full bg-primary">
             <Rocket className="size-5 text-primary-foreground" />
           </div>
           <h3 className="text-lg font-semibold text-foreground">¿Qué pasa después?</h3>
         </div>
         <div className="relative">
           {/* Vertical Timeline Line */}
-          <div className="absolute left-3 top-0 bottom-0 w-0.5 bg-border"></div>
+          <div className="absolute inset-y-0 left-3 w-0.5 bg-border"></div>
           
           <div className="space-y-6">
             <div className="flex items-start gap-4">
-              <div className="relative z-10 size-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold">1</div>
+              <div className="relative z-10 flex size-6 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">1</div>
               <div>
                 <h4 className="font-semibold text-foreground">Revisión</h4>
                 <p className="text-sm text-muted-foreground">Verificamos la información en 24-48 horas</p>
               </div>
             </div>
             <div className="flex items-start gap-4">
-              <div className="relative z-10 size-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold">2</div>
+              <div className="relative z-10 flex size-6 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">2</div>
               <div>
                 <h4 className="font-semibold text-foreground">Aprobación</h4>
-                <p className="text-sm text-muted-foreground">Te notificamos el estado de tu propuesta</p>
+                <p className="text-sm text-muted-foreground">Te enviamos un email cuando tu propuesta sea aprobada</p>
               </div>
             </div>
             <div className="flex items-start gap-4">
-              <div className="relative z-10 size-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold">3</div>
+              <div className="relative z-10 flex size-6 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">3</div>
               <div>
                 <h4 className="font-semibold text-foreground">Publicación</h4>
-                <p className="text-sm text-muted-foreground">El evento aparece en Aldebaran</p>
+                <p className="text-sm text-muted-foreground">Te enviamos el enlace directo cuando tu evento esté publicado</p>
               </div>
             </div>
             <div className="flex items-start gap-4">
-              <div className="relative z-10 size-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold">4</div>
+              <div className="relative z-10 flex size-6 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">4</div>
               <div>
                 <h4 className="font-semibold text-foreground">Comunidad</h4>
                 <p className="text-sm text-muted-foreground">Miles de corredores lo descubren</p>

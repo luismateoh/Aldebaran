@@ -1,6 +1,9 @@
+'use client'
+
 import * as React from "react"
 import Link from "next/link"
 import { useState } from "react"
+import { usePathname } from "next/navigation"
 
 import { NavItem } from "@/types/nav"
 import { siteConfig } from "@/config/site"
@@ -20,6 +23,9 @@ interface MainNavProps {
 }
 
 export function MainNav({ items }: MainNavProps) {
+  const pathname = usePathname()
+  const isHomePage = pathname === '/'
+
   return (
     <div className="flex gap-6 md:gap-10">
       <Link href="/" className="flex items-center space-x-2">
@@ -29,9 +35,9 @@ export function MainNav({ items }: MainNavProps) {
         </span>
       </Link>
       
-      {/* Desktop Navigation */}
-      {items?.length ? (
-        <nav className="hidden md:flex gap-6 items-center">
+      {/* Desktop Navigation - Hidden on homepage */}
+      {items?.length && !isHomePage ? (
+        <nav className="hidden items-center gap-6 md:flex">
           {items?.map(
             (item, index) =>
               item.href && (
@@ -41,7 +47,7 @@ export function MainNav({ items }: MainNavProps) {
                   variant={item.title === "Proponer Evento" ? "default" : "ghost"}
                   size="sm"
                   className={cn(
-                    item.title === "Proponer Evento" && "bg-primary hover:bg-primary/90 text-primary-foreground font-semibold",
+                    item.title === "Proponer Evento" && "bg-primary font-semibold text-primary-foreground hover:bg-primary/90",
                     item.disabled && "cursor-not-allowed opacity-80"
                   )}
                 >
@@ -54,8 +60,8 @@ export function MainNav({ items }: MainNavProps) {
         </nav>
       ) : null}
 
-      {/* Mobile Navigation */}
-      {items?.length ? (
+      {/* Mobile Navigation - Hidden on homepage */}
+      {items?.length && !isHomePage ? (
         <div className="md:hidden">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -73,7 +79,7 @@ export function MainNav({ items }: MainNavProps) {
                         href={item.href}
                         className={cn(
                           "w-full cursor-pointer",
-                          item.title === "Proponer Evento" && "bg-primary/10 text-primary font-semibold"
+                          item.title === "Proponer Evento" && "bg-primary/10 font-semibold text-primary"
                         )}
                       >
                         {item.title}

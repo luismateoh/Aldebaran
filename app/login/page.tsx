@@ -25,9 +25,9 @@ export default function LoginPage() {
   // Show loading state while checking auth
   if (user) {
     return (
-      <div className="min-h-svh flex items-center justify-center">
+      <div className="flex min-h-svh items-center justify-center">
         <div className="text-center">
-          <div className="size-8 border-2 border-current border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="mx-auto mb-4 size-8 animate-spin rounded-full border-2 border-current border-t-transparent" />
           <p>Redirigiendo...</p>
         </div>
       </div>
@@ -64,12 +64,12 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
-      <div className="bg-muted relative hidden lg:block">
+      <div className="relative hidden bg-muted lg:block">
         <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 via-blue-600 to-red-600">
           <div className="absolute inset-0 bg-black/20" />
-          <div className="relative h-full flex flex-col justify-center items-center text-white p-8">
-            <div className="text-center space-y-6 max-w-md">
-              <Trophy className="size-16 mx-auto text-white/90" />
+          <div className="relative flex h-full flex-col items-center justify-center p-8 text-white">
+            <div className="max-w-md space-y-6 text-center">
+              <Trophy className="mx-auto size-16 text-white/90" />
               <h2 className="text-3xl font-bold">
                 Descubre eventos de running en Colombia
               </h2>
@@ -78,11 +78,11 @@ export default function LoginPage() {
                 maratones y eventos de atletismo en todo el país.
               </p>
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="bg-white/10 backdrop-blur rounded-lg p-3">
+                <div className="rounded-lg bg-white/10 p-3 backdrop-blur">
                   <div className="font-semibold">+500</div>
                   <div className="text-white/70">Eventos</div>
                 </div>
-                <div className="bg-white/10 backdrop-blur rounded-lg p-3">
+                <div className="rounded-lg bg-white/10 p-3 backdrop-blur">
                   <div className="font-semibold">32</div>
                   <div className="text-white/70">Departamentos</div>
                 </div>

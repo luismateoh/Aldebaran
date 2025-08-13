@@ -6,7 +6,8 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const event = await eventsService.getEventById(params.id)
+    const resolvedParams = await params
+    const event = await eventsService.getEventById(resolvedParams.id)
     
     if (!event) {
       return NextResponse.json(
@@ -29,8 +30,9 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
+    const resolvedParams = await params
     const updates = await request.json()
-    const updatedEvent = await eventsService.updateEvent(params.id, updates)
+    const updatedEvent = await eventsService.updateEvent(resolvedParams.id, updates)
     
     if (!updatedEvent) {
       return NextResponse.json(
@@ -53,7 +55,8 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const deleted = await eventsService.deleteEvent(params.id)
+    const resolvedParams = await params
+    const deleted = await eventsService.deleteEvent(resolvedParams.id)
     
     if (!deleted) {
       return NextResponse.json(

@@ -79,9 +79,9 @@ export default function UserProfilePage() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <div className="size-8 border-2 border-current border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="mx-auto mb-4 size-8 animate-spin rounded-full border-2 border-current border-t-transparent" />
           <p>Cargando perfil...</p>
         </div>
       </div>
@@ -100,11 +100,11 @@ export default function UserProfilePage() {
   }
 
   return (
-    <div className="container max-w-6xl mx-auto py-8 space-y-6">
+    <div className="container mx-auto max-w-6xl space-y-6 py-8">
       {/* Header del perfil */}
       <Card>
         <CardContent className="pt-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
             <Avatar className="size-20">
               <AvatarImage src={user.photoURL || undefined} />
               <AvatarFallback className="text-lg font-semibold">
@@ -113,29 +113,29 @@ export default function UserProfilePage() {
             </Avatar>
             
             <div className="flex-1">
-              <h1 className="text-2xl font-bold mb-1">
+              <h1 className="mb-1 text-2xl font-bold">
                 {user.displayName || 'Usuario'}
               </h1>
-              <p className="text-muted-foreground mb-3">{user.email}</p>
+              <p className="mb-3 text-muted-foreground">{user.email}</p>
               
               <div className="flex flex-wrap gap-2">
                 <Badge variant="secondary">
-                  <User className="size-3 mr-1" />
+                  <User className="mr-1 size-3" />
                   {userProfile?.runnerProfile?.level || 'Principiante'}
                 </Badge>
                 <Badge variant="outline">
-                  <Heart className="size-3 mr-1" />
+                  <Heart className="mr-1 size-3" />
                   {stats.totalEventsLiked} eventos favoritos
                 </Badge>
                 <Badge variant="outline">
-                  <Trophy className="size-3 mr-1" />
+                  <Trophy className="mr-1 size-3" />
                   {stats.totalEventsAttended} eventos completados
                 </Badge>
               </div>
             </div>
             
             <Button variant="outline" size="sm" onClick={() => router.push('/configuracion')}>
-              <Settings className="size-4 mr-2" />
+              <Settings className="mr-2 size-4" />
               Configuración
             </Button>
           </div>
@@ -143,7 +143,7 @@ export default function UserProfilePage() {
       </Card>
 
       {/* Estadísticas rápidas */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
@@ -197,23 +197,23 @@ export default function UserProfilePage() {
       <Tabs defaultValue="favorites" className="w-full">
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="favorites">
-            <Heart className="size-4 mr-2" />
+            <Heart className="mr-2 size-4" />
             Favoritos
           </TabsTrigger>
           <TabsTrigger value="upcoming">
-            <Calendar className="size-4 mr-2" />
+            <Calendar className="mr-2 size-4" />
             Próximos
           </TabsTrigger>
           <TabsTrigger value="past">
-            <Trophy className="size-4 mr-2" />
+            <Trophy className="mr-2 size-4" />
             Completados
           </TabsTrigger>
           <TabsTrigger value="goals">
-            <Target className="size-4 mr-2" />
+            <Target className="mr-2 size-4" />
             Metas
           </TabsTrigger>
           <TabsTrigger value="stats">
-            <BarChart3 className="size-4 mr-2" />
+            <BarChart3 className="mr-2 size-4" />
             Stats
           </TabsTrigger>
         </TabsList>
@@ -228,12 +228,12 @@ export default function UserProfilePage() {
             </CardHeader>
             <CardContent>
               {likedEvents.length === 0 ? (
-                <div className="text-center py-8">
-                  <Heart className="size-12 mx-auto text-muted-foreground mb-4" />
+                <div className="py-8 text-center">
+                  <Heart className="mx-auto mb-4 size-12 text-muted-foreground" />
                   <p className="text-muted-foreground">
                     Aún no tienes eventos favoritos
                   </p>
-                  <p className="text-sm text-muted-foreground mt-2">
+                  <p className="mt-2 text-sm text-muted-foreground">
                     Da like a los eventos que te interesen para verlos aquí
                   </p>
                   <Button className="mt-4" onClick={() => router.push('/')}>
@@ -241,20 +241,20 @@ export default function UserProfilePage() {
                   </Button>
                 </div>
               ) : loadingEvents ? (
-                <div className="text-center py-8">
-                  <div className="size-8 border-2 border-current border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                <div className="py-8 text-center">
+                  <div className="mx-auto mb-4 size-8 animate-spin rounded-full border-2 border-current border-t-transparent" />
                   <p>Cargando eventos favoritos...</p>
                 </div>
               ) : (
                 <div className="grid gap-4">
                   {favoriteEvents.map((event: any) => (
-                    <Card key={event.id} className="cursor-pointer hover:shadow-md transition-shadow" 
+                    <Card key={event.id} className="cursor-pointer transition-shadow hover:shadow-md" 
                           onClick={() => router.push(`/events/${event.id}`)}>
                       <CardContent className="p-4">
-                        <div className="flex justify-between items-start mb-3">
+                        <div className="mb-3 flex items-start justify-between">
                           <div className="flex-1">
-                            <h3 className="font-semibold text-lg mb-1">{event.title}</h3>
-                            <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
+                            <h3 className="mb-1 text-lg font-semibold">{event.title}</h3>
+                            <div className="mb-2 flex items-center gap-4 text-sm text-muted-foreground">
                               <div className="flex items-center gap-1">
                                 <Calendar className="size-4" />
                                 {event.eventDate}
@@ -264,7 +264,7 @@ export default function UserProfilePage() {
                                 {event.municipality}, {event.department}
                               </div>
                             </div>
-                            <p className="text-sm text-muted-foreground line-clamp-2">
+                            <p className="line-clamp-2 text-sm text-muted-foreground">
                               {event.snippet || 'Evento de running en Colombia'}
                             </p>
                           </div>
@@ -298,8 +298,8 @@ export default function UserProfilePage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8">
-                <Calendar className="size-12 mx-auto text-muted-foreground mb-4" />
+              <div className="py-8 text-center">
+                <Calendar className="mx-auto mb-4 size-12 text-muted-foreground" />
                 <p className="text-muted-foreground">
                   No hay eventos próximos marcados
                 </p>
@@ -320,12 +320,12 @@ export default function UserProfilePage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8">
-                <Trophy className="size-12 mx-auto text-muted-foreground mb-4" />
+              <div className="py-8 text-center">
+                <Trophy className="mx-auto mb-4 size-12 text-muted-foreground" />
                 <p className="text-muted-foreground">
                   No hay eventos completados registrados
                 </p>
-                <p className="text-sm text-muted-foreground mt-2">
+                <p className="mt-2 text-sm text-muted-foreground">
                   Marca los eventos en los que hayas participado
                 </p>
               </div>
@@ -348,19 +348,19 @@ export default function UserProfilePage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center">
+                  <div className="flex items-center justify-between">
                     <span>Eventos favoritos</span>
                     <Badge>{stats.totalEventsLiked}</Badge>
                   </div>
-                  <div className="flex justify-between items-center">
+                  <div className="flex items-center justify-between">
                     <span>Eventos completados</span>
                     <Badge>{stats.totalEventsAttended}</Badge>
                   </div>
-                  <div className="flex justify-between items-center">
+                  <div className="flex items-center justify-between">
                     <span>Comentarios publicados</span>
                     <Badge>{stats.totalCommentsPosted}</Badge>
                   </div>
-                  <div className="flex justify-between items-center">
+                  <div className="flex items-center justify-between">
                     <span>Categoría favorita</span>
                     <Badge variant="secondary">{stats.favoriteCategory}</Badge>
                   </div>

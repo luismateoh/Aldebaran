@@ -144,9 +144,9 @@ export default function SettingsPage() {
   // Show loading while checking authentication
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <div className="size-8 border-2 border-current border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="mx-auto mb-4 size-8 animate-spin rounded-full border-2 border-current border-t-transparent" />
           <p>Verificando autenticación...</p>
         </div>
       </div>
@@ -196,18 +196,18 @@ export default function SettingsPage() {
               </p>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" onClick={handleResetSettings}>
-                  <RotateCcw className="size-4 mr-2" />
+                  <RotateCcw className="mr-2 size-4" />
                   Restablecer
                 </Button>
                 <Button size="sm" onClick={handleSaveSettings} disabled={isSaving}>
                   {isSaving ? (
                     <>
-                      <div className="size-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
+                      <div className="mr-2 size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                       Guardando...
                     </>
                   ) : (
                     <>
-                      <Save className="size-4 mr-2" />
+                      <Save className="mr-2 size-4" />
                       Guardar Cambios
                     </>
                   )}
@@ -220,11 +220,11 @@ export default function SettingsPage() {
 
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <div className="size-6 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
+          <div className="mr-2 size-6 animate-spin rounded-full border-2 border-current border-t-transparent" />
           Cargando configuración...
         </div>
       ) : (
-        <div className="space-y-6 mt-6">
+        <div className="mt-6 space-y-6">
           {/* Site Configuration */}
           <Card>
             <CardHeader>
@@ -237,7 +237,7 @@ export default function SettingsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="siteName">Nombre del Sitio</Label>
                   <Input
@@ -315,7 +315,7 @@ export default function SettingsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="defaultCategory">Categoría por Defecto</Label>
                   <Select value={settings.defaultEventCategory} onValueChange={(value) => handleSettingChange('defaultEventCategory', value)}>
@@ -430,29 +430,6 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
 
-          {/* System Status */}
-          <Card className="border-green-200 bg-green-50 dark:bg-green-950/20">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-green-800 dark:text-green-200">
-                <CheckCircle className="size-5" />
-                Sistema Configurado
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-green-700 dark:text-green-300 space-y-2">
-                <p>✅ Sistema de administración completamente funcional</p>
-                <ul className="list-disc ml-6 space-y-1">
-                  <li>✅ Configuraciones persistentes en Firestore</li>
-                  <li>✅ Gestión de múltiples administradores</li>
-                  <li>✅ Roles y permisos configurables</li>
-                  <li>✅ Interface de configuración dinámica</li>
-                </ul>
-                <p className="text-sm">
-                  Todas las configuraciones se guardan automáticamente en la base de datos.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       )}
     </div>

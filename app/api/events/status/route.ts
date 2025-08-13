@@ -2,6 +2,40 @@ import { NextRequest, NextResponse } from 'next/server'
 import { eventsServiceAdmin } from '@/lib/events-firebase-admin'
 import { verifyAdminToken } from '@/lib/auth-server'
 
+export async function GET(request: NextRequest) {
+  try {
+    console.log('📡 API /api/events/status - Verificando conexión Firebase...')
+
+    // Verify admin authentication
+    const authResult = await verifyAdminToken(request)
+    if (!authResult.success) {
+      console.log('❌ Admin verification failed:', authResult.error)
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    console.log('✅ Admin verified:', authResult.user?.email)
+
+    // Test Firebase connection by trying to fetch events count
+    const stats = await eventsServiceAdmin.getEventsStats()
+    
+    console.log('✅ API /api/events/status - Firebase conectado exitosamente')
+    
+    return NextResponse.json({ 
+      success: true,
+      message: 'Firebase conectado exitosamente',
+      stats,
+      timestamp: new Date().toISOString()
+    })
+
+  } catch (error) {
+    console.error('❌ Error in events/status:', error)
+    return NextResponse.json({ 
+      error: 'Error conectando con Firebase',
+      details: error instanceof Error ? error.message : 'Error desconocido'
+    }, { status: 500 })
+  }
+}
+
 export async function PATCH(request: NextRequest) {
   try {
     console.log('📡 API /api/events/status - Verificando autenticación...')

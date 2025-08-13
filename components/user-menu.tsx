@@ -61,20 +61,20 @@ export function UserMenu() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative size-9 rounded-full">
-          <Avatar className="size-8 border-2 border-border/50 hover:border-border transition-colors">
+          <Avatar className="size-8 border-2 border-border/50 transition-colors hover:border-border">
             <AvatarImage 
               src={user.photoURL || undefined} 
               alt={user.displayName || user.email || 'Usuario'} 
               className="object-cover"
             />
-            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
+            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 font-semibold text-white">
               {getUserInitials(user.email)}
             </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-72" align="end" forceMount>
-        <DropdownMenuLabel className="font-normal p-3">
+        <DropdownMenuLabel className="p-3 font-normal">
           <div className="flex items-center space-x-3">
             <Avatar className="size-10">
               <AvatarImage 
@@ -82,7 +82,7 @@ export function UserMenu() {
                 alt={user.displayName || user.email || 'Usuario'} 
                 className="object-cover"
               />
-              <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
+              <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 font-semibold text-white">
                 {getUserInitials(user.email)}
               </AvatarFallback>
             </Avatar>
@@ -94,9 +94,9 @@ export function UserMenu() {
                 {user.email}
               </p>
               {isAdmin && (
-                <div className="flex items-center gap-1 mt-1">
+                <div className="mt-1 flex items-center gap-1">
                   <Shield className="size-3 text-green-600" />
-                  <span className="text-xs text-green-600 font-medium">
+                  <span className="text-xs font-medium text-green-600">
                     Administrador
                   </span>
                 </div>
@@ -131,7 +131,7 @@ export function UserMenu() {
         
         <DropdownMenuItem 
           onClick={handleLogout}
-          className="cursor-pointer px-3 py-2 text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950/50"
+          className="cursor-pointer px-3 py-2 text-red-600 focus:bg-red-50 focus:text-red-600 dark:focus:bg-red-950/50"
           disabled={isLoggingOut}
         >
           <LogOut className="mr-2 size-4" />
@@ -139,7 +139,7 @@ export function UserMenu() {
             {isLoggingOut ? 'Cerrando sesión...' : 'Cerrar sesión'}
           </span>
           {isLoggingOut && (
-            <div className="ml-auto size-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            <div className="ml-auto size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
           )}
         </DropdownMenuItem>
       </DropdownMenuContent>

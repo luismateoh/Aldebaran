@@ -58,37 +58,37 @@ export default function EventCard({ event: event }: { event: EventData }) {
   return (
     <article
       id={event.id || ''}
-      className="group bg-white dark:bg-gray-900 overflow-hidden"
+      className="group overflow-hidden bg-white dark:bg-gray-900"
       onCopy={(e) => {
         e.preventDefault()
       }}
     >
       {/* Card Header */}
-      <div className="flex p-4 items-start">
+      <div className="flex items-start p-4">
         {/* Date section - siguiendo especificaciones Figma */}
-        <div className="w-[62px] text-center mr-6 flex flex-col justify-center h-[102px]">
-          <div className="text-xs font-semibold text-[#6B7280] uppercase leading-none">
+        <div className="mr-6 flex h-[102px] w-[62px] flex-col justify-center text-center">
+          <div className="text-xs font-semibold uppercase leading-none text-[#6B7280]">
             DOM
           </div>
-          <div className="text-2xl font-bold text-[#111827] leading-none mt-2">
+          <div className="mt-2 text-2xl font-bold leading-none text-[#111827]">
             {dayNumber}
           </div>
-          <div className="text-xs text-[#6B7280] mt-2">
+          <div className="mt-2 text-xs text-[#6B7280]">
             {monthShort.toUpperCase()}
           </div>
         </div>
 
         {/* Vertical line separator */}
-        <div className="w-px bg-black h-[102px] mr-6"></div>
+        <div className="mr-6 h-[102px] w-px bg-black"></div>
 
         {/* Details section */}
-        <div className="flex-1 flex flex-col justify-center h-[102px]">
+        <div className="flex h-[102px] flex-1 flex-col justify-center">
           {/* First row: Category badge + Location */}
-          <div className="flex items-center gap-2 mb-2">
-            <Badge className="rounded-md capitalize text-xs">
+          <div className="mb-2 flex items-center gap-2">
+            <Badge className="rounded-md text-xs capitalize">
               {event.category}
             </Badge>
-            <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-xs">
+            <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
               <div className="flex items-center gap-1">
                 <MapPin className="size-3" />
                 <span>{event.municipality}</span>
@@ -104,14 +104,14 @@ export default function EventCard({ event: event }: { event: EventData }) {
           
           {/* Event title */}
           <a href={`/events/${event.id || ''}/`} className="group-hover:underline">
-            <h2 className="font-semibold text-lg leading-tight text-gray-900 dark:text-white line-clamp-2">
-              {event.title}
+            <h2 className="line-clamp-2 text-lg font-semibold leading-tight text-gray-900 dark:text-white">
+              {event.title.toUpperCase()}
             </h2>
           </a>
 
           {/* Distance badges */}
           {event.distances && Array.isArray(event.distances) && event.distances.length > 0 && (
-            <div className="flex items-center gap-2 mt-2 text-sm text-gray-600 dark:text-gray-300">
+            <div className="mt-2 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
               <div className="flex flex-wrap gap-1">
                 {event.distances.map((distance: any, index: number) => (
                   <Badge
@@ -129,7 +129,7 @@ export default function EventCard({ event: event }: { event: EventData }) {
       </div>
 
       {/* Image section */}
-      <div className="relative h-48 bg-gradient-to-br from-cyan-400 to-green-400 rounded-lg overflow-hidden mx-4 mb-2">
+      <div className="relative mx-4 mb-2 h-48 overflow-hidden rounded-lg bg-gradient-to-br from-cyan-400 to-green-400">
         <a href={`/events/${event.id || ''}/`} className="absolute inset-0">
           <SmartImage
             src={event.cover || undefined}
@@ -146,12 +146,12 @@ export default function EventCard({ event: event }: { event: EventData }) {
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-end p-3 text-sm text-gray-600 dark:text-gray-400 gap-2">
+      <div className="flex items-center justify-end gap-2 p-3 text-sm text-gray-600 dark:text-gray-400">
         <Button
           variant="ghost"
           size="sm"
           onClick={handleShare}
-          className="p-1 h-auto hover:bg-gray-50 dark:hover:bg-gray-800"
+          className="h-auto p-1 hover:bg-gray-50 dark:hover:bg-gray-800"
         >
           <Share2 className="size-4" />
         </Button>
@@ -160,7 +160,7 @@ export default function EventCard({ event: event }: { event: EventData }) {
           variant="ghost"
           size="sm"
           onClick={handleSaveEvent}
-          className={`p-1 h-auto hover:bg-gray-50 dark:hover:bg-gray-800 ${
+          className={`h-auto p-1 hover:bg-gray-50 dark:hover:bg-gray-800 ${
             isSaved ? 'text-blue-600 dark:text-blue-400' : ''
           }`}
         >
@@ -173,7 +173,7 @@ export default function EventCard({ event: event }: { event: EventData }) {
           variant="ghost"
           size="sm"
           showCount={true}
-          className="p-1 h-auto hover:bg-gray-50 dark:hover:bg-gray-800"
+          className="h-auto p-1 hover:bg-gray-50 dark:hover:bg-gray-800"
         />
       </div>
     </article>

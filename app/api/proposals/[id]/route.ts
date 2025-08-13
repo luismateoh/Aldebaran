@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { proposalsServiceAdmin } from '@/lib/proposals-firebase-admin'
 import { verifyAdminToken } from '@/lib/auth-server'
+import nodemailer from 'nodemailer'
 
 // GET - Obtener propuesta por ID
 export async function GET(
@@ -15,7 +16,8 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const proposal = await proposalsServiceAdmin.getProposalById(params.id)
+    const resolvedParams = await params
+    const proposal = await proposalsServiceAdmin.getProposalById(resolvedParams.id)
     
     if (!proposal) {
       return NextResponse.json({ error: 'Propuesta no encontrada' }, { status: 404 })
@@ -41,7 +43,8 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
-    console.log(`📡 API /api/proposals/[id] - Actualizando propuesta ${params.id}`)
+    const resolvedParams = await params
+    console.log(`📡 API /api/proposals/[id] - Actualizando propuesta ${resolvedParams.id}`)
 
     const authResult = await verifyAdminToken(request)
     if (!authResult.success) {
@@ -59,7 +62,7 @@ export async function PATCH(
     const reviewedBy = authResult.user?.email || 'Admin'
     
     const updatedProposal = await proposalsServiceAdmin.updateProposalStatus(
-      params.id, 
+      resolvedParams.id, 
       status,
       reviewedBy,
       rejectionReason
@@ -67,6 +70,17 @@ export async function PATCH(
     
     if (!updatedProposal) {
       return NextResponse.json({ error: 'Propuesta no encontrada' }, { status: 404 })
+    }
+    
+    // Si la propuesta fue aprobada y tiene email del remitente, enviar notificación
+    if (status === 'approved' && updatedProposal.submitterEmail && updatedProposal.submitterEmail.trim()) {
+      try {
+        await sendApprovalNotificationEmail(updatedProposal)
+        console.log(`✅ Email de aprobación enviado a: ${updatedProposal.submitterEmail}`)
+      } catch (emailError) {
+        console.error('❌ Error enviando email de aprobación:', emailError)
+        // No fallar la aprobación por un error de email
+      }
     }
     
     return NextResponse.json({ 
@@ -90,14 +104,15 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    console.log(`📡 API /api/proposals/[id] - Eliminando propuesta ${params.id}`)
+    const resolvedParams = await params
+    console.log(`📡 API /api/proposals/[id] - Eliminando propuesta ${resolvedParams.id}`)
 
     const authResult = await verifyAdminToken(request)
     if (!authResult.success) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const success = await proposalsServiceAdmin.deleteProposal(params.id)
+    const success = await proposalsServiceAdmin.deleteProposal(resolvedParams.id)
     
     if (!success) {
       return NextResponse.json({ error: 'Error eliminando propuesta' }, { status: 500 })
@@ -115,4 +130,66 @@ export async function DELETE(
       details: error instanceof Error ? error.message : 'Error desconocido'
     }, { status: 500 })
   }
+}
+
+// Función para enviar email de notificación de aprobación
+async function sendApprovalNotificationEmail(proposal: any) {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.NEXT_PUBLIC_ADMIN_EMAIL,
+      pass: process.env.GMAIL_APP_PASSWORD
+    }
+  })
+
+  const emailBody = `
+¡Excelentes noticias! 🎉
+
+Hola ${proposal.submittedBy},
+
+Tu propuesta de evento deportivo ha sido **APROBADA** y será publicada en Aldebaran.
+
+📋 **DETALLES DE TU EVENTO:**
+🏃 Evento: ${proposal.title}
+📅 Fecha: ${proposal.eventDate}
+📍 Lugar: ${proposal.municipality}, ${proposal.department}
+🏢 Organizador: ${proposal.organizer}
+💰 Costo: ${proposal.registrationFee || 'Por definir'}
+🌐 Web: ${proposal.website || 'No especificado'}
+
+🏁 **DISTANCIAS DISPONIBLES:**
+${proposal.distances?.length ? proposal.distances.map((d: string) => `• ${d}`).join('\n') : '• Por definir'}
+
+📝 **DESCRIPCIÓN:**
+${proposal.description}
+
+---
+
+✅ **PRÓXIMOS PASOS:**
+1. Tu evento será publicado en https://aldebaran-run.vercel.app en las próximas horas
+2. Los corredores podrán encontrarlo y registrarse
+3. Te enviaremos el enlace directo cuando esté público
+
+💡 **¿NECESITAS HACER CAMBIOS?**
+Si necesitas actualizar alguna información del evento, contáctanos respondiendo a este email.
+
+🏃‍♀️ **¡Gracias por contribuir a la comunidad atlética de Colombia!**
+
+Un abrazo,
+El equipo de Aldebaran 🌟
+
+---
+📧 Este correo fue generado automáticamente. Si no solicitaste esta información, puedes ignorarlo.
+🆔 ID de propuesta: ${proposal.id}
+⏰ Fecha de aprobación: ${new Date().toLocaleString('es-CO')}
+  `
+
+  const mailOptions = {
+    from: process.env.NEXT_PUBLIC_ADMIN_EMAIL,
+    to: proposal.submitterEmail,
+    subject: `🎉 ¡Tu evento "${proposal.title}" ha sido aprobado! - Aldebaran`,
+    text: emailBody
+  }
+
+  await transporter.sendMail(mailOptions)
 }

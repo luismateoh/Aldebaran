@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { proposalsServiceAdmin } from '@/lib/proposals-firebase-admin'
 import { eventsServiceAdmin } from '@/lib/events-firebase-admin'
 import { verifyAdminToken } from '@/lib/auth-server'
+import nodemailer from 'nodemailer'
 
 export async function POST(request: NextRequest) {
   try {
@@ -56,9 +57,21 @@ export async function POST(request: NextRequest) {
 
     console.log(`✅ Evento creado desde propuesta: ${newEvent.id}`)
 
+    // Si la propuesta tiene email del remitente, enviar notificación de publicación
+    if (proposal.submitterEmail && proposal.submitterEmail.trim()) {
+      try {
+        await sendPublicationNotificationEmail(proposal, newEvent)
+        console.log(`✅ Email de publicación enviado a: ${proposal.submitterEmail}`)
+      } catch (emailError) {
+        console.error('❌ Error enviando email de publicación:', emailError)
+        // No fallar la publicación por un error de email
+      }
+    }
+
     return NextResponse.json({ 
       success: true,
       event: newEvent,
+      eventId: newEvent.id,
       message: `Propuesta "${proposal.title}" publicada como evento exitosamente`
     }, { status: 201 })
 
@@ -69,4 +82,76 @@ export async function POST(request: NextRequest) {
       details: error instanceof Error ? error.message : 'Error desconocido'
     }, { status: 500 })
   }
+}
+
+// Función para enviar email de notificación de publicación
+async function sendPublicationNotificationEmail(proposal: any, event: any) {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.NEXT_PUBLIC_ADMIN_EMAIL,
+      pass: process.env.GMAIL_APP_PASSWORD
+    }
+  })
+
+  const eventUrl = `https://aldebaran-run.vercel.app/events/${event.id}`
+
+  const emailBody = `
+¡Tu evento ya está publicado! 🏃‍♂️✨
+
+Hola ${proposal.submittedBy},
+
+¡Excelentes noticias! Tu evento deportivo ya está **OFICIALMENTE PUBLICADO** en Aldebaran y disponible para que los corredores se inscriban.
+
+📋 **TU EVENTO PUBLICADO:**
+🏃 Evento: ${proposal.title}
+📅 Fecha: ${proposal.eventDate}
+📍 Lugar: ${proposal.municipality}, ${proposal.department}
+🏢 Organizador: ${proposal.organizer}
+💰 Costo: ${proposal.registrationFee || 'Por definir'}
+
+🌐 **¡YA PUEDES VERLO EN VIVO!**
+Tu evento está disponible en: ${eventUrl}
+
+🏁 **DISTANCIAS DISPONIBLES:**
+${proposal.distances?.length ? proposal.distances.map((d: string) => `• ${d}`).join('\n') : '• Por definir'}
+
+📝 **DESCRIPCIÓN:**
+${proposal.description}
+
+---
+
+🎯 **LO QUE PUEDEN HACER LOS CORREDORES AHORA:**
+✅ Ver toda la información del evento
+✅ Guardar el evento en sus favoritos  
+✅ Compartirlo con otros corredores
+✅ Comentar y hacer preguntas
+✅ Acceder al sitio de registro (si proporcionaste el link)
+
+📈 **ESTADÍSTICAS:**
+Te enviaremos actualizaciones sobre el interés en tu evento y las interacciones de los usuarios.
+
+💡 **¿NECESITAS ACTUALIZAR ALGO?**
+Si necesitas hacer cambios a la información del evento, contáctanos respondiendo a este email.
+
+🏆 **¡Gracias por fortalecer la comunidad atlética colombiana!**
+
+¡A correr se ha dicho! 🏃‍♀️💨
+El equipo de Aldebaran 🌟
+
+---
+🔗 Link directo: ${eventUrl}
+📧 Este correo fue generado automáticamente.
+🆔 ID del evento: ${event.id}
+⏰ Fecha de publicación: ${new Date().toLocaleString('es-CO')}
+  `
+
+  const mailOptions = {
+    from: process.env.NEXT_PUBLIC_ADMIN_EMAIL,
+    to: proposal.submitterEmail,
+    subject: `🏃‍♂️ ¡Tu evento "${proposal.title}" ya está publicado! - Aldebaran`,
+    text: emailBody
+  }
+
+  await transporter.sendMail(mailOptions)
 }

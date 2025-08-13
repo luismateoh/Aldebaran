@@ -1,6 +1,6 @@
 import { adminDb } from './firebase-admin'
 import { FieldValue, Timestamp } from 'firebase-admin/firestore'
-import type { FirebaseEventData, EventData } from '../types'
+import type { FirebaseEventData, EventData } from '@/types'
 
 const EVENTS_COLLECTION = 'events'
 
@@ -37,6 +37,30 @@ export class EventsServiceServer {
       return sortedEvents
     } catch (error) {
       console.error('❌ Error obteniendo eventos:', error)
+      throw error
+    }
+  }
+
+  async getAllEventsForExport(): Promise<EventData[]> {
+    try {
+      console.log('📊 Obteniendo TODOS los eventos para exportación...')
+      
+      const snapshot = await this.eventsRef.get()
+      console.log(`📋 Encontrados ${snapshot.docs.length} eventos totales en Firebase`)
+      
+      const allEvents = snapshot.docs.map(doc => this.transformFirestoreDoc(doc))
+      
+      // Ordenar por fecha descendente (más recientes primero)
+      const sortedEvents = allEvents.sort((a, b) => {
+        const dateA = new Date(a.eventDate || '2024-01-01')
+        const dateB = new Date(b.eventDate || '2024-01-01')
+        return dateB.getTime() - dateA.getTime()
+      })
+      
+      console.log(`✅ Devolviendo ${sortedEvents.length} eventos totales para exportación`)
+      return sortedEvents
+    } catch (error) {
+      console.error('❌ Error obteniendo eventos para exportación:', error)
       throw error
     }
   }

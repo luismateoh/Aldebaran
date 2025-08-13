@@ -4,7 +4,6 @@ import withPWA from "next-pwa";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   experimental: {
     typedRoutes: false, // Disable to avoid minimatch issues
   },
@@ -19,25 +18,21 @@ const nextConfig = {
     // Skip ESLint during build
     ignoreDuringBuilds: true,
   },
-
-  headers
-
-}
-
-export async function headers() {
-  const headers = [];
-  if (process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview') {
-    headers.push({
-      headers: [
-        {
-          key: 'X-Robots-Tag',
-          value: 'noindex',
-        },
-      ],
-      source: '/:path*',
-    });
+  async headers() {
+    const headersList = [];
+    if (process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview') {
+      headersList.push({
+        headers: [
+          {
+            key: 'X-Robots-Tag',
+            value: 'noindex',
+          },
+        ],
+        source: '/:path*',
+      });
+    }
+    return headersList;
   }
-  return headers;
 }
 
 const pwaConfig = {

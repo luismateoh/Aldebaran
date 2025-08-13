@@ -80,7 +80,8 @@ export const GET = async (request: NextRequest, { params }: { params: { id: stri
   try {
     const { searchParams } = new URL(request.url)
     const userId = searchParams.get('userId')
-    const eventId = params.id
+    const resolvedParams = await params
+    const eventId = resolvedParams.id
 
     if (!eventId) {
       return new Response(

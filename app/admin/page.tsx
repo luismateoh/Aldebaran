@@ -7,7 +7,8 @@ import { useAuthApi } from '@/hooks/use-auth-api'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { FileText, Calendar, Mail, Send, CheckCircle, AlertCircle, Zap, User, Plus, Settings, Database, Brain, UserPlus, PenTool, Copy, Search, Filter, MapPin, Clock } from 'lucide-react'
+import { FileText, Calendar, Mail, Send, CheckCircle, AlertCircle, Zap, User, Plus, Settings, Database, Brain, UserPlus, PenTool, Copy, Search, Filter, MapPin, Clock, Download } from 'lucide-react'
+import { toast } from "sonner"
 
 export default function AdminPage() {
   const router = useRouter()
@@ -22,6 +23,7 @@ export default function AdminPage() {
   const [testingEmail, setTestingEmail] = useState(false)
   const [testingFirebase, setTestingFirebase] = useState(false)
   const [testingAi, setTestingAi] = useState(false)
+  const [exportingEvents, setExportingEvents] = useState(false)
 
   // Redirect if not authenticated or not admin
   useEffect(() => {
@@ -41,24 +43,71 @@ export default function AdminPage() {
 
   const loadSystemStats = async () => {
     try {
-      const response = await makeAuthenticatedRequest('/api/events/list')
+      // Usar el nuevo endpoint de estadísticas unificado
+      const statsResponse = await makeAuthenticatedRequest('/api/stats')
       
-      if (response.ok) {
-        const data = await response.json()
-        setSystemStats({
-          totalEvents: data.events?.length || 0,
-          publishedEvents: data.events?.filter((e: any) => e.status === 'published' && !e.draft).length || 0,
-          draftEvents: data.events?.filter((e: any) => e.status === 'draft' || e.draft).length || 0,
-          proposals: data.events?.filter((e: any) => e.status === 'proposal').length || 0,
-          deletedEvents: data.events?.filter((e: any) => e.status === 'deleted').length || 0,
-          status: 'connected'
-        })
+      if (statsResponse.ok) {
+        const statsData = await statsResponse.json()
+        
+        if (statsData.success && statsData.stats) {
+          setSystemStats({
+            ...statsData.stats
+          })
+        } else {
+          throw new Error('Invalid stats response format')
+        }
       } else {
-        setSystemStats({ status: 'error', totalEvents: 0, publishedEvents: 0, draftEvents: 0, proposals: 0, deletedEvents: 0 })
+        throw new Error(`Stats API returned ${statsResponse.status}`)
       }
     } catch (error) {
       console.error('Error loading system stats:', error)
-      setSystemStats({ status: 'error', totalEvents: 0, publishedEvents: 0, draftEvents: 0, proposals: 0, deletedEvents: 0 })
+      
+      // Fallback to original method if new endpoint fails
+      try {
+        console.log('Intentando método de estadísticas alternativo...')
+        
+        // Cargar eventos
+        const eventsResponse = await makeAuthenticatedRequest('/api/events/list')
+        let eventStats = { totalEvents: 0, publishedEvents: 0, draftEvents: 0, deletedEvents: 0 }
+        
+        if (eventsResponse.ok) {
+          const eventsData = await eventsResponse.json()
+          eventStats = {
+            totalEvents: eventsData.events?.length || 0,
+            publishedEvents: eventsData.events?.filter((e: any) => e.status === 'published' && !e.draft).length || 0,
+            draftEvents: eventsData.events?.filter((e: any) => e.status === 'draft' || e.draft).length || 0,
+            deletedEvents: eventsData.events?.filter((e: any) => e.status === 'deleted').length || 0,
+          }
+        }
+
+        // Cargar propuestas
+        let proposalsCount = 0
+        try {
+          const proposalsResponse = await makeAuthenticatedRequest('/api/proposals')
+          if (proposalsResponse.ok) {
+            const proposalsData = await proposalsResponse.json()
+            proposalsCount = proposalsData.proposals?.length || 0
+          }
+        } catch (proposalsError) {
+          console.log('No se pudieron cargar propuestas:', proposalsError)
+        }
+
+        setSystemStats({
+          ...eventStats,
+          proposals: proposalsCount,
+          status: 'connected'
+        })
+      } catch (fallbackError) {
+        console.error('Error en método alternativo:', fallbackError)
+        setSystemStats({ 
+          status: 'error', 
+          totalEvents: 0, 
+          publishedEvents: 0, 
+          draftEvents: 0, 
+          proposals: 0, 
+          deletedEvents: 0 
+        })
+      }
     } finally {
       setIsLoadingStats(false)
     }
@@ -156,13 +205,13 @@ export default function AdminPage() {
 
       if (response.ok) {
         const data = await response.json()
-        alert(`✅ Email de prueba enviado exitosamente!\n\nPequeña vista previa:\n${data.preview?.substring(0, 200)}...`)
+        toast.success('Email de prueba enviado exitosamente')
       } else {
         const errorData = await response.json()
-        alert(`❌ Error enviando email: ${errorData.error}`)
+        toast.error(`Error enviando email: ${errorData.error}`)
       }
     } catch (error) {
-      alert(`💥 Error de conexión: ${error}`)
+      toast.error(`Error de conexión: ${error}`)
     } finally {
       setTestingEmail(false)
     }
@@ -173,12 +222,12 @@ export default function AdminPage() {
     try {
       const response = await makeAuthenticatedRequest('/api/events/status')
       if (response.ok) {
-        alert('✅ Conexión a Firebase exitosa!')
+        toast.success('Conexión a Firebase exitosa!')
       } else {
-        alert('❌ Error conectando a Firebase')
+        toast.error('Error conectando a Firebase')
       }
     } catch (error) {
-      alert(`💥 Error de conexión a Firebase: ${error}`)
+      toast.error(`Error de conexión a Firebase: ${error}`)
     } finally {
       setTestingFirebase(false)
     }
@@ -193,26 +242,71 @@ export default function AdminPage() {
       if (response.ok) {
         const hasActiveProvider = data.primary !== 'none'
         if (hasActiveProvider) {
-          alert(`✅ IA configurada correctamente!\n\nProveedor activo: ${data.primary}\nModelo: ${data[data.primary]?.model}\nEstado: ${data[data.primary]?.status}`)
+          toast.success(`IA configurada correctamente!\n\nProveedor activo: ${data.primary}\nModelo: ${data[data.primary]?.model}\nEstado: ${data[data.primary]?.status}`)
         } else {
-          alert('❌ No hay proveedores de IA configurados.\n\nConfigura al menos una API key (GROQ_API_KEY, OPENAI_API_KEY, o GOOGLE_API_KEY) en las variables de entorno.')
+          toast.error('No hay proveedores de IA configurados.\n\nConfigura al menos una API key (GROQ_API_KEY, OPENAI_API_KEY, o GOOGLE_API_KEY) en las variables de entorno.')
         }
       } else {
-        alert('❌ Error verificando configuración de IA')
+        toast.error('Error verificando configuración de IA')
       }
     } catch (error) {
-      alert(`💥 Error probando AI: ${error}`)
+      toast.error(`Error probando AI: ${error}`)
     } finally {
       setTestingAi(false)
+    }
+  }
+
+  const handleExportEvents = async () => {
+    setExportingEvents(true)
+    try {
+      toast.info('Iniciando exportación de eventos...')
+      
+      const response = await makeAuthenticatedRequest('/api/admin/export-events')
+      
+      if (response.ok) {
+        // Descargar el archivo Excel
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(blob)
+        
+        // Crear enlace de descarga
+        const a = document.createElement('a')
+        a.href = url
+        
+        // Obtener nombre del archivo desde los headers
+        const contentDisposition = response.headers.get('Content-Disposition')
+        let filename = 'eventos-aldebaran.xlsx'
+        if (contentDisposition) {
+          const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/)
+          if (filenameMatch) {
+            filename = filenameMatch[1]
+          }
+        }
+        
+        a.download = filename
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        window.URL.revokeObjectURL(url)
+        
+        toast.success(`Archivo ${filename} descargado exitosamente`)
+      } else {
+        const errorData = await response.json().catch(() => ({}))
+        toast.error(`Error exportando eventos: ${errorData.error || 'Error desconocido'}`)
+      }
+    } catch (error) {
+      console.error('Error exporting events:', error)
+      toast.error(`Error de conexión: ${error}`)
+    } finally {
+      setExportingEvents(false)
     }
   }
 
   // Show loading while checking authentication
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <div className="size-8 border-2 border-current border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="mx-auto mb-4 size-8 animate-spin rounded-full border-2 border-current border-t-transparent" />
           <p>Verificando autenticación...</p>
         </div>
       </div>
@@ -233,18 +327,18 @@ export default function AdminPage() {
           <p className="text-muted-foreground">
             Dashboard de gestión de eventos Aldebaran
           </p>
-          <Badge variant="outline" className="text-xs w-fit">
-            <User className="size-3 mr-1" />
+          <Badge variant="outline" className="w-fit text-xs">
+            <User className="mr-1 size-3" />
             {user.email}
           </Badge>
         </div>
 
         {/* Acciones Rápidas - Mobile Optimized */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mt-4">
+        <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-6">
           <Button 
             onClick={() => router.push('/admin/events/new')}
             size="sm"
-            className="h-12 text-xs flex flex-col gap-1"
+            className="flex h-12 flex-col gap-1 text-xs"
           >
             <Plus className="size-4" />
             Nuevo Evento
@@ -254,7 +348,7 @@ export default function AdminPage() {
             onClick={() => router.push('/admin/templates')}
             size="sm"
             variant="outline"
-            className="h-12 text-xs flex flex-col gap-1 border-blue-200 text-blue-700 hover:bg-blue-50"
+            className="flex h-12 flex-col gap-1 text-xs border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400 dark:hover:bg-blue-950"
           >
             <Zap className="size-4" />
             Templates
@@ -264,7 +358,7 @@ export default function AdminPage() {
             onClick={() => router.push('/admin/events')}
             size="sm"
             variant="outline"
-            className="h-12 text-xs flex flex-col gap-1"
+            className="flex h-12 flex-col gap-1 text-xs"
           >
             <Search className="size-4" />
             Buscar
@@ -274,12 +368,12 @@ export default function AdminPage() {
             onClick={() => router.push('/admin/proposals')}
             size="sm"
             variant="outline"
-            className="h-12 text-xs flex flex-col gap-1 relative"
+            className="relative flex h-12 flex-col gap-1 text-xs"
           >
             <Mail className="size-4" />
             Propuestas
             {systemStats?.proposals > 0 && (
-              <div className="absolute -top-1 -right-1 size-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center">
+              <div className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
                 {systemStats.proposals}
               </div>
             )}
@@ -289,16 +383,31 @@ export default function AdminPage() {
             onClick={() => router.push('/admin/events?filter=draft')}
             size="sm"
             variant="outline"
-            className="h-12 text-xs flex flex-col gap-1"
+            className="flex h-12 flex-col gap-1 text-xs"
           >
             <FileText className="size-4" />
             Borradores
+          </Button>
+
+          <Button 
+            onClick={handleExportEvents}
+            disabled={exportingEvents}
+            size="sm"
+            variant="outline"
+            className="flex h-12 flex-col gap-1 text-xs border-green-200 text-green-700 hover:bg-green-50 dark:border-green-800 dark:text-green-400 dark:hover:bg-green-950"
+          >
+            {exportingEvents ? (
+              <div className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+            ) : (
+              <Download className="size-4" />
+            )}
+            {exportingEvents ? 'Exportando...' : 'Exportar Excel'}
           </Button>
         </div>
       </div>
 
       {/* Resumen de Eventos */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-6">
+      <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-5">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
@@ -371,7 +480,7 @@ export default function AdminPage() {
       </div>
 
       {/* Configuraciones del Sistema */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
         {/* Firebase Configuration */}
         <Card>
           <CardHeader>
@@ -388,7 +497,7 @@ export default function AdminPage() {
                   firebaseConfig?.configured ? 'bg-green-500' : 'bg-red-500'
                 }`} />
                 <div>
-                  <p className="font-medium text-sm">
+                  <p className="text-sm font-medium">
                     {firebaseConfig?.configured ? 'Configurado' : 'Sin configurar'}
                   </p>
                   <p className="text-xs text-muted-foreground">
@@ -403,7 +512,7 @@ export default function AdminPage() {
                 variant="outline"
               >
                 {testingFirebase ? (
-                  <div className="size-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                  <div className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                 ) : (
                   <Settings className="size-4" />
                 )}
@@ -429,7 +538,7 @@ export default function AdminPage() {
                   emailConfig?.configured ? 'bg-green-500' : 'bg-red-500'
                 }`} />
                 <div>
-                  <p className="font-medium text-sm">
+                  <p className="text-sm font-medium">
                     {isLoadingEmailConfig ? 'Verificando...' :
                      emailConfig?.configured ? 'Configurado' : 'Sin configurar'}
                   </p>
@@ -445,7 +554,7 @@ export default function AdminPage() {
                 variant="outline"
               >
                 {testingEmail ? (
-                  <div className="size-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                  <div className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                 ) : (
                   <Send className="size-4" />
                 )}
@@ -470,7 +579,7 @@ export default function AdminPage() {
                   aiConfig?.configured ? 'bg-green-500' : 'bg-red-500'
                 }`} />
                 <div>
-                  <p className="font-medium text-sm">
+                  <p className="text-sm font-medium">
                     {aiConfig?.configured ? 'Configurado' : 'Sin configurar'}
                   </p>
                   <p className="text-xs text-muted-foreground">
@@ -485,7 +594,7 @@ export default function AdminPage() {
                 variant="outline"
               >
                 {testingAi ? (
-                  <div className="size-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                  <div className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                 ) : (
                   <Brain className="size-4" />
                 )}
@@ -496,7 +605,7 @@ export default function AdminPage() {
       </div>
 
       {/* Gestión de Contenido */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Gestión de Eventos */}
         <Card>
           <CardHeader>
@@ -513,7 +622,7 @@ export default function AdminPage() {
               onClick={() => router.push('/admin/events/new')}
               className="w-full justify-start"
             >
-              <Plus className="size-4 mr-2" />
+              <Plus className="mr-2 size-4" />
               Crear Nuevo Evento
             </Button>
             
@@ -522,7 +631,7 @@ export default function AdminPage() {
               className="w-full justify-start" 
               variant="outline"
             >
-              <PenTool className="size-4 mr-2" />
+              <PenTool className="mr-2 size-4" />
               Administrar Eventos
             </Button>
           </CardContent>
@@ -544,7 +653,7 @@ export default function AdminPage() {
               onClick={() => router.push('/admin/proposals')}
               className="w-full justify-start"
             >
-              <Mail className="size-4 mr-2" />
+              <Mail className="mr-2 size-4" />
               Gestionar Propuestas
               {systemStats?.proposals > 0 && (
                 <Badge variant="destructive" className="ml-auto">
@@ -558,7 +667,7 @@ export default function AdminPage() {
               className="w-full justify-start" 
               variant="outline"
             >
-              <AlertCircle className="size-4 mr-2" />
+              <AlertCircle className="mr-2 size-4" />
               Revisar Pendientes
             </Button>
           </CardContent>
@@ -566,7 +675,7 @@ export default function AdminPage() {
       </div>
 
       {/* Configuración Avanzada */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Administradores */}
         <Card>
           <CardHeader>
@@ -584,7 +693,7 @@ export default function AdminPage() {
               className="w-full justify-start"
               variant="outline"
             >
-              <UserPlus className="size-4 mr-2" />
+              <UserPlus className="mr-2 size-4" />
               Gestionar Administradores
             </Button>
             
@@ -611,12 +720,12 @@ export default function AdminPage() {
               className="w-full justify-start"
               variant="outline"
             >
-              <Settings className="size-4 mr-2" />
+              <Settings className="mr-2 size-4" />
               Configuración Avanzada
             </Button>
             
             <div className="text-sm text-muted-foreground">
-              <p>Versión: Next.js 14 + Firebase</p>
+              <p>Versión: Next.js 15 + Firebase</p>
             </div>
           </CardContent>
         </Card>

@@ -20,9 +20,9 @@ export default function TemplatesPage() {
   // Show loading while checking authentication
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <div className="size-8 border-2 border-current border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="mx-auto mb-4 size-8 animate-spin rounded-full border-2 border-current border-t-transparent" />
           <p>Verificando autenticación...</p>
         </div>
       </div>
@@ -48,12 +48,12 @@ export default function TemplatesPage() {
   }
 
   return (
-    <div className="container max-w-6xl mx-auto py-8 space-y-6">
+    <div className="container mx-auto max-w-6xl space-y-6 py-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold">Templates de Eventos</h1>
+            <h1 className="text-2xl font-bold sm:text-3xl">Templates de Eventos</h1>
             <p className="text-sm text-muted-foreground">
               Crea eventos rápidamente usando plantillas predefinidas optimizadas para móvil
             </p>

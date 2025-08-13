@@ -123,10 +123,10 @@ export default function UserSettings() {
 
   if (!user) {
     return (
-      <div className="container max-w-2xl mx-auto py-8">
+      <div className="container mx-auto max-w-2xl py-8">
         <Card>
           <CardContent className="p-6 text-center">
-            <Shield className="size-12 mx-auto text-muted-foreground mb-4" />
+            <Shield className="mx-auto mb-4 size-12 text-muted-foreground" />
             <p className="text-muted-foreground">
               Inicia sesión para acceder a la configuración
             </p>
@@ -137,7 +137,7 @@ export default function UserSettings() {
   }
 
   return (
-    <div className="container max-w-2xl mx-auto py-8 space-y-6">
+    <div className="container mx-auto max-w-2xl space-y-6 py-8">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button
@@ -145,11 +145,11 @@ export default function UserSettings() {
           size="sm"
           onClick={() => router.push('/perfil')}
         >
-          <ArrowLeft className="size-4 mr-2" />
+          <ArrowLeft className="mr-2 size-4" />
           Volver al Perfil
         </Button>
         <div className="flex-1">
-          <h1 className="text-2xl font-bold flex items-center gap-2">
+          <h1 className="flex items-center gap-2 text-2xl font-bold">
             <Settings className="size-6" />
             Configuración
           </h1>
@@ -417,7 +417,7 @@ export default function UserSettings() {
           className="flex items-center gap-2"
         >
           {loading ? (
-            <div className="size-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            <div className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
           ) : (
             <Save className="size-4" />
           )}
