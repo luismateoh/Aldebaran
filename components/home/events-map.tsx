@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Calendar, MapPin, Users } from "lucide-react"
+import { Calendar, MapPin, Route } from "lucide-react"
 import Link from "next/link"
 import { EventData } from "@/types"
 
@@ -154,50 +154,51 @@ export function EventsMap({ events }: EventsMapProps) {
             position={event.coordinates}
           >
             <Popup maxWidth={300} className="custom-popup">
-              <div className="p-2">
-                <h3 className="mb-2 line-clamp-2 text-sm font-semibold">
+              <div className="p-3">
+                <h3 className="mb-3 line-clamp-2 font-semibold">
                   {event.title}
                 </h3>
                 
-                <div className="space-y-2 text-xs">
-                  <div className="flex items-center gap-1 text-muted-foreground">
-                    <Calendar className="size-3" />
-                    <span>{formatDate(event.eventDate)}</span>
-                  </div>
-                  
-                  <div className="flex items-center gap-1 text-muted-foreground">
-                    <MapPin className="size-3" />
-                    <span>{event.municipality}, {event.department}</span>
-                  </div>
-
-                  {event.distances && event.distances.length > 0 && (
-                    <div className="flex items-center gap-1">
-                      <Users className="size-3 text-muted-foreground" />
-                      <div className="flex flex-wrap gap-1">
-                        {event.distances.slice(0, 2).map((distance, index) => (
-                          <Badge key={`${event.id}-distance-${index}`} variant="outline" className="px-1 py-0 text-xs">
-                            {typeof distance === 'string' ? distance : distance.value}
-                          </Badge>
-                        ))}
-                        {event.distances.length > 2 && (
-                          <Badge variant="outline" className="px-1 py-0 text-xs">
-                            +{event.distances.length - 2}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {event.category && (
+                {/* Categoria */}
+                {event.category && (
+                  <div className="mb-3 flex justify-start">
                     <Badge variant="secondary" className="text-xs">
                       {event.category}
                     </Badge>
+                  </div>
+                )}
+                
+                <div className="space-y-2 text-sm">
+                  {/* Fecha */}
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Calendar className="size-4" />
+                    <span>{formatDate(event.eventDate)}</span>
+                  </div>
+                  
+                  {/* Ubicación */}
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <MapPin className="size-4" />
+                    <span>{event.municipality}, {event.department}</span>
+                  </div>
+
+                  {/* Distancias */}
+                  {event.distances && event.distances.length > 0 && (
+                    <div className="flex items-center gap-2">
+                      <Route className="size-4 text-muted-foreground" />
+                      <div className="flex flex-wrap gap-1">
+                        {event.distances.map((distance, index) => (
+                          <Badge key={`${event.id}-distance-${index}`} variant="outline" className="text-xs">
+                            {typeof distance === 'string' ? distance : distance.value}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
                   )}
                 </div>
 
-                <div className="mt-3">
-                  <Button asChild size="sm" className="h-7 w-full text-xs">
-                    <Link href={`/event/${event.id}`}>
+                <div className="mt-4">
+                  <Button asChild size="sm" className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+                    <Link href={`/events/${event.id}`}>
                       Ver Detalles
                     </Link>
                   </Button>
