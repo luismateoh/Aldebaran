@@ -113,7 +113,18 @@
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
   }
 
+  /* Dark mode specific styles */
+  .dark .leaflet-popup-content-wrapper {
+    background-color: hsl(var(--card)) !important;
+    color: hsl(var(--card-foreground)) !important;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3) !important;
+  }
+
   .leaflet-popup-tip {
+    background-color: hsl(var(--card)) !important;
+  }
+
+  .dark .leaflet-popup-tip {
     background-color: hsl(var(--card)) !important;
   }
 
@@ -125,6 +136,12 @@
 
   .leaflet-popup-close-button:hover {
     color: hsl(var(--foreground)) !important;
+  }
+
+  /* Button text fix in Leaflet popup */
+  .leaflet-popup-content button,
+  .leaflet-popup-content a[role="button"] {
+    color: hsl(var(--primary-foreground)) !important;
   }
 
 }

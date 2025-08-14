@@ -187,7 +187,7 @@ export function EventsMap({ events }: EventsMapProps) {
                       <Route className="size-4 text-muted-foreground" />
                       <div className="flex flex-wrap gap-1">
                         {event.distances.map((distance, index) => (
-                          <Badge key={`${event.id}-distance-${index}`} variant="outline" className="text-xs">
+                          <Badge key={`${event.id}-distance-${index}`} variant="secondary" className="text-xs">
                             {typeof distance === 'string' ? distance : distance.value}
                           </Badge>
                         ))}
@@ -197,7 +197,7 @@ export function EventsMap({ events }: EventsMapProps) {
                 </div>
 
                 <div className="mt-4">
-                  <Button asChild size="sm" className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+                  <Button asChild size="sm" className="w-full">
                     <Link href={`/events/${event.id}`}>
                       Ver Detalles
                     </Link>
