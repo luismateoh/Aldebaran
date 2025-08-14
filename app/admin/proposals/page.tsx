@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Check, X, Edit, Calendar, MapPin, User, ExternalLink, RefreshCw, Copy, CheckCheck } from 'lucide-react'
+import { toast } from "sonner"
 
 interface Proposal {
   id: string
@@ -117,21 +118,22 @@ export default function ProposalsPage() {
           p.id === proposalId ? { ...p, status: 'approved' } : p
         ))
         
-        setActionResult({
-          success: true,
-          message: data.message || 'Propuesta aprobada exitosamente'
+        // Mostrar toast de éxito
+        toast.success('✅ Propuesta aprobada exitosamente', {
+          description: 'Se ha creado un evento draft en borradores para su revisión'
         })
+        
+        // Limpiar mensaje de resultado anterior
+        setActionResult(null)
       } else {
         const errorData = await response.json()
-        setActionResult({
-          success: false,
-          message: errorData.error || 'Error aprobando propuesta'
+        toast.error('❌ Error aprobando propuesta', {
+          description: errorData.error || 'Error desconocido'
         })
       }
     } catch (error) {
-      setActionResult({
-        success: false,
-        message: 'Error de conexión: ' + (error instanceof Error ? error.message : 'Error desconocido')
+      toast.error('❌ Error de conexión', {
+        description: error instanceof Error ? error.message : 'Error desconocido'
       })
     } finally {
       setIsProcessing(false)
@@ -159,21 +161,20 @@ export default function ProposalsPage() {
           p.id === proposalId ? { ...p, status: 'rejected', rejectionReason } : p
         ))
         
-        setActionResult({
-          success: true,
-          message: data.message || 'Propuesta rechazada exitosamente'
+        toast.success('✅ Propuesta rechazada', {
+          description: 'La propuesta ha sido marcada como rechazada'
         })
+        
+        setActionResult(null)
       } else {
         const errorData = await response.json()
-        setActionResult({
-          success: false,
-          message: errorData.error || 'Error rechazando propuesta'
+        toast.error('❌ Error rechazando propuesta', {
+          description: errorData.error || 'Error desconocido'
         })
       }
     } catch (error) {
-      setActionResult({
-        success: false,
-        message: 'Error de conexión: ' + (error instanceof Error ? error.message : 'Error desconocido')
+      toast.error('❌ Error de conexión', {
+        description: error instanceof Error ? error.message : 'Error desconocido'
       })
     } finally {
       setIsProcessing(false)
@@ -193,10 +194,11 @@ export default function ProposalsPage() {
       if (response.ok) {
         const data = await response.json()
         
-        setActionResult({
-          success: true,
-          message: data.message || 'Propuesta publicada como evento exitosamente'
+        toast.success('🎉 Evento publicado exitosamente', {
+          description: 'La propuesta ha sido publicada como evento público'
         })
+        
+        setActionResult(null)
         
         // Recargar propuestas para reflejar cambios
         setTimeout(() => {
@@ -211,15 +213,13 @@ export default function ProposalsPage() {
         }
       } else {
         const errorData = await response.json()
-        setActionResult({
-          success: false,
-          message: errorData.error || 'Error publicando propuesta como evento'
+        toast.error('❌ Error publicando evento', {
+          description: errorData.error || 'Error desconocido'
         })
       }
     } catch (error) {
-      setActionResult({
-        success: false,
-        message: 'Error de conexión: ' + (error instanceof Error ? error.message : 'Error desconocido')
+      toast.error('❌ Error de conexión', {
+        description: error instanceof Error ? error.message : 'Error desconocido'
       })
     } finally {
       setIsProcessing(false)

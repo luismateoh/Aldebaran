@@ -16,6 +16,7 @@ import { NaturalDatePicker } from '@/components/natural-date-picker'
 import { MunicipalityAutocomplete } from '@/components/municipality-autocomplete'
 import { getAltitude } from '@/lib/colombia-altitudes'
 import { Save, Calendar, MapPin, User, Globe, DollarSign, Check } from 'lucide-react'
+import { toast } from "sonner"
 
 interface EventData {
   id: string
@@ -26,6 +27,7 @@ interface EventData {
   organizer: string
   category: string
   status: 'draft' | 'published' | 'cancelled'
+  draft?: boolean
   distances: string[]
   website: string
   registrationFee: string
@@ -84,7 +86,12 @@ export default function EditEventPage() {
 
       if (response.ok) {
         const data = await response.json()
-        setEventData(data.event)
+        const event = data.event
+        // Ensure draft field is consistent with status
+        setEventData({
+          ...event,
+          draft: event.draft !== undefined ? event.draft : event.status === 'draft'
+        })
       } else {
         console.error('Error loading event:', response.status)
         setSaveResult({
@@ -186,17 +193,26 @@ export default function EditEventPage() {
           success: true, 
           message: 'Evento actualizado exitosamente' 
         })
+        toast.success('Evento actualizado exitosamente')
       } else {
         const errorData = await response.json()
+        const errorMessage = `Error al actualizar evento: ${errorData.error || response.status}`
         setSaveResult({ 
           error: true, 
-          message: `Error al actualizar evento: ${errorData.error || response.status}` 
+          message: errorMessage
+        })
+        toast.error('Error actualizando evento', {
+          description: errorData.error || 'Error desconocido'
         })
       }
     } catch (error) {
+      const errorMessage = 'Error de conexión: ' + (error instanceof Error ? error.message : 'Error desconocido')
       setSaveResult({ 
         error: true, 
-        message: 'Error de conexión: ' + (error instanceof Error ? error.message : 'Error desconocido')
+        message: errorMessage
+      })
+      toast.error('Error de conexión', {
+        description: error instanceof Error ? error.message : 'Error desconocido'
       })
     } finally {
       setIsSaving(false)
@@ -685,7 +701,11 @@ ${eventData.description}`
                 checked={eventData.status === 'published'}
                 onCheckedChange={(checked) => {
                   const newStatus = checked ? 'published' : 'draft'
-                  setEventData(prev => prev ? { ...prev, status: newStatus } : null)
+                  setEventData(prev => prev ? { 
+                    ...prev, 
+                    status: newStatus,
+                    draft: newStatus === 'draft'
+                  } : null)
                 }}
               />
               <Label htmlFor="status-switch" className="text-sm font-normal">

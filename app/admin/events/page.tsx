@@ -17,6 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { toast } from "sonner"
 
 interface Event {
   id: string
@@ -89,77 +90,98 @@ export default function EventsPage() {
     try {
       setActionResult(null)
       
+      console.log(`Updating event ${eventId} to status ${status}`)
+      
       const response = await makeAuthenticatedRequest('/api/events/status', {
         method: 'PATCH',
         body: JSON.stringify({ eventId, status })
       })
 
+      console.log('Response status:', response.status)
+      console.log('Response headers:', response.headers)
+
       if (response.ok) {
-        // Update local state
+        const responseData = await response.json()
+        console.log('Response data:', responseData)
+        
+        // Update local state with both status and draft fields
         setEvents(events.map(event => 
-          event.id === eventId ? { ...event, status } : event
+          event.id === eventId ? { 
+            ...event, 
+            status, 
+            draft: status === 'draft' 
+          } : event
         ))
         
-        // Show success message
-        setActionResult({
-          success: true,
-          message: `Evento actualizado a "${
-            status === 'published' ? 'publicado' : 
-            status === 'draft' ? 'borrador' : 'cancelado'
-          }"`
-        })
+        // Show success toast
+        toast.success(`Evento actualizado a "${
+          status === 'published' ? 'publicado' : 
+          status === 'draft' ? 'borrador' : 'cancelado'
+        }"`)
       } else {
-        const errorData = await response.json()
-        setActionResult({
-          success: false,
-          message: errorData.error || 'Error actualizando evento'
+        console.error('Response not OK, status:', response.status)
+        const responseText = await response.text()
+        console.error('Response text:', responseText)
+        
+        // Try to parse as JSON, fallback to text
+        let errorMessage = 'Error desconocido'
+        try {
+          const errorData = JSON.parse(responseText)
+          errorMessage = errorData.error || errorMessage
+        } catch {
+          errorMessage = `HTTP ${response.status}: ${responseText.substring(0, 100)}`
+        }
+        
+        toast.error('Error actualizando evento', {
+          description: errorMessage
         })
       }
     } catch (error) {
-      setActionResult({
-        success: false,
-        message: `Error: ${error instanceof Error ? error.message : 'Desconocido'}`
+      console.error('Catch block error:', error)
+      toast.error('Error de conexión', {
+        description: error instanceof Error ? error.message : 'Error desconocido'
       })
     }
   }
 
   const handleDeleteEvent = async (eventId: string, eventTitle: string) => {
-    // Confirmación antes de eliminar
-    const confirmed = window.confirm(
-      `¿Estás seguro de que quieres eliminar permanentemente el evento "${eventTitle}"?\n\nEsta acción no se puede deshacer.`
-    )
+    // Toast de confirmación antes de eliminar
+    toast.warning(`¿Eliminar "${eventTitle}"?`, {
+      description: 'Esta acción no se puede deshacer.',
+      action: {
+        label: 'Eliminar',
+        onClick: async () => {
+          try {
+            setActionResult(null)
+            
+            const response = await makeAuthenticatedRequest(`/api/events/delete?id=${eventId}`, {
+              method: 'DELETE'
+            })
 
-    if (!confirmed) return
-
-    try {
-      setActionResult(null)
-      
-      const response = await makeAuthenticatedRequest(`/api/events/delete?id=${eventId}`, {
-        method: 'DELETE'
-      })
-
-      if (response.ok) {
-        // Remove from local state
-        setEvents(events.filter(event => event.id !== eventId))
-        
-        // Show success message
-        setActionResult({
-          success: true,
-          message: `Evento "${eventTitle}" eliminado permanentemente`
-        })
-      } else {
-        const errorData = await response.json()
-        setActionResult({
-          success: false,
-          message: errorData.error || 'Error eliminando evento'
-        })
+            if (response.ok) {
+              // Remove from local state
+              setEvents(events.filter(event => event.id !== eventId))
+              
+              // Show success toast
+              toast.success(`Evento "${eventTitle}" eliminado permanentemente`)
+            } else {
+              const errorData = await response.json()
+              toast.error('Error eliminando evento', {
+                description: errorData.error || 'Error desconocido'
+              })
+            }
+          } catch (error) {
+            toast.error('Error eliminando evento', {
+              description: error instanceof Error ? error.message : 'Error desconocido'
+            })
+          }
+        }
+      },
+      cancel: {
+        label: 'Cancelar',
+        onClick: () => {}
       }
-    } catch (error) {
-      setActionResult({
-        success: false,
-        message: `Error: ${error instanceof Error ? error.message : 'Desconocido'}`
-      })
-    }
+    })
   }
 
   const formatDate = (dateString: string) => {
@@ -216,17 +238,15 @@ export default function EventsPage() {
         })
         
         if (createResponse.ok) {
-          setActionResult({
-            success: true,
-            message: 'Evento duplicado exitosamente. Actualice la fecha antes de publicar.'
+          toast.success('Evento duplicado exitosamente', {
+            description: 'Actualice la fecha antes de publicar.'
           })
           loadEvents() // Recargar lista
         }
       }
     } catch (error) {
-      setActionResult({
-        success: false,
-        message: 'Error duplicando evento'
+      toast.error('Error duplicando evento', {
+        description: 'No se pudo duplicar el evento'
       })
     }
   }

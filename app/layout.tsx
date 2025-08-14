@@ -14,6 +14,7 @@ import { TailwindIndicator } from "@/components/tailwind-indicator"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/lib/auth-context"
 import { Toaster } from "@/components/ui/sonner"
+import ConditionalLayout from "@/components/conditional-layout"
 
 export const metadata: Metadata = {
   title: {
@@ -59,13 +60,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
         >
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
             <AuthProvider>
-              <div className="relative flex min-h-screen flex-col">
-                <SiteHeader />
-                <div className="flex-1">{children}</div>
-              </div>
+              <ConditionalLayout>
+                {children}
+              </ConditionalLayout>
               <TailwindIndicator />
-              <Footer />
-              <ScrollToTop />
               <Toaster />
             </AuthProvider>
           </ThemeProvider>

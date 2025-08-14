@@ -5,7 +5,7 @@ import { notFound } from "next/navigation"
 
 import { eventsService } from "@/lib/events-firebase"
 import { EventData } from "@/lib/types"
-import { capitalize } from "@/lib/utils"
+import { capitalize, markdownToHtml } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import EventComments from "@/components/event-comments"
 import InteractiveSection from "@/components/interactive-section"
@@ -18,12 +18,13 @@ type Params = {
 }
 
 type Props = {
-  params: Params
+  params: Promise<Params>
 }
 
 export async function generateMetadata({ params }: Props) {
   try {
-    const eventData: EventData = await eventsService.getEventById(params.id)
+    const { id } = await params
+    const eventData: EventData = await eventsService.getEventById(id)
     
     // Si el evento es borrador, no generar metadata
     if (eventData.draft) {
@@ -71,9 +72,10 @@ function parseEventDate(dateString: string): Date {
 // -< Event >-
 export default async function Event({ params }: Props) {
   let eventData: EventData
+  const { id } = await params
   
   try {
-    eventData = await eventsService.getEventById(params.id)
+    eventData = await eventsService.getEventById(id)
     
     // Si el evento es borrador, no permitir acceso público
     if (eventData.draft) {
@@ -84,8 +86,8 @@ export default async function Event({ params }: Props) {
     notFound()
   }
 
-  // Convertir description de markdown a HTML si es necesario
-  const contentHtml = eventData.description || ''
+  // Convertir description de markdown a HTML
+  const contentHtml = eventData.description ? await markdownToHtml(eventData.description) : ''
   
   // Parsear fecha de manera segura
   const eventDate = parseEventDate(eventData.eventDate)
@@ -131,11 +133,9 @@ export default async function Event({ params }: Props) {
                 Información del Evento
               </h2>
               
-              <div className="prose prose-base max-w-none dark:prose-invert">
+              <div className="prose prose-base max-w-none dark:prose-invert prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-em:text-foreground">
                 {contentHtml ? (
-                  contentHtml.split('\n').map((paragraph, index) => (
-                    paragraph.trim() && <p key={index} className="mb-4 leading-relaxed text-foreground">{paragraph}</p>
-                  ))
+                  <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
                 ) : (
                   <p className="leading-relaxed text-foreground">
                     {eventData.snippet || 'Información no disponible.'}
@@ -145,7 +145,7 @@ export default async function Event({ params }: Props) {
             </div>
 
             {/* Comments Section */}
-            <EventComments eventId={params.id} />
+            <EventComments eventId={id} />
           </div>
         </div>
 

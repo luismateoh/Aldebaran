@@ -32,35 +32,56 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Convertir propuesta a formato de evento
-    const eventData = {
-      title: proposal.title,
-      eventDate: proposal.eventDate,
-      municipality: proposal.municipality,
-      department: proposal.department,
-      organizer: proposal.organizer,
-      website: proposal.website || '',
-      description: proposal.description,
-      distances: proposal.distances,
-      registrationFee: proposal.registrationFee || '',
-      category: proposal.category,
-      status: 'published' as const,
-      author: authResult.user?.email || 'Admin',
-      altitude: '1000m', // Valor por defecto
-      cover: '',
-      tags: [proposal.category.toLowerCase(), proposal.municipality.toLowerCase(), 'atletismo'],
-      snippet: proposal.description.substring(0, 150)
+    // Buscar si ya existe un evento draft de esta propuesta
+    const existingEvents = await eventsServiceAdmin.getAllEvents()
+    const existingEvent = existingEvents.find(event => 
+      event.proposalId === proposalId && event.status === 'draft'
+    )
+
+    let publishedEvent
+
+    if (existingEvent) {
+      // Si ya existe un evento draft, actualizarlo a published
+      publishedEvent = await eventsServiceAdmin.updateEvent(existingEvent.id, {
+        status: 'published',
+        draft: false,
+        publishedAt: new Date().toISOString(),
+        publishedBy: authResult.user?.email || 'Admin'
+      })
+      console.log(`✅ Evento draft actualizado a published: ${existingEvent.id}`)
+    } else {
+      // Si no existe, crear nuevo evento published
+      const eventData = {
+        title: proposal.title,
+        eventDate: proposal.eventDate,
+        municipality: proposal.municipality,
+        department: proposal.department,
+        organizer: proposal.organizer,
+        website: proposal.website || '',
+        description: proposal.description,
+        distances: proposal.distances,
+        registrationFee: proposal.registrationFee || '',
+        category: proposal.category,
+        status: 'published' as const,
+        draft: false,
+        author: authResult.user?.email || 'Admin',
+        altitude: '1000m', // Valor por defecto
+        cover: '',
+        tags: [proposal.category.toLowerCase(), proposal.municipality.toLowerCase(), 'atletismo'],
+        snippet: proposal.description.substring(0, 150),
+        proposalId: proposal.id,
+        publishedAt: new Date().toISOString(),
+        publishedBy: authResult.user?.email || 'Admin'
+      }
+
+      publishedEvent = await eventsServiceAdmin.createEvent(eventData)
+      console.log(`✅ Evento nuevo creado como published: ${publishedEvent.id}`)
     }
-
-    // Crear el evento
-    const newEvent = await eventsServiceAdmin.createEvent(eventData)
-
-    console.log(`✅ Evento creado desde propuesta: ${newEvent.id}`)
 
     // Si la propuesta tiene email del remitente, enviar notificación de publicación
     if (proposal.submitterEmail && proposal.submitterEmail.trim()) {
       try {
-        await sendPublicationNotificationEmail(proposal, newEvent)
+        await sendPublicationNotificationEmail(proposal, publishedEvent)
         console.log(`✅ Email de publicación enviado a: ${proposal.submitterEmail}`)
       } catch (emailError) {
         console.error('❌ Error enviando email de publicación:', emailError)
@@ -70,8 +91,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ 
       success: true,
-      event: newEvent,
-      eventId: newEvent.id,
+      event: publishedEvent,
+      eventId: publishedEvent.id,
       message: `Propuesta "${proposal.title}" publicada como evento exitosamente`
     }, { status: 201 })
 

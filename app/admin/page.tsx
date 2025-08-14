@@ -301,6 +301,7 @@ export default function AdminPage() {
     }
   }
 
+
   // Show loading while checking authentication
   if (loading) {
     return (
@@ -660,15 +661,6 @@ export default function AdminPage() {
                   {systemStats.proposals}
                 </Badge>
               )}
-            </Button>
-            
-            <Button 
-              onClick={() => router.push('/admin/proposals/pending')}
-              className="w-full justify-start" 
-              variant="outline"
-            >
-              <AlertCircle className="mr-2 size-4" />
-              Revisar Pendientes
             </Button>
           </CardContent>
         </Card>

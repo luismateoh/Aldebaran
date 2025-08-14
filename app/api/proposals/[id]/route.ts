@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { proposalsServiceAdmin } from '@/lib/proposals-firebase-admin'
+import { eventsServiceAdmin } from '@/lib/events-firebase-admin'
 import { verifyAdminToken } from '@/lib/auth-server'
 import nodemailer from 'nodemailer'
 
@@ -72,14 +73,46 @@ export async function PATCH(
       return NextResponse.json({ error: 'Propuesta no encontrada' }, { status: 404 })
     }
     
-    // Si la propuesta fue aprobada y tiene email del remitente, enviar notificación
-    if (status === 'approved' && updatedProposal.submitterEmail && updatedProposal.submitterEmail.trim()) {
+    // Si la propuesta fue aprobada, crear evento draft y enviar notificación
+    if (status === 'approved') {
       try {
-        await sendApprovalNotificationEmail(updatedProposal)
-        console.log(`✅ Email de aprobación enviado a: ${updatedProposal.submitterEmail}`)
-      } catch (emailError) {
-        console.error('❌ Error enviando email de aprobación:', emailError)
-        // No fallar la aprobación por un error de email
+        // Crear evento draft automáticamente
+        const eventData = {
+          title: updatedProposal.title,
+          eventDate: updatedProposal.eventDate,
+          municipality: updatedProposal.municipality,
+          department: updatedProposal.department,
+          organizer: updatedProposal.organizer,
+          website: updatedProposal.website || '',
+          description: updatedProposal.description,
+          distances: updatedProposal.distances || [],
+          registrationFee: updatedProposal.registrationFee || '',
+          category: updatedProposal.category || 'Running',
+          status: 'draft' as const,
+          draft: true,
+          author: authResult.user?.email || 'Admin',
+          altitude: '1000m', // Valor por defecto
+          cover: '',
+          tags: [
+            (updatedProposal.category || 'running').toLowerCase(), 
+            updatedProposal.municipality.toLowerCase(), 
+            'atletismo'
+          ],
+          snippet: updatedProposal.description.substring(0, 150),
+          proposalId: updatedProposal.id // Referencia a la propuesta original
+        }
+
+        const newEvent = await eventsServiceAdmin.createEvent(eventData)
+        console.log(`✅ Evento draft creado desde propuesta: ${newEvent.id}`)
+
+        // Enviar email de aprobación si tiene email
+        if (updatedProposal.submitterEmail && updatedProposal.submitterEmail.trim()) {
+          await sendApprovalNotificationEmail(updatedProposal)
+          console.log(`✅ Email de aprobación enviado a: ${updatedProposal.submitterEmail}`)
+        }
+      } catch (error) {
+        console.error('❌ Error creando evento draft o enviando email:', error)
+        // No fallar la aprobación por errores en la creación del evento o email
       }
     }
     

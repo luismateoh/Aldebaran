@@ -179,7 +179,7 @@ export default function DynamicEventCard({ eventData, eventDate }: DynamicEventC
           {eventData.altitude && (
             <div className="flex justify-between">
               <span className="text-muted-foreground">Altitud:</span>
-              <span className="font-medium">{eventData.altitude}</span>
+              <span className="font-medium">{eventData.altitude.replace(/\$[^$]*\$/g, '').trim()}</span>
             </div>
           )}
         </div>
