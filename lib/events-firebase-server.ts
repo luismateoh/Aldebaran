@@ -3,6 +3,7 @@ import { FieldValue, Timestamp } from 'firebase-admin/firestore'
 import type { FirebaseEventData, EventData } from '@/types'
 
 const EVENTS_COLLECTION = 'events'
+const INVALID_EVENT_DATE_SENTINEL = new Date(1900, 0, 1)
 
 export class EventsServiceServer {
   private eventsRef = adminDb.collection(EVENTS_COLLECTION)
@@ -43,8 +44,8 @@ export class EventsServiceServer {
       
       // Ordenar por fecha ascendente
       const sortedEvents = futureEvents.sort((a, b) => {
-        const dateA = this.parseEventDate(a.eventDate || '') || new Date(2024, 0, 1)
-        const dateB = this.parseEventDate(b.eventDate || '') || new Date(2024, 0, 1)
+        const dateA = this.parseEventDate(a.eventDate || '') || INVALID_EVENT_DATE_SENTINEL
+        const dateB = this.parseEventDate(b.eventDate || '') || INVALID_EVENT_DATE_SENTINEL
         return dateA.getTime() - dateB.getTime()
       })
       
@@ -67,8 +68,8 @@ export class EventsServiceServer {
       
       // Ordenar por fecha descendente (más recientes primero)
       const sortedEvents = allEvents.sort((a, b) => {
-        const dateA = this.parseEventDate(a.eventDate || '') || new Date(2024, 0, 1)
-        const dateB = this.parseEventDate(b.eventDate || '') || new Date(2024, 0, 1)
+        const dateA = this.parseEventDate(a.eventDate || '') || INVALID_EVENT_DATE_SENTINEL
+        const dateB = this.parseEventDate(b.eventDate || '') || INVALID_EVENT_DATE_SENTINEL
         return dateB.getTime() - dateA.getTime()
       })
       
@@ -243,12 +244,32 @@ export class EventsServiceServer {
       distancesVerificationStatus: data.distancesVerificationStatus || '',
       distancesVerificationNote: data.distancesVerificationNote || '',
       distancesVerificationAt,
-      createdAt: data.createdAt instanceof Timestamp ? 
-        data.createdAt.toDate().toISOString() : 
-        (data.createdAt || new Date().toISOString()),
-      updatedAt: data.updatedAt instanceof Timestamp ? 
-        data.updatedAt.toDate().toISOString() : 
-        (data.updatedAt || new Date().toISOString())
+      createdAt:
+        data.createdAt instanceof Timestamp
+          ? data.createdAt.toDate()
+          : data.createdAt instanceof Date
+            ? data.createdAt
+            : (() => {
+                const value = data.createdAt
+                if (typeof value === 'string') {
+                  const parsed = new Date(value)
+                  if (!isNaN(parsed.getTime())) return parsed
+                }
+                return new Date()
+              })(),
+      updatedAt:
+        data.updatedAt instanceof Timestamp
+          ? data.updatedAt.toDate()
+          : data.updatedAt instanceof Date
+            ? data.updatedAt
+            : (() => {
+                const value = data.updatedAt
+                if (typeof value === 'string') {
+                  const parsed = new Date(value)
+                  if (!isNaN(parsed.getTime())) return parsed
+                }
+                return new Date()
+              })()
     }
   }
 }

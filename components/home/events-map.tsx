@@ -169,7 +169,7 @@ export function EventsMap({ events }: EventsMapProps) {
   }
 
   return (
-    <div className="relative z-0 h-[500px] w-full overflow-hidden rounded-lg border">
+    <div className="relative h-[500px] w-full overflow-hidden rounded-lg border">
       <MapContainer
         center={[4.5709, -74.2973]} // Centro de Colombia
         zoom={6}
