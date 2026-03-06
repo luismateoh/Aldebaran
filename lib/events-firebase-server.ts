@@ -133,6 +133,13 @@ export class EventsServiceServer {
     const date = this.toDate(value)
     return date ? date.toISOString() : null
   }
+
+  private normalizeStatus(value: unknown): FirebaseEventData['status'] {
+    if (value === 'published' || value === 'draft' || value === 'archived' || value === 'cancelled') {
+      return value
+    }
+    return 'published'
+  }
   async getAllEvents(): Promise<EventData[]> {
     try {
       console.log('🔍 Obteniendo eventos desde Firebase...')
@@ -338,7 +345,7 @@ export class EventsServiceServer {
       website: this.normalizeText(data.website),
       distances: Array.isArray(data.distances) ? data.distances : [],
       cover: this.normalizeText(data.cover),
-      status: this.normalizeText(data.status) || 'published',
+      status: this.normalizeStatus(data.status),
       municipality: this.normalizeText(data.municipality),
       department: this.normalizeText(data.department),
       publishDate,
