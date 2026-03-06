@@ -133,7 +133,6 @@ export class EventsServiceServer {
     const date = this.toDate(value)
     return date ? date.toISOString() : null
   }
-
   async getAllEvents(): Promise<EventData[]> {
     try {
       console.log('🔍 Obteniendo eventos desde Firebase...')
@@ -311,8 +310,8 @@ export class EventsServiceServer {
       typeof data.registrationDeadline === 'string'
         ? data.registrationDeadline
         : this.toDateOnly(data.registrationDeadline)
-    sanitizedData.distancesVerificationAt = this.toIsoOrNull(data.distancesVerificationAt)
-    sanitizedData.locationValidatedAt = this.toIsoOrNull(data.locationValidatedAt)
+    const distancesVerificationAt = this.toIsoOrNull(data.distancesVerificationAt)
+    const locationValidatedAt = this.toIsoOrNull(data.locationValidatedAt)
     const title = this.normalizeText(data.title)
     const description = this.normalizeText(data.description)
     const contentHtml = this.normalizeText(data.contentHtml)
@@ -323,13 +322,23 @@ export class EventsServiceServer {
       ? ''
       : (rawSnippet || cleanDescription.substring(0, 150) || '')
 
-    return {
+    const event: EventData = {
       id: doc.id,
-      ...sanitizedData,
       title,
       description: cleanDescription,
+      author: this.normalizeText(data.author) || 'Luis Hincapie',
+      draft: Boolean(data.draft || data.status === 'draft'),
+      category: this.normalizeText(data.category) || 'Running',
+      tags: Array.isArray(data.tags) ? data.tags : [this.normalizeText(data.category).toLowerCase() || 'running'],
       snippet,
+      altitude: this.normalizeText(data.altitude) || '1000m',
       contentHtml: cleanContentHtml || cleanDescription,
+      organizer: this.normalizeText(data.organizer),
+      registrationFee: this.normalizeText(data.registrationFee || data.registrationFeed || data.price || ''),
+      website: this.normalizeText(data.website),
+      distances: Array.isArray(data.distances) ? data.distances : [],
+      cover: this.normalizeText(data.cover),
+      status: this.normalizeText(data.status) || 'published',
       municipality: this.normalizeText(data.municipality),
       department: this.normalizeText(data.department),
       publishDate,
@@ -337,7 +346,31 @@ export class EventsServiceServer {
       registrationDeadline,
       createdAt: this.toIsoOrNull(data.createdAt) || new Date().toISOString(),
       updatedAt: this.toIsoOrNull(data.updatedAt) || new Date().toISOString()
-    } as EventData
+    }
+
+    const eventWithExtras = event as EventData & Record<string, unknown>
+    eventWithExtras.distancesVerificationAt = distancesVerificationAt
+    eventWithExtras.locationValidatedAt = locationValidatedAt
+
+    const passthroughKeys = [
+      'sourceType',
+      'sourceLine',
+      'sourceImagePath',
+      'locationValidationStatus',
+      'locationValidatedBy',
+      'coverSource',
+      'distancesVerifiedBy',
+      'distancesVerificationStatus',
+      'distancesVerificationNote'
+    ]
+
+    for (const key of passthroughKeys) {
+      if (sanitizedData[key] !== undefined) {
+        eventWithExtras[key] = sanitizedData[key]
+      }
+    }
+
+    return event
   }
 }
 
