@@ -14,6 +14,23 @@ interface UpcomingEventsCarouselProps {
 }
 
 export function UpcomingEventsCarousel({ events }: UpcomingEventsCarouselProps) {
+  const parseEventDate = (dateString: string): Date | null => {
+    try {
+      const localDateMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateString)
+      if (localDateMatch) {
+        const year = Number(localDateMatch[1])
+        const month = Number(localDateMatch[2])
+        const day = Number(localDateMatch[3])
+        return new Date(year, month - 1, day)
+      }
+
+      const parsed = new Date(dateString)
+      return isNaN(parsed.getTime()) ? null : parsed
+    } catch {
+      return null
+    }
+  }
+
   if (!events || events.length === 0) {
     return (
       <div className="rounded-lg border-2 border-dashed border-muted bg-muted/30 py-12 text-center">
@@ -27,7 +44,9 @@ export function UpcomingEventsCarousel({ events }: UpcomingEventsCarouselProps) 
   // Función para formatear la fecha
   const formatDate = (dateString: string) => {
     try {
-      const date = new Date(dateString)
+      const date = parseEventDate(dateString)
+      if (!date) return dateString
+
       return date.toLocaleDateString('es-CO', {
         weekday: 'short',
         year: 'numeric',
@@ -42,8 +61,12 @@ export function UpcomingEventsCarousel({ events }: UpcomingEventsCarouselProps) 
   // Función para calcular días restantes
   const getDaysUntilEvent = (dateString: string) => {
     try {
-      const eventDate = new Date(dateString)
+      const eventDate = parseEventDate(dateString)
+      if (!eventDate) return null
+
       const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      eventDate.setHours(0, 0, 0, 0)
       const diffTime = eventDate.getTime() - today.getTime()
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
       return diffDays

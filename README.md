@@ -1,6 +1,6 @@
 # Aldebaran 🏃‍♂️
 
-Una plataforma moderna para eventos de atletismo en Colombia, construida con Next.js 14 y Firebase.
+Una plataforma moderna para eventos de atletismo en Colombia, construida con Next.js 15 y Firebase.
 
 ## 🚀 Características
 
@@ -22,6 +22,15 @@ Una plataforma moderna para eventos de atletismo en Colombia, construida con Nex
 - 🎯 **PWA** con soporte offline
 
 ## 🏁 Inicio Rápido
+
+Índice central de documentación: [DOCS_INDEX.md](DOCS_INDEX.md)
+
+Guía recomendada de configuración local completa: [LOCAL_SETUP.md](LOCAL_SETUP.md)
+
+### Documentación
+- [ADMIN_SETUP.md](ADMIN_SETUP.md)
+- [VERCEL_ENV_SETUP.md](VERCEL_ENV_SETUP.md)
+- [PROMPT_CLAUDE_CARRERAS_AUTOMATIZACION.md](PROMPT_CLAUDE_CARRERAS_AUTOMATIZACION.md)
 
 ### 1. Instalación
 ```bash
@@ -99,12 +108,12 @@ npm run firebase:deploy    # Desplegar a Firebase
 4. El evento se guarda automáticamente en Firebase
 
 ### Proponer Eventos
-- Los usuarios pueden proponer eventos en `/proponer`
+- Los usuarios pueden proponer eventos en `/propose-event`
 - Sistema de notificaciones por email al administrador
 
 ## 🛠️ Tecnologías
 
-- **Framework:** Next.js 14 (App Router)
+- **Framework:** Next.js 15 (App Router)
 - **Base de Datos:** Firebase Firestore
 - **Lenguaje:** TypeScript
 - **Estilos:** Tailwind CSS
@@ -147,11 +156,10 @@ Aldebaran/
 │   ├── admin/             # Panel de administración
 │   ├── api/               # API routes
 │   ├── events/            # Páginas de eventos
-│   └── proponer/          # Formulario de propuestas
+│   └── propose-event/     # Formulario público de propuestas
 ├── components/            # Componentes React
 ├── lib/                   # Utilidades y servicios
 ├── hooks/                 # Custom React hooks
-├── data/                  # Datos locales (comentarios)
 ├── public/                # Assets estáticos
 └── scripts/               # Scripts de utilidad
 ```
@@ -164,6 +172,6 @@ Aldebaran/
 4. Push a la rama (`git push origin feature/AmazingFeature`)
 5. Abre un Pull Request
 
-## About this project
+## Sobre el proyecto
 
-This project is a collection of athletics races, with the purpose of providing a platform for athletes and serves as a calendar of events for the general public in Colombia.
+Aldebaran es un calendario de carreras de atletismo en Colombia orientado a corredores, organizadores y público general.
