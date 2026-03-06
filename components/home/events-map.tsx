@@ -49,6 +49,39 @@ const COLOMBIA_COORDINATES: Record<string, [number, number]> = {
   'Vichada': [6.1892, -67.4853], // Puerto Carreño
 }
 
+const normalizeLocationKey = (value: string) =>
+  value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9 ]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+const DEPARTMENT_ALIASES: Record<string, string> = {
+  'archipielago de san andres providencia y santa catalina': 'San Andrés y Providencia',
+  'san andres y providencia': 'San Andrés y Providencia',
+  'bogota dc': 'Bogotá',
+  'bogota d c': 'Bogotá',
+}
+
+const NORMALIZED_COORDINATES = Object.entries(COLOMBIA_COORDINATES).reduce(
+  (acc, [key, value]) => {
+    acc[normalizeLocationKey(key)] = value
+    return acc
+  },
+  {} as Record<string, [number, number]>
+)
+
+const getEventCoordinates = (event: EventData): [number, number] | undefined => {
+  const municipalityKey = normalizeLocationKey(event.municipality || '')
+  const rawDepartmentKey = normalizeLocationKey(event.department || '')
+  const departmentAlias = DEPARTMENT_ALIASES[rawDepartmentKey]
+  const departmentKey = normalizeLocationKey(departmentAlias || event.department || '')
+
+  return NORMALIZED_COORDINATES[municipalityKey] || NORMALIZED_COORDINATES[departmentKey]
+}
+
 export function EventsMap({ events }: EventsMapProps) {
   const [mapLoaded, setMapLoaded] = useState(false)
   const [MapContainer, setMapContainer] = useState<any>(null)
@@ -107,7 +140,7 @@ export function EventsMap({ events }: EventsMapProps) {
   const eventsWithCoordinates = events
     .map(event => ({
       ...event,
-      coordinates: COLOMBIA_COORDINATES[event.department] || COLOMBIA_COORDINATES[event.municipality]
+      coordinates: getEventCoordinates(event)
     }))
     .filter(event => event.coordinates)
 
@@ -136,7 +169,7 @@ export function EventsMap({ events }: EventsMapProps) {
   }
 
   return (
-    <div className="h-[500px] w-full overflow-hidden rounded-lg border">
+    <div className="relative z-0 h-[500px] w-full overflow-hidden rounded-lg border">
       <MapContainer
         center={[4.5709, -74.2973]} // Centro de Colombia
         zoom={6}

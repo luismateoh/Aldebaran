@@ -14,6 +14,21 @@ export const metadata = {
 }
 
 export default async function IndexPage() {
+  const parseEventDate = (dateValue?: string): Date | null => {
+    if (!dateValue) return null
+
+    const localDateMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateValue)
+    if (localDateMatch) {
+      const year = Number(localDateMatch[1])
+      const month = Number(localDateMatch[2])
+      const day = Number(localDateMatch[3])
+      return new Date(year, month - 1, day)
+    }
+
+    const parsed = new Date(dateValue)
+    return isNaN(parsed.getTime()) ? null : parsed
+  }
+
   // Obtener eventos para el carrusel y mapa
   let upcomingEvents: EventData[] = []
   
@@ -82,7 +97,8 @@ export default async function IndexPage() {
         .filter(event => {
           try {
             if (!event.eventDate) return false
-            const eventDate = new Date(event.eventDate)
+            const eventDate = parseEventDate(event.eventDate)
+            if (!eventDate) return false
             return eventDate >= now && eventDate <= threeMonthsFromNow
           } catch (error) {
             console.warn('Invalid event date:', event.eventDate, error)

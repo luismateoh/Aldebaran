@@ -14,6 +14,7 @@ NEXT_PUBLIC_FIREBASE_PROJECT_ID=
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
 NEXT_PUBLIC_FIREBASE_APP_ID=
+NEXT_PUBLIC_ADMIN_EMAIL=
 ```
 
 ### Firebase Admin SDK (Servidor)
@@ -45,7 +46,6 @@ Para notificaciones por email de nuevas propuestas:
 NEXT_PUBLIC_EMAILJS_SERVICE_ID=
 NEXT_PUBLIC_EMAILJS_TEMPLATE_ID=
 NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=
-NEXT_PUBLIC_ADMIN_EMAIL=
 ```
 
 ## Instrucciones de Configuración en Vercel
@@ -92,7 +92,7 @@ Para verificar que las variables están correctamente configuradas:
 ## Problemas Comunes
 
 ### Firebase Private Key
-- **Error**: "no "kid" claim found in token header"
+- **Error**: `no "kid" claim found in token header`
 - **Solución**: Verificar formato correcto de FIREBASE_PRIVATE_KEY con escapes `\n`
 
 ### Auth Domain
@@ -105,5 +105,4 @@ Para verificar que las variables están correctamente configuradas:
 
 ---
 
-**Último update**: $(date)
 **Mantenedor**: Luis Hincapie <luismateohm@gmail.com>

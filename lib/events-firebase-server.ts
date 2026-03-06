@@ -7,6 +7,21 @@ const EVENTS_COLLECTION = 'events'
 export class EventsServiceServer {
   private eventsRef = adminDb.collection(EVENTS_COLLECTION)
 
+  private parseEventDate(dateValue?: string): Date | null {
+    if (!dateValue) return null
+
+    const localDateMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateValue)
+    if (localDateMatch) {
+      const year = Number(localDateMatch[1])
+      const month = Number(localDateMatch[2])
+      const day = Number(localDateMatch[3])
+      return new Date(year, month - 1, day)
+    }
+
+    const parsed = new Date(dateValue)
+    return isNaN(parsed.getTime()) ? null : parsed
+  }
+
   async getAllEvents(): Promise<EventData[]> {
     try {
       console.log('🔍 Obteniendo eventos desde Firebase...')
@@ -22,14 +37,14 @@ export class EventsServiceServer {
       
       const futureEvents = events.filter(event => {
         if (!event.eventDate) return false
-        const eventDate = new Date(event.eventDate)
-        return eventDate >= today && !event.draft
+        const eventDate = this.parseEventDate(event.eventDate)
+        return !!eventDate && eventDate >= today && !event.draft
       })
       
       // Ordenar por fecha ascendente
       const sortedEvents = futureEvents.sort((a, b) => {
-        const dateA = new Date(a.eventDate || '2024-01-01')
-        const dateB = new Date(b.eventDate || '2024-01-01')
+        const dateA = this.parseEventDate(a.eventDate || '') || new Date(2024, 0, 1)
+        const dateB = this.parseEventDate(b.eventDate || '') || new Date(2024, 0, 1)
         return dateA.getTime() - dateB.getTime()
       })
       
@@ -52,8 +67,8 @@ export class EventsServiceServer {
       
       // Ordenar por fecha descendente (más recientes primero)
       const sortedEvents = allEvents.sort((a, b) => {
-        const dateA = new Date(a.eventDate || '2024-01-01')
-        const dateB = new Date(b.eventDate || '2024-01-01')
+        const dateA = this.parseEventDate(a.eventDate || '') || new Date(2024, 0, 1)
+        const dateB = this.parseEventDate(b.eventDate || '') || new Date(2024, 0, 1)
         return dateB.getTime() - dateA.getTime()
       })
       
@@ -164,7 +179,10 @@ export class EventsServiceServer {
       
       return snapshot.docs
         .map(doc => this.transformFirestoreDoc(doc))
-        .filter(event => new Date(event.eventDate || '2024-01-01') >= today)
+        .filter(event => {
+          const eventDate = this.parseEventDate(event.eventDate || '')
+          return !!eventDate && eventDate >= today
+        })
     } catch (error) {
       console.error('Error getting events by category:', error)
       return []
@@ -173,20 +191,64 @@ export class EventsServiceServer {
 
   private transformFirestoreDoc(doc: any): EventData {
     const data = doc.data()
+
+    // Manejar fecha del evento de manera robusta
+    let eventDate = ''
+    const rawDate = data.eventDate || data.date
+    if (rawDate) {
+      if (rawDate instanceof Timestamp) {
+        eventDate = rawDate.toDate().toISOString().split('T')[0]
+      } else if (typeof rawDate === 'string' && rawDate.trim()) {
+        const parsedDate = new Date(rawDate)
+        if (!isNaN(parsedDate.getTime())) {
+          eventDate = parsedDate.toISOString().split('T')[0]
+        }
+      }
+    }
+
+    // Manejar publishDate
+    let publishDate = data.publishDate
+    if (publishDate instanceof Timestamp) {
+      publishDate = publishDate.toDate().toISOString().split('T')[0]
+    }
+
+    // Manejar distancesVerificationAt para serialización server -> client
+    const distancesVerificationAt = data.distancesVerificationAt instanceof Timestamp
+      ? data.distancesVerificationAt.toDate().toISOString()
+      : (data.distancesVerificationAt || null)
+
     return {
       id: doc.id,
-      ...data,
-      publishDate: data.publishDate instanceof Timestamp ? 
-        data.publishDate.toDate().toISOString().split('T')[0] : 
-        data.publishDate || new Date().toISOString().split('T')[0],
-      eventDate: data.eventDate || '',
+      title: data.title || '',
+      description: data.description || '',
+      author: data.author || 'Luis Hincapie',
+      publishDate: publishDate || new Date().toISOString().split('T')[0],
+      draft: data.draft || data.status === 'draft',
+      category: data.category || 'Running',
+      tags: data.tags || [data.category?.toLowerCase() || 'running'],
+      snippet: data.snippet || data.description?.substring(0, 150) || '',
+      altitude: data.altitude || '1000m',
+      eventDate: eventDate,
+      organizer: data.organizer || '',
       registrationDeadline: data.registrationDeadline || '',
+      registrationFee: data.registrationFee || data.registrationFeed || data.price || '',
+      website: data.website || '',
+      distances: Array.isArray(data.distances) ? data.distances : [],
+      cover: data.cover || '',
+      department: data.department || '',
+      municipality: data.municipality || '',
+      contentHtml: data.description || data.contentHtml || '',
+      status: data.status || 'published',
+      distancesVerifiedBy: data.distancesVerifiedBy || '',
+      distancesVerificationStatus: data.distancesVerificationStatus || '',
+      distancesVerificationNote: data.distancesVerificationNote || '',
+      distancesVerificationAt,
       createdAt: data.createdAt instanceof Timestamp ? 
-        data.createdAt.toDate() : 
-        data.createdAt || new Date(),
+        data.createdAt.toDate().toISOString() : 
+        (data.createdAt || new Date().toISOString()),
       updatedAt: data.updatedAt instanceof Timestamp ? 
-        data.updatedAt.toDate() : 
-        data.updatedAt || new Date()
+        data.updatedAt.toDate().toISOString() : 
+        (data.updatedAt || new Date().toISOString())
     }
   }
 }
