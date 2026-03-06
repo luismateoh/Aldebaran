@@ -20,11 +20,11 @@ export async function GET(request: NextRequest) {
     // Get events stats
     const eventsStats = await eventsServiceAdmin.getEventsStats()
     
-    // Get proposals count
-    let proposalsCount = 0
+    // Get pending proposals count (solo pendientes)
+    let pendingProposalsCount = 0
     try {
-      const proposals = await proposalsServiceAdmin.getAllProposals()
-      proposalsCount = proposals.length
+      const proposalStats = await proposalsServiceAdmin.getProposalStats()
+      pendingProposalsCount = proposalStats.pending
     } catch (proposalsError) {
       console.log('❌ Error obteniendo propuestas para stats:', proposalsError)
       // No fallar por esto, simplemente usar 0
@@ -38,8 +38,8 @@ export async function GET(request: NextRequest) {
       cancelledEvents: eventsStats.cancelledEvents,
       deletedEvents: 0, // Firebase no usa soft delete por ahora
       
-      // Proposals count
-      proposals: proposalsCount,
+      // Pending proposals count
+      proposals: pendingProposalsCount,
       
       // Meta info
       status: 'connected',

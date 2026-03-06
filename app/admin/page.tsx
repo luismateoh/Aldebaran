@@ -80,13 +80,13 @@ export default function AdminPage() {
           }
         }
 
-        // Cargar propuestas
+        // Cargar propuestas (solo pendientes)
         let proposalsCount = 0
         try {
           const proposalsResponse = await makeAuthenticatedRequest('/api/proposals')
           if (proposalsResponse.ok) {
             const proposalsData = await proposalsResponse.json()
-            proposalsCount = proposalsData.proposals?.length || 0
+            proposalsCount = proposalsData.proposals?.filter((p: any) => p.status === 'pending').length || 0
           }
         } catch (proposalsError) {
           console.log('No se pudieron cargar propuestas:', proposalsError)

@@ -52,16 +52,16 @@ function parseEventDate(dateString: string): Date {
     return new Date()
   }
 
-  // Intentar diferentes formatos de fecha
-  const date = new Date(dateString)
-  if (!isNaN(date.getTime())) {
-    return date
-  }
-
   // Si es formato YYYY-MM-DD, asegurar que se parsee correctamente
   if (typeof dateString === 'string' && dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
     const [year, month, day] = dateString.split('-').map(Number)
     return new Date(year, month - 1, day) // month es 0-indexed en JS
+  }
+
+  // Intentar diferentes formatos de fecha
+  const date = new Date(dateString)
+  if (!isNaN(date.getTime())) {
+    return date
   }
 
   // Fallback a fecha actual si no se puede parsear
