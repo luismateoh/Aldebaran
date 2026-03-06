@@ -197,8 +197,8 @@ export function EventsMap({ events }: EventsMapProps) {
                 </div>
 
                 <div className="mt-4">
-                  <Button asChild size="sm" className="w-full">
-                    <Link href={`/events/${event.id}`}>
+                  <Button asChild size="sm" className="w-full !text-primary-foreground hover:!text-primary-foreground">
+                    <Link href={`/events/${event.id}`} className="no-underline">
                       Ver Detalles
                     </Link>
                   </Button>

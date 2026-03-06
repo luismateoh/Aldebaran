@@ -13,6 +13,21 @@ export const metadata = {
   keywords: siteConfig.keywords,
 }
 
+function parseEventDateLocal(dateString: string): Date | null {
+  if (!dateString) return null
+
+  const localDateMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateString)
+  if (localDateMatch) {
+    const year = Number(localDateMatch[1])
+    const month = Number(localDateMatch[2])
+    const day = Number(localDateMatch[3])
+    return new Date(year, month - 1, day)
+  }
+
+  const parsed = new Date(dateString)
+  return isNaN(parsed.getTime()) ? null : parsed
+}
+
 export default async function IndexPage() {
   // Obtener eventos para el carrusel y mapa
   let upcomingEvents: EventData[] = []
@@ -74,16 +89,18 @@ export default async function IndexPage() {
       console.log(`📊 Loaded ${allEvents.length} events from server`)
       
       // Filtrar próximos eventos (próximos 3 meses)
-      const now = new Date()
-      const threeMonthsFromNow = new Date()
-      threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3)
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+
+      const threeMonthsFromToday = new Date(today)
+      threeMonthsFromToday.setMonth(threeMonthsFromToday.getMonth() + 3)
       
       upcomingEvents = allEvents
         .filter(event => {
           try {
             if (!event.eventDate) return false
-            const eventDate = new Date(event.eventDate)
-            return eventDate >= now && eventDate <= threeMonthsFromNow
+            const eventDate = parseEventDateLocal(event.eventDate)
+            return !!eventDate && eventDate >= today && eventDate <= threeMonthsFromToday
           } catch (error) {
             console.warn('Invalid event date:', event.eventDate, error)
             return false

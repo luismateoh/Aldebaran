@@ -19,9 +19,55 @@ import type { FirebaseEventData, EventData } from '../types'
 import { FIREBASE_COLLECTIONS, UI_CONSTANTS } from './constants'
 
 const EVENTS_COLLECTION = FIREBASE_COLLECTIONS.EVENTS
+const INVALID_EVENT_DATE_SENTINEL = new Date(1900, 0, 1)
 
 export class EventsService {
   private eventsRef = collection(db, EVENTS_COLLECTION)
+
+  private parseEventDate(dateValue?: string): Date | null {
+    if (!dateValue) return null
+
+    const localDateMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateValue)
+    if (localDateMatch) {
+      const year = Number(localDateMatch[1])
+      const month = Number(localDateMatch[2])
+      const day = Number(localDateMatch[3])
+      return new Date(year, month - 1, day)
+    }
+
+    const parsed = new Date(dateValue)
+    return isNaN(parsed.getTime()) ? null : parsed
+  }
+
+  private normalizeText(value: unknown): string {
+    if (typeof value !== 'string') return ''
+
+    return value
+      .replace(/Ã¡/g, 'á')
+      .replace(/Ã©/g, 'é')
+      .replace(/Ã­/g, 'í')
+      .replace(/Ã³/g, 'ó')
+      .replace(/Ãº/g, 'ú')
+      .replace(/ÃÁ/g, 'Á')
+      .replace(/Ã‰/g, 'É')
+      .replace(/Ã/g, 'Í')
+      .replace(/Ã“/g, 'Ó')
+      .replace(/Ãš/g, 'Ú')
+      .replace(/Ã±/g, 'ñ')
+      .replace(/Ã‘/g, 'Ñ')
+      .replace(/Â/g, '')
+      .replace(/MARAT\s*[\?�]\s*N/gi, 'MARATÓN')
+      .replace(/Marat\s*[\?�]\s*n/g, 'Maratón')
+      .replace(/\s+/g, ' ')
+      .trim()
+  }
+
+  private isLowValueDescription(value: string): boolean {
+    const normalized = this.normalizeText(value).toLowerCase()
+    return normalized.includes('evento cargado') &&
+      normalized.includes('fuente visual proporcionada') &&
+      normalized.includes('verificar detalles oficiales')
+  }
 
   async getAllEvents(): Promise<EventData[]> {
     try {
@@ -40,15 +86,15 @@ export class EventsService {
       
       const futureEvents = events.filter(event => {
         if (!event.eventDate) return false
-        const eventDate = new Date(event.eventDate)
+        const eventDate = this.parseEventDate(event.eventDate)
         // Excluir eventos en borrador y solo mostrar eventos futuros
-        return eventDate >= today && !event.draft
+        return !!eventDate && eventDate >= today && !event.draft
       })
       
       // Ordenar por fecha ascendente (próximos primero)
       const sortedEvents = futureEvents.sort((a, b) => {
-        const dateA = new Date(a.eventDate || '2024-01-01')
-        const dateB = new Date(b.eventDate || '2024-01-01')
+        const dateA = this.parseEventDate(a.eventDate || '') || INVALID_EVENT_DATE_SENTINEL
+        const dateB = this.parseEventDate(b.eventDate || '') || INVALID_EVENT_DATE_SENTINEL
         return dateA.getTime() - dateB.getTime()
       })
       
@@ -166,15 +212,15 @@ export class EventsService {
       
       const futureEvents = events.filter(event => {
         if (!event.eventDate) return false
-        const eventDate = new Date(event.eventDate)
+        const eventDate = this.parseEventDate(event.eventDate)
         // Excluir eventos en borrador y solo mostrar eventos futuros
-        return eventDate >= today && !event.draft
+        return !!eventDate && eventDate >= today && !event.draft
       })
       
       // Ordenar por fecha ascendente (próximos primero)
       const sortedEvents = futureEvents.sort((a, b) => {
-        const dateA = new Date(a.eventDate || '2024-01-01')
-        const dateB = new Date(b.eventDate || '2024-01-01')
+        const dateA = this.parseEventDate(a.eventDate || '') || INVALID_EVENT_DATE_SENTINEL
+        const dateB = this.parseEventDate(b.eventDate || '') || INVALID_EVENT_DATE_SENTINEL
         return dateA.getTime() - dateB.getTime()
       })
       
@@ -204,16 +250,26 @@ export class EventsService {
       }
     }
 
+    const title = this.normalizeText(data.title)
+    const description = this.normalizeText(data.description)
+    const contentHtml = this.normalizeText(data.contentHtml)
+    const cleanDescription = this.isLowValueDescription(description) ? '' : description
+    const cleanContentHtml = this.isLowValueDescription(contentHtml) ? '' : contentHtml
+    const rawSnippet = this.normalizeText(data.snippet)
+    const snippet = this.isLowValueDescription(rawSnippet)
+      ? ''
+      : (rawSnippet || cleanDescription.substring(0, UI_CONSTANTS.MAX_SNIPPET_LENGTH) || '')
+
     return {
       id: doc.id,
-      title: data.title || '',
-      description: data.description || '',
+      title,
+      description: cleanDescription,
       author: data.author || UI_CONSTANTS.DEFAULT_AUTHOR,
       publishDate: data.publishDate || new Date().toISOString().split('T')[0],
       draft: data.draft || data.status === 'draft',
       category: data.category || 'Running',
       tags: data.tags || [data.category?.toLowerCase() || 'running'],
-      snippet: data.snippet || data.description?.substring(0, UI_CONSTANTS.MAX_SNIPPET_LENGTH) || '',
+      snippet,
       altitude: data.altitude || UI_CONSTANTS.DEFAULT_ALTITUDE,
       eventDate: eventDate,
       organizer: data.organizer || '',
@@ -222,9 +278,9 @@ export class EventsService {
       website: data.website || '',
       distances: data.distances || [],
       cover: data.cover || '',
-      department: data.department || '',
-      municipality: data.municipality || '',
-      contentHtml: data.description || data.contentHtml || '',
+      department: this.normalizeText(data.department),
+      municipality: this.normalizeText(data.municipality),
+      contentHtml: cleanContentHtml || cleanDescription,
       status: data.status || 'published',
       createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate().toISOString() : (data.createdAt || new Date().toISOString()),
       updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate().toISOString() : (data.updatedAt || new Date().toISOString())

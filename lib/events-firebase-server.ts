@@ -3,9 +3,136 @@ import { FieldValue, Timestamp } from 'firebase-admin/firestore'
 import type { FirebaseEventData, EventData } from '@/types'
 
 const EVENTS_COLLECTION = 'events'
+const INVALID_EVENT_DATE_SENTINEL = new Date(1900, 0, 1)
 
 export class EventsServiceServer {
   private eventsRef = adminDb.collection(EVENTS_COLLECTION)
+
+  private parseEventDate(dateValue?: string): Date | null {
+    if (!dateValue) return null
+
+    const localDateMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateValue)
+    if (localDateMatch) {
+      const year = Number(localDateMatch[1])
+      const month = Number(localDateMatch[2])
+      const day = Number(localDateMatch[3])
+      return new Date(year, month - 1, day)
+    }
+
+    const parsed = new Date(dateValue)
+    return isNaN(parsed.getTime()) ? null : parsed
+  }
+
+  private normalizeText(value: unknown): string {
+    if (typeof value !== 'string') return ''
+
+    return value
+      .replace(/Ã¡/g, 'á')
+      .replace(/Ã©/g, 'é')
+      .replace(/Ã­/g, 'í')
+      .replace(/Ã³/g, 'ó')
+      .replace(/Ãº/g, 'ú')
+      .replace(/ÃÁ/g, 'Á')
+      .replace(/Ã‰/g, 'É')
+      .replace(/Ã/g, 'Í')
+      .replace(/Ã“/g, 'Ó')
+      .replace(/Ãš/g, 'Ú')
+      .replace(/Ã±/g, 'ñ')
+      .replace(/Ã‘/g, 'Ñ')
+      .replace(/Â/g, '')
+      .replace(/MARAT\s*[\?�]\s*N/gi, 'MARATÓN')
+      .replace(/Marat\s*[\?�]\s*n/g, 'Maratón')
+      .replace(/\s+/g, ' ')
+      .trim()
+  }
+
+  private isLowValueDescription(value: string): boolean {
+    const normalized = this.normalizeText(value).toLowerCase()
+    return normalized.includes('evento cargado') &&
+      normalized.includes('fuente visual proporcionada') &&
+      normalized.includes('verificar detalles oficiales')
+  }
+
+  private sanitizeForClient(value: unknown): unknown {
+    const date = this.toDate(value)
+    if (date) return date.toISOString()
+
+    if (Array.isArray(value)) {
+      return value.map(item => this.sanitizeForClient(item))
+    }
+
+    if (value && typeof value === 'object') {
+      const output: Record<string, unknown> = {}
+      for (const [key, rawValue] of Object.entries(value as Record<string, unknown>)) {
+        output[key] = this.sanitizeForClient(rawValue)
+      }
+      return output
+    }
+
+    return value
+  }
+
+  private toTimestampDate(value: unknown): Date | null {
+    if (!value) return null
+
+    if (value instanceof Date) {
+      return isNaN(value.getTime()) ? null : value
+    }
+
+    if (value instanceof Timestamp) {
+      const date = value.toDate()
+      return isNaN(date.getTime()) ? null : date
+    }
+
+    if (typeof value === 'object') {
+      const rawValue = value as {
+        toDate?: () => Date
+        _seconds?: number
+        _nanoseconds?: number
+        seconds?: number
+        nanoseconds?: number
+      }
+
+      if (typeof rawValue.toDate === 'function') {
+        const date = rawValue.toDate()
+        if (date instanceof Date && !isNaN(date.getTime())) {
+          return date
+        }
+      }
+
+      const seconds = rawValue._seconds ?? rawValue.seconds
+      const nanoseconds = rawValue._nanoseconds ?? rawValue.nanoseconds ?? 0
+
+      if (typeof seconds === 'number') {
+        const date = new Date(seconds * 1000 + Math.floor(nanoseconds / 1_000_000))
+        return isNaN(date.getTime()) ? null : date
+      }
+    }
+
+    return null
+  }
+
+  private toDate(value: unknown): Date | null {
+    const timestampDate = this.toTimestampDate(value)
+    if (timestampDate) return timestampDate
+
+    if (typeof value === 'string' || typeof value === 'number') {
+      const parsed = new Date(value)
+      return isNaN(parsed.getTime()) ? null : parsed
+    }
+
+    return null
+  }
+
+  private toDateOnly(value: unknown): string {
+    const date = this.toDate(value)
+    return date ? date.toISOString().split('T')[0] : ''
+  }
+
+  private toIsoOrNull(value: unknown): string | null {
+    const date = this.toDate(value)
+    return date ? date.toISOString() : null
+  }
 
   async getAllEvents(): Promise<EventData[]> {
     try {
@@ -22,14 +149,14 @@ export class EventsServiceServer {
       
       const futureEvents = events.filter(event => {
         if (!event.eventDate) return false
-        const eventDate = new Date(event.eventDate)
-        return eventDate >= today && !event.draft
+        const eventDate = this.parseEventDate(event.eventDate)
+        return !!eventDate && eventDate >= today && !event.draft
       })
       
       // Ordenar por fecha ascendente
       const sortedEvents = futureEvents.sort((a, b) => {
-        const dateA = new Date(a.eventDate || '2024-01-01')
-        const dateB = new Date(b.eventDate || '2024-01-01')
+        const dateA = this.parseEventDate(a.eventDate || '') || INVALID_EVENT_DATE_SENTINEL
+        const dateB = this.parseEventDate(b.eventDate || '') || INVALID_EVENT_DATE_SENTINEL
         return dateA.getTime() - dateB.getTime()
       })
       
@@ -52,8 +179,8 @@ export class EventsServiceServer {
       
       // Ordenar por fecha descendente (más recientes primero)
       const sortedEvents = allEvents.sort((a, b) => {
-        const dateA = new Date(a.eventDate || '2024-01-01')
-        const dateB = new Date(b.eventDate || '2024-01-01')
+        const dateA = this.parseEventDate(a.eventDate || '') || INVALID_EVENT_DATE_SENTINEL
+        const dateB = this.parseEventDate(b.eventDate || '') || INVALID_EVENT_DATE_SENTINEL
         return dateB.getTime() - dateA.getTime()
       })
       
@@ -164,7 +291,10 @@ export class EventsServiceServer {
       
       return snapshot.docs
         .map(doc => this.transformFirestoreDoc(doc))
-        .filter(event => new Date(event.eventDate || '2024-01-01') >= today)
+        .filter(event => {
+          const eventDate = this.parseEventDate(event.eventDate || '')
+          return !!eventDate && eventDate >= today
+        })
     } catch (error) {
       console.error('Error getting events by category:', error)
       return []
@@ -173,21 +303,41 @@ export class EventsServiceServer {
 
   private transformFirestoreDoc(doc: any): EventData {
     const data = doc.data()
+    const sanitizedData = this.sanitizeForClient(data) as Record<string, unknown>
+
+    const eventDate = this.toDateOnly(data.eventDate || data.date)
+    const publishDate = this.toDateOnly(data.publishDate) || this.toDateOnly(new Date())
+    const registrationDeadline =
+      typeof data.registrationDeadline === 'string'
+        ? data.registrationDeadline
+        : this.toDateOnly(data.registrationDeadline)
+    sanitizedData.distancesVerificationAt = this.toIsoOrNull(data.distancesVerificationAt)
+    sanitizedData.locationValidatedAt = this.toIsoOrNull(data.locationValidatedAt)
+    const title = this.normalizeText(data.title)
+    const description = this.normalizeText(data.description)
+    const contentHtml = this.normalizeText(data.contentHtml)
+    const cleanDescription = this.isLowValueDescription(description) ? '' : description
+    const cleanContentHtml = this.isLowValueDescription(contentHtml) ? '' : contentHtml
+    const rawSnippet = this.normalizeText(data.snippet)
+    const snippet = this.isLowValueDescription(rawSnippet)
+      ? ''
+      : (rawSnippet || cleanDescription.substring(0, 150) || '')
+
     return {
       id: doc.id,
-      ...data,
-      publishDate: data.publishDate instanceof Timestamp ? 
-        data.publishDate.toDate().toISOString().split('T')[0] : 
-        data.publishDate || new Date().toISOString().split('T')[0],
-      eventDate: data.eventDate || '',
-      registrationDeadline: data.registrationDeadline || '',
-      createdAt: data.createdAt instanceof Timestamp ? 
-        data.createdAt.toDate() : 
-        data.createdAt || new Date(),
-      updatedAt: data.updatedAt instanceof Timestamp ? 
-        data.updatedAt.toDate() : 
-        data.updatedAt || new Date()
-    }
+      ...sanitizedData,
+      title,
+      description: cleanDescription,
+      snippet,
+      contentHtml: cleanContentHtml || cleanDescription,
+      municipality: this.normalizeText(data.municipality),
+      department: this.normalizeText(data.department),
+      publishDate,
+      eventDate,
+      registrationDeadline,
+      createdAt: this.toIsoOrNull(data.createdAt) || new Date().toISOString(),
+      updatedAt: this.toIsoOrNull(data.updatedAt) || new Date().toISOString()
+    } as EventData
   }
 }
 

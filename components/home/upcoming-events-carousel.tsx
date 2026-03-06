@@ -1,16 +1,30 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Calendar, MapPin, Route, Clock } from "lucide-react"
+import { Calendar, MapPin, Route } from "lucide-react"
 import Link from "next/link"
 import { EventData } from "@/types"
 
 interface UpcomingEventsCarouselProps {
   events: EventData[]
+}
+
+function parseEventDateLocal(dateString: string): Date | null {
+  if (!dateString) return null
+
+  const localDateMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateString)
+  if (localDateMatch) {
+    const year = Number(localDateMatch[1])
+    const month = Number(localDateMatch[2])
+    const day = Number(localDateMatch[3])
+    return new Date(year, month - 1, day)
+  }
+
+  const parsed = new Date(dateString)
+  return isNaN(parsed.getTime()) ? null : parsed
 }
 
 export function UpcomingEventsCarousel({ events }: UpcomingEventsCarouselProps) {
@@ -26,30 +40,31 @@ export function UpcomingEventsCarousel({ events }: UpcomingEventsCarouselProps) 
 
   // Función para formatear la fecha
   const formatDate = (dateString: string) => {
-    try {
-      const date = new Date(dateString)
-      return date.toLocaleDateString('es-CO', {
-        weekday: 'short',
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      })
-    } catch {
-      return dateString
-    }
+    const date = parseEventDateLocal(dateString)
+    if (!date) return dateString
+
+    return date.toLocaleDateString('es-CO', {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    })
   }
 
   // Función para calcular días restantes
   const getDaysUntilEvent = (dateString: string) => {
-    try {
-      const eventDate = new Date(dateString)
-      const today = new Date()
-      const diffTime = eventDate.getTime() - today.getTime()
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-      return diffDays
-    } catch {
-      return null
-    }
+    const eventDate = parseEventDateLocal(dateString)
+    if (!eventDate) return null
+
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    const eventDay = new Date(eventDate)
+    eventDay.setHours(0, 0, 0, 0)
+
+    const diffTime = eventDay.getTime() - today.getTime()
+    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24))
+    return diffDays
   }
 
   return (
