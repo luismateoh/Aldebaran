@@ -60,3 +60,4 @@ firebase-service-account.json
 *.tmp
 *.temp
 .cache/
+.env*
