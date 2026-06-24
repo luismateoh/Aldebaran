@@ -10,8 +10,8 @@
     "lint:fix": "next lint --fix",
     "preview": "next build && next start",
     "typecheck": "tsc --noEmit",
-    "format:write": "prettier --write "**/*.{ts,tsx,mdx,md}" --cache",
-    "format:check": "prettier --check "**/*.{ts,tsx,mdx,md}" --cache",
+    "format:write": "prettier --write \"**/*.{ts,tsx,mdx,md}\" --cache",
+    "format:check": "prettier --check \"**/*.{ts,tsx,mdx,md}\" --cache",
     "firebase:emulators": "firebase emulators:start --only firestore",
     "firebase:deploy": "firebase deploy",
     "firebase:deploy-rules": "firebase deploy --only firestore:rules,firestore:indexes"
