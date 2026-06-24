@@ -22,7 +22,6 @@ interface DistanceLevel {
   glow: string
   level: string
   tip: string
-  image: string
 }
 
 const DISTANCE_LEVELS: DistanceLevel[] = [
