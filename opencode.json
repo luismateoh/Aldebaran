@@ -1,0 +1,79 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "groq/llama-3.1-8b-instant",
+  "small_model": "groq/llama-3.1-8b-instant",
+
+  "provider": {
+    "openrouter": {
+      "options": {
+        "apiKey": "{env:OPENROUTER_API_KEY}"
+      }
+    },
+    "groq": {
+      "options": {
+        "apiKey": "{env:GROQ_API_KEY}"
+      }
+    }
+  },
+
+  "agent": {
+    "planner": {
+      "model": "openrouter/moonshotai/kimi-2-7-code-thinking",
+      "mode": "subagent",
+      "description": "Descompone tareas complejas en pasos ejecutables usando Kimi 2.7 Code. Úsalo para planificar y analizar antes de ejecutar.",
+      "temperature": 0.2,
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "edit": "deny"
+      }
+    },
+    "worker": {
+      "model": "groq/llama-3.1-8b-instant",
+      "mode": "subagent",
+      "description": "Ejecuta pasos individuales de un plan de forma rápida y eficiente. Ideal para tareas concretas y bien definidas.",
+      "temperature": 0.3,
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "edit": "deny"
+      }
+    },
+    "worker-deepseek": {
+      "model": "groq/deepseek-r1-distill-llama-70b",
+      "mode": "subagent",
+      "description": "Worker con DeepSeek R1 para tareas que requieren más razonamiento que el worker estándar.",
+      "temperature": 0.3,
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "edit": "deny"
+      }
+    }
+  },
+
+  "command": {
+    "harness": {
+      "description": "Ejecuta una tarea compleja usando el sistema multi-agente: Kimi 2.7 planifica, workers ejecutan.",
+      "agent": "build",
+      "model": "groq/llama-3.1-8b-instant",
+      "template": "Ejecuta el skill 'harness' para procesar la siguiente tarea usando el sistema multi-agente (Kimi 2.7 planifica, workers ejecutan).\n\nTarea: $ARGUMENTS"
+    }
+  },
+
+  "instructions": ["CLAUDE.md"],
+
+  "skills": {
+    "paths": [".opencode/skills"]
+  },
+
+  "permission": {
+    "edit": "allow",
+    "bash": "allow",
+    "read": "allow",
+    "task": "allow"
+  }
+}

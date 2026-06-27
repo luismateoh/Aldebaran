@@ -107,6 +107,33 @@ NEXT_PUBLIC_ADMIN_EMAIL=admin@example.com
 ### Production
 Same as development variables above.
 
+## AI Harness - Sistema Multi-Agente
+
+The project includes a multi-agent AI harness system configured for opencode:
+
+### Arquitectura
+- **Planner** (`@planner`): Kimi 2.7 Code vía OpenRouter - descompone tareas complejas en pasos
+- **Workers** (`@worker`, `@worker-deepseek`): Modelos rápidos vía Groq - ejecutan pasos individuales
+- **Skill** (`harness`): Orquestador que coordina planner + workers
+
+### Flujo típico
+1. Invocar el skill `harness` con la tarea
+2. El skill delega planificación a `@planner` (Kimi 2.7 Code)
+3. Los pasos se ejecutan via `@worker` (llama-3.1-8b-instant) o `@worker-deepseek` (deepseek-r1)
+4. Se recopilan y presentan los resultados
+
+### Comando rápido
+```
+/harness Crea contenido para la Maratón de Bogotá 2025
+```
+
+### Configuración requerida
+```bash
+# .env.local
+OPENROUTER_API_KEY=sk-or-v1-...  # Para Kimi 2.7 Code (planner)
+GROQ_API_KEY=gsk_...              # Para workers (ejecución)
+```
+
 ## Key Features
 
 ### Firebase Authentication
