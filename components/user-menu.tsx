@@ -14,8 +14,13 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { LogOut, Settings, User, Shield } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
-export function UserMenu() {
+interface UserMenuProps {
+  className?: string
+}
+
+export function UserMenu({ className }: UserMenuProps) {
   const { user, isAdmin, logout } = useAuth()
   const router = useRouter()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
@@ -26,7 +31,7 @@ export function UserMenu() {
         variant="outline" 
         size="sm" 
         onClick={() => router.push('/login')}
-        className="flex items-center gap-2"
+        className={cn("flex items-center gap-2", className)}
       >
         <svg className="size-4" viewBox="0 0 24 24">
           <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -60,7 +65,7 @@ export function UserMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative size-9 rounded-full">
+        <Button variant="ghost" className={cn("relative size-9 rounded-full", className)}>
           <Avatar className="size-8 border-2 border-border/50 transition-colors hover:border-border">
             <AvatarImage 
               src={user.photoURL || undefined} 

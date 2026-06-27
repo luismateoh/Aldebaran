@@ -24,7 +24,7 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
   return (
     <>
       <div className="relative flex min-h-screen flex-col">
-        <SiteHeader />
+        <SiteHeader isHomePage={pathname === '/'} />
         <div className="flex-1">{children}</div>
       </div>
       <Footer />

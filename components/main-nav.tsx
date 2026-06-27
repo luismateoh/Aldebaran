@@ -20,15 +20,17 @@ import {
 
 interface MainNavProps {
   items?: NavItem[]
+  variant?: "default" | "transparent"
 }
 
-export function MainNav({ items }: MainNavProps) {
+export function MainNav({ items, variant = "default" }: MainNavProps) {
   const pathname = usePathname()
   const isHomePage = pathname === '/'
+  const isTransparent = variant === "transparent"
 
   return (
     <div className="flex gap-6 md:gap-10">
-      <Link href="/" className="flex items-center space-x-2">
+      <Link href="/" className={cn("flex items-center space-x-2", isTransparent && "text-white")}>
         <Icons.logo className="size-12" />
         <span className="inline-block text-2xl font-bold">
           {siteConfig.name}
@@ -48,7 +50,8 @@ export function MainNav({ items }: MainNavProps) {
                   size="sm"
                   className={cn(
                     item.title === "Proponer Evento" && "bg-primary font-semibold text-primary-foreground hover:bg-primary/90",
-                    item.disabled && "cursor-not-allowed opacity-80"
+                    item.disabled && "cursor-not-allowed opacity-80",
+                    isTransparent && "text-white hover:bg-white/10 hover:text-white"
                   )}
                 >
                   <Link href={item.href}>
@@ -65,7 +68,7 @@ export function MainNav({ items }: MainNavProps) {
         <div className="md:hidden">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="px-2">
+              <Button variant="ghost" size="sm" className={cn("px-2", isTransparent && "text-white hover:bg-white/10")}>
                 <Menu className="size-5" />
                 <span className="sr-only">Menu</span>
               </Button>

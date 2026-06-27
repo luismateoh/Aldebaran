@@ -5,9 +5,10 @@ import { StatsBar } from "@/components/home/stats-bar"
 import { DistanceLevels } from "@/components/home/distance-levels"
 import { MotivationalBanner } from "@/components/home/motivational-banner"
 import { HowItWorks } from "@/components/home/how-it-works"
-import { UpcomingEventsCarousel } from "@/components/home/upcoming-events-carousel"
+import { UpcomingEventsAccordion } from "@/components/home/upcoming-events-accordion"
 import { EventsMapWrapper } from "@/components/home/events-map-wrapper"
-import { Calendar, MapPin, Users, ArrowRight, Plus, Zap, Trophy, Heart, Search } from "lucide-react"
+import { Features } from "@/components/home/features"
+import { Calendar, MapPin, Users, ArrowRight, Plus, Zap } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { eventsServiceServer } from "@/lib/events-firebase-server"
@@ -115,33 +116,6 @@ export default async function IndexPage() {
     upcomingEvents = []
   }
 
-  const features = [
-    {
-      icon: Search,
-      title: "Descubre Eventos",
-      description: "Explora carreras y competencias en todo el país con información detallada y actualizada.",
-      color: "from-orange-500 to-red-500",
-    },
-    {
-      icon: MapPin,
-      title: "Mapa Interactivo",
-      description: "Visualiza eventos geográficamente y encuentra carreras cerca de tu ubicación.",
-      color: "from-blue-500 to-cyan-500",
-    },
-    {
-      icon: Heart,
-      title: "Comunidad Activa",
-      description: "Conecta con otros corredores, comenta eventos y comparte tus experiencias.",
-      color: "from-pink-500 to-rose-500",
-    },
-    {
-      icon: Trophy,
-      title: "Todo Tipo de Carreras",
-      description: "Desde 5K recreativos hasta maratones competitivos y trail running extremo.",
-      color: "from-amber-500 to-orange-500",
-    },
-  ]
-
   return (
     <>
       {/* Hero */}
@@ -154,45 +128,7 @@ export default async function IndexPage() {
       <DistanceLevels events={upcomingEvents} />
 
       {/* Features Section */}
-      <section className="container py-20 md:py-28">
-        <div className="mb-16 text-center">
-          <span className="mb-3 inline-block rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
-            Por qué Aldebaran
-          </span>
-          <h2 className="text-3xl font-extrabold tracking-tight md:text-5xl">
-            Todo lo que necesitas para
-            <br />
-            <span className="text-gradient">tu próxima carrera</span>
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-            La plataforma más completa para descubrir y participar en eventos de atletismo en Colombia.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {features.map((feature, index) => {
-            const Icon = feature.icon
-            return (
-              <div
-                key={feature.title}
-                className="group relative overflow-hidden rounded-2xl border border-border bg-card p-8 transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-xl"
-                style={{
-                  animation: `fade-in-up 0.6s ease-out ${index * 0.1}s both`,
-                }}
-              >
-                <div className={`mb-5 flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br ${feature.color} text-white shadow-lg transition-transform group-hover:scale-110`}>
-                  <Icon className="size-7" />
-                </div>
-                <h3 className="mb-2 text-xl font-bold">{feature.title}</h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  {feature.description}
-                </p>
-                <div className={`absolute -bottom-20 -right-20 h-40 w-40 rounded-full bg-gradient-to-br ${feature.color} opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-10`} />
-              </div>
-            )
-          })}
-        </div>
-      </section>
+      <Features />
 
       {/* Motivational Banner */}
       <MotivationalBanner />
@@ -222,7 +158,7 @@ export default async function IndexPage() {
           </Button>
         </div>
 
-        <UpcomingEventsCarousel events={upcomingEvents} />
+        <UpcomingEventsAccordion events={upcomingEvents} />
       </section>
 
       {/* Events Map */}

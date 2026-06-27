@@ -4,6 +4,7 @@ import { Search, MousePointerClick, Trophy } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 const STEPS = [
   {
@@ -11,21 +12,24 @@ const STEPS = [
     step: "01",
     title: "Descubre",
     description: "Explora carreras por distancia, ubicación o fecha. Filtra según tu nivel y preferencias.",
-    image: "/images/steps/discover.jpg",
+    image: "/images/home/runner-sunrise.jpg",
+    gradient: "from-orange-500/90 to-red-600/90",
   },
   {
     icon: MousePointerClick,
     step: "02",
     title: "Regístrate",
     description: "Inscríbete con un solo clic. Accede al sitio oficial del evento con toda la información.",
-    image: "/images/steps/register.jpg",
+    image: "/images/home/runners-sunset.jpg",
+    gradient: "from-blue-500/90 to-cyan-600/90",
   },
   {
     icon: Trophy,
     step: "03",
     title: "Corre",
     description: "Llega al día de la carrera preparado. Supera tus límites y cruza la meta.",
-    image: "/images/steps/run.jpg",
+    image: "/images/home/pexels-marathon.jpg",
+    gradient: "from-green-500/90 to-emerald-600/90",
   },
 ]
 
@@ -47,46 +51,54 @@ export function HowItWorks() {
           </p>
         </div>
 
-        <div className="relative grid grid-cols-1 gap-8 md:grid-cols-3">
-          {/* Connecting line */}
-          <div className="absolute left-0 right-0 top-32 hidden h-px bg-gradient-to-r from-transparent via-border to-transparent md:block" />
+        <div className="relative grid grid-cols-1 gap-6 md:grid-cols-3">
+          {/* Connecting line - desktop */}
+          <div className="absolute inset-x-0 top-1/2 hidden h-px -translate-y-1/2 bg-gradient-to-r from-transparent via-primary/30 to-transparent md:block" />
 
           {STEPS.map((step, index) => {
             const Icon = step.icon
             return (
               <div
                 key={step.step}
-                className="relative flex flex-col items-center"
+                className="group relative overflow-hidden rounded-3xl border border-border transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl"
                 style={{
                   animation: `fade-in-up 0.6s ease-out ${index * 0.15}s both`,
                 }}
               >
-                {/* Image card */}
-                <div className="relative z-10 mb-6 h-48 w-full max-w-xs overflow-hidden rounded-2xl border border-border shadow-lg">
+                {/* Background image */}
+                <div className="relative h-64 overflow-hidden md:h-80">
                   <Image
                     src={step.image}
                     alt={step.title}
                     fill
                     sizes="(max-width: 768px) 100vw, 33vw"
-                    className="object-cover transition-transform duration-700 hover:scale-105"
+                    className="object-cover transition-transform duration-700 group-hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                  <span className="absolute left-3 top-3 flex size-8 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground shadow-lg">
+                  <div className={cn("absolute inset-0 opacity-80 mix-blend-multiply", step.gradient)} />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+
+                  {/* Step number */}
+                  <span className="absolute left-4 top-4 flex size-10 items-center justify-center rounded-full bg-white/15 backdrop-blur-md text-sm font-bold text-white shadow-lg">
                     {step.step}
                   </span>
+
+                  {/* Icon overlay */}
+                  <div className="absolute bottom-0 left-1/2 z-20 -translate-x-1/2 translate-y-1/2">
+                    <div className="flex size-16 items-center justify-center rounded-2xl border-4 border-background bg-primary text-primary-foreground shadow-xl transition-transform duration-500 group-hover:scale-110">
+                      <Icon className="size-7" />
+                    </div>
+                  </div>
                 </div>
 
-                {/* Icon overlay */}
-                <div className="relative z-20 -mt-12 mb-4 flex size-14 items-center justify-center rounded-full border-4 border-background bg-primary text-primary-foreground shadow-lg">
-                  <Icon className="size-6" />
+                {/* Text content */}
+                <div className="bg-card px-6 pb-8 pt-12 text-center md:px-8">
+                  <h3 className="mb-2 text-xl font-bold">
+                    {step.title}
+                  </h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {step.description}
+                  </p>
                 </div>
-
-                <h3 className="mb-2 text-xl font-bold">
-                  {step.title}
-                </h3>
-                <p className="max-w-xs text-center text-sm leading-relaxed text-muted-foreground">
-                  {step.description}
-                </p>
               </div>
             )
           })}

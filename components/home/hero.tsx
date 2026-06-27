@@ -15,8 +15,8 @@ export function Hero({ eventsCount }: HeroProps) {
       {/* Background image */}
       <div className="absolute inset-0 z-0">
         <Image
-          src="/images/hero/hero-main.jpg"
-          alt="Corredores de atletismo en Colombia"
+          src="/images/home/hero-trail-running.jpg"
+          alt="Corredores de trail running en montaña"
           fill
           priority
           sizes="100vw"

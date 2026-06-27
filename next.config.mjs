@@ -18,6 +18,22 @@ const nextConfig = {
     // Skip ESLint during build
     ignoreDuringBuilds: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'source.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.pexels.com',
+      },
+    ],
+  },
   async headers() {
     const headersList = [];
     if (process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview') {
