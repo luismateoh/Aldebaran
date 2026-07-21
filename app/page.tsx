@@ -1,11 +1,14 @@
 import type { Metadata } from "next"
+import Link from "next/link"
+import { ArrowRight } from "lucide-react"
 import { siteConfig } from "@/config/site"
 import { HeroSection } from "@/components/home/hero-section"
 import { StatsSection } from "@/components/home/stats-section"
 import { ExploreCategories } from "@/components/home/explore-categories"
 import { MapSection } from "@/components/home/map-section"
 import { ResourcesSection } from "@/components/home/resources-section"
-import { FeaturedEventsSection } from "@/components/home/featured-events-section"
+import { UpcomingEventsAccordion } from "@/components/home/upcoming-events-accordion"
+import { DistanceLevels } from "@/components/home/distance-levels"
 import { HowItWorksSection } from "@/components/home/how-it-works-section"
 import { OrganizerCTA } from "@/components/cta/organizer-cta"
 import { NewsletterSection } from "@/components/home/newsletter-section"
@@ -174,16 +177,39 @@ export default async function IndexPage() {
       {/* 5. Resources */}
       <ResourcesSection />
 
-      {/* 6. Featured Events */}
-      <FeaturedEventsSection events={upcomingEvents} />
+      {/* 6. Distance Levels */}
+      <DistanceLevels events={upcomingEvents} />
 
-      {/* 7. How It Works */}
+      {/* 7. Upcoming Events */}
+      <section className="container py-20 md:py-28">
+        <div className="mb-12 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
+          <div>
+            <span className="mb-3 inline-block rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
+              No te lo pierdas
+            </span>
+            <h2 className="text-3xl font-extrabold tracking-tight md:text-5xl">Próximos Eventos</h2>
+            <p className="mt-3 text-lg text-muted-foreground">
+              Las carreras más emocionantes que se acercan en Colombia
+            </p>
+          </div>
+          <Link
+            href="/events"
+            className="group inline-flex items-center justify-center gap-2 rounded-full border border-input bg-background px-8 py-2.5 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+          >
+            Ver todos
+            <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
+          </Link>
+        </div>
+        <UpcomingEventsAccordion events={upcomingEvents} />
+      </section>
+
+      {/* 8. How It Works */}
       <HowItWorksSection />
 
-      {/* 8. Organizer CTA */}
+      {/* 9. Organizer CTA */}
       <OrganizerCTA />
 
-      {/* 9. Newsletter */}
+      {/* 10. Newsletter */}
       <NewsletterSection />
     </>
   )

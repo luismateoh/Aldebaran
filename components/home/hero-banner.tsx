@@ -1,15 +1,15 @@
 "use client"
 
-import React from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import Image from "next/image"
-import { motion, type Variants } from "framer-motion"
+import { motion, AnimatePresence, type Variants } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 export interface HeroBannerProps {
   title: string
   subtitle: string
   label?: string
-  image: string
+  images: string[]
   actions?: React.ReactNode
   stats?: { value: string; label: string }[]
   className?: string
@@ -63,11 +63,23 @@ export function HeroBanner({
   title,
   subtitle,
   label,
-  image,
+  images,
   actions,
   stats,
   className,
 }: HeroBannerProps) {
+  const [currentIndex, setCurrentIndex] = useState(0)
+
+  const nextImage = useCallback(() => {
+    setCurrentIndex((prev) => (prev + 1) % images.length)
+  }, [images.length])
+
+  useEffect(() => {
+    if (images.length <= 1) return
+    const interval = setInterval(nextImage, 6000)
+    return () => clearInterval(interval)
+  }, [images.length, nextImage])
+
   return (
     <section
       className={cn(
@@ -75,16 +87,27 @@ export function HeroBanner({
         className
       )}
     >
-      {/* Background image — 21:9 crop via object-cover */}
+      {/* Background images carousel */}
       <div className="absolute inset-0 z-0">
-        <Image
-          src={image}
-          alt={title}
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-center"
-        />
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentIndex}
+            className="absolute inset-0"
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
+          >
+            <Image
+              src={images[currentIndex]}
+              alt={title}
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover object-center"
+            />
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       {/* Overlay: light 35% near top, dark 60% from bottom */}
@@ -179,6 +202,25 @@ export function HeroBanner({
           <div className="hidden lg:col-span-5 lg:block xl:col-span-6" />
         </motion.div>
       </div>
+
+      {/* Carousel navigation dots */}
+      {images.length > 1 && (
+        <div className="absolute bottom-24 left-1/2 z-10 flex -translate-x-1/2 gap-2">
+          {images.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentIndex(index)}
+              className={cn(
+                "h-2 rounded-full transition-all duration-500",
+                index === currentIndex
+                  ? "w-8 bg-white"
+                  : "w-2 bg-white/40 hover:bg-white/60"
+              )}
+              aria-label={`Ir a imagen ${index + 1}`}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Scroll indicator */}
       <motion.div

@@ -8,8 +8,8 @@ import { ArrowRight, MapPin } from "lucide-react"
 export interface HeroSectionProps {
   eventsCount: number
   departmentsCount: number
-  /** Override the hero image path. Falls back to gradient if not found. */
-  heroImage?: string
+  /** Override the hero images. Falls back to gradient if not found. */
+  heroImages?: string[]
 }
 
 /**
@@ -19,7 +19,7 @@ export interface HeroSectionProps {
 export function HeroSection({
   eventsCount,
   departmentsCount,
-  heroImage = "/images/hero/hero-home.jpg",
+  heroImages = ["/images/hero/hero-home.jpg", "/images/home/hero-trail-running.jpg"],
 }: HeroSectionProps) {
   return (
     <HeroBanner
@@ -30,7 +30,7 @@ export function HeroSection({
           ? `${eventsCount} eventos activos`
           : "La plataforma de atletismo"
       } en Colombia`}
-      image={heroImage}
+      images={heroImages}
       actions={
         <>
           <Button
