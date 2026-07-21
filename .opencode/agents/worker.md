@@ -1,7 +1,7 @@
 ---
 description: Ejecuta pasos individuales de un plan de forma rápida y eficiente. Ideal para tareas concretas y bien definidas.
 mode: subagent
-model: groq/llama-3.1-8b-instant
+model: opencode/deepseek-v4-flash-free
 temperature: 0.3
 permission:
   read: allow

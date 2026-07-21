@@ -19,6 +19,13 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
+    // Responsive image breakpoints
+    deviceSizes: [420, 640, 768, 1024, 1280, 1536],
+    // Image sizes for cards, galleries, etc
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // Supported formats with AVIF for better compression
+    formats: ['image/avif', 'image/webp'],
+    // Allow external images from common stock photo providers
     remotePatterns: [
       {
         protocol: 'https',
@@ -32,7 +39,28 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'images.pexels.com',
       },
+      {
+        protocol: 'https',
+        hostname: '**.cloudinary.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.googleusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'firebasestorage.googleapis.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+      },
     ],
+    // Minimum cache TTL for optimized images
+    minimumCacheTTL: 60 * 60 * 24, // 24 hours
+    // Disable static import warning for `fill` images with no sizes
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   async headers() {
     const headersList = [];

@@ -19,9 +19,21 @@ module.exports = {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        surface: {
+          DEFAULT: "hsl(var(--surface))",
+          secondary: "hsl(var(--surface-secondary))",
+          hover: "hsl(var(--surface-hover))",
+        },
+        "text-primary": "hsl(var(--text-primary))",
+        "text-secondary": "hsl(var(--text-secondary))",
+        "text-muted": "hsl(var(--text-muted))",
+        success: "hsl(var(--success))",
+        warning: "hsl(var(--warning))",
+        danger: "hsl(var(--danger))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          hover: "hsl(var(--primary-hover))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -52,10 +64,29 @@ module.exports = {
         lg: `var(--radius)`,
         md: `calc(var(--radius) - 2px)`,
         sm: "calc(var(--radius) - 4px)",
+        xl: `var(--radius-xl)`,
+        "2xl": `var(--radius-2xl)`,
       },
       fontFamily: {
-        sans: ["Inter", ...fontFamily.sans],
+        sans: ["var(--font-sans)", "Inter", ...fontFamily.sans],
         heading: ["CalSans Semibold", ...fontFamily.sans],
+      },
+      fontSize: {
+        "hero-xl": ["4.5rem", { lineHeight: "1.05", letterSpacing: "-0.03em" }],
+        "hero": ["4rem", { lineHeight: "1.1", letterSpacing: "-0.02em" }],
+        "heading-1": ["3rem", { lineHeight: "1.15", letterSpacing: "-0.02em" }],
+        "heading-2": ["2.25rem", { lineHeight: "1.2", letterSpacing: "-0.02em" }],
+        "heading-3": ["1.75rem", { lineHeight: "1.25", letterSpacing: "-0.01em" }],
+        "heading-4": ["1.375rem", { lineHeight: "1.35" }],
+        "body-large": ["1.125rem", { lineHeight: "1.6" }],
+        "body": ["1rem", { lineHeight: "1.6" }],
+        "caption": ["0.875rem", { lineHeight: "1.5" }],
+        "small": ["0.75rem", { lineHeight: "1.5" }],
+      },
+      spacing: {
+        18: "4.5rem",
+        22: "5.5rem",
+        30: "7.5rem",
       },
       keyframes: {
         "accordion-down": {
@@ -70,6 +101,10 @@ module.exports = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+      },
+      transitionDuration: {
+        250: "250ms",
+        300: "300ms",
       },
     },
   },

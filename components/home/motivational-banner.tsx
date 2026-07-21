@@ -56,7 +56,7 @@ export function MotivationalBanner() {
         }}
       >
         <Image
-          src="/images/hero/banner-motivacional.jpg"
+          src="/images/hero/hero-events.jpg"
           alt="Trail running en Colombia"
           fill
           sizes="100vw"

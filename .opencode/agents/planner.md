@@ -1,7 +1,8 @@
 ---
 description: Descompone tareas complejas en pasos ejecutables usando Kimi 2.7 Code. Úsalo para planificar y analizar antes de ejecutar.
 mode: subagent
-model: openrouter/moonshotai/kimi-2-7-code-thinking
+model: opencode/deepseek-v4-flash-free
+# fallback models: openrouter/moonshotai/kimi-k2.7-code, openrouter/moonshotai/kimi-k2-thinking
 temperature: 0.2
 permission:
   read: allow

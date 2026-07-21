@@ -31,6 +31,11 @@ export interface FirebaseEventData {
   registrationDeadline?: string
   contentHtml?: string
   
+  // Referencia a propuesta original (para propuestas aprobadas/publicadas)
+  proposalId?: string
+  publishedAt?: string
+  publishedBy?: string
+  
   // Estadísticas de interacción
   likesCount?: number
   interestedCount?: number

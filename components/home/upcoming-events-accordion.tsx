@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import Image from "next/image"
+import { ImageWithFallback } from "@/components/ui/image-with-fallback"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -96,7 +96,7 @@ export function UpcomingEventsAccordion({ events }: UpcomingEventsAccordionProps
             )}
           >
             {/* Background image */}
-            <Image
+            <ImageWithFallback
               src={eventImage}
               alt={event.title}
               fill
@@ -105,6 +105,7 @@ export function UpcomingEventsAccordion({ events }: UpcomingEventsAccordionProps
                 "object-cover transition-transform duration-700",
                 isActive ? "scale-100" : "scale-110 group-hover:scale-100"
               )}
+              fallbackVariant="default"
             />
 
             {/* Overlay */}

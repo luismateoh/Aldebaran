@@ -1,257 +1,176 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { useAuth } from '@/lib/auth-context'
-import { useAuthApi } from '@/hooks/use-auth-api'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { useState, useEffect } from 'react'
+import { User, Shield, ShieldCheck, Trash2, Loader2 } from 'lucide-react'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { UserPlus, User, Mail, Shield, Trash2, AlertCircle, CheckCircle } from 'lucide-react'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { toast } from "sonner"
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useToast } from '@/hooks/use-toast'
 
 interface Admin {
+  uid: string
   email: string
-  displayName: string | null
-  photoURL: string | null
-  role: 'super_admin' | 'admin'
-  addedBy: string
-  addedAt: string
-  lastLogin?: string
+  displayName: string
+  photoURL: string
+  role: 'admin' | 'super_admin'
+  createdAt: string
 }
 
 export default function AdministratorsPage() {
-  const router = useRouter()
-  const { user, isAdmin, loading } = useAuth()
-  const { makeAuthenticatedRequest } = useAuthApi()
   const [admins, setAdmins] = useState<Admin[]>([])
-  const [isLoadingAdmins, setIsLoadingAdmins] = useState(true)
+  const [loading, setLoading] = useState(true)
   const [newAdminEmail, setNewAdminEmail] = useState('')
-  const [isAddingAdmin, setIsAddingAdmin] = useState(false)
+  const [newAdminRole, setNewAdminRole] = useState<'admin' | 'super_admin'>('admin')
+  const [adding, setAdding] = useState(false)
+  const [removing, setRemoving] = useState<string | null>(null)
+  const { toast } = useToast()
 
-  // Redirect if not authenticated or not admin
-  useEffect(() => {
-    if (!loading && (!user || !isAdmin)) {
-      router.push('/login')
-    }
-  }, [user, isAdmin, loading, router])
-
-  useEffect(() => {
-    if (user && isAdmin) {
-      loadAdministrators()
-    }
-  }, [user, isAdmin])
-
-  const loadAdministrators = async () => {
+  const fetchAdmins = async () => {
     try {
-      const response = await makeAuthenticatedRequest('/api/admin/administrators')
-      
-      if (response.ok) {
-        const data = await response.json()
-        if (data.success) {
-          setAdmins(data.administrators)
-        } else {
-          // Fallback to current user if API doesn't work yet
-          setAdmins([
-            {
-              email: user?.email || '',
-              displayName: user?.displayName || null,
-              photoURL: user?.photoURL || null,
-              role: 'super_admin',
-              addedBy: 'system',
-              addedAt: '2024-01-01',
-              lastLogin: new Date().toISOString()
-            }
-          ])
-        }
-      } else {
-        throw new Error('Failed to load administrators')
-      }
+      setLoading(true)
+      const res = await fetch('/api/admin/administrators')
+      if (!res.ok) throw new Error('Error al cargar administradores')
+      const data = await res.json()
+      setAdmins(data.admins || [])
     } catch (error) {
-      console.error('Error loading administrators:', error)
-      // Fallback to current user
-      setAdmins([
-        {
-          email: user?.email || '',
-          displayName: user?.displayName || null,
-          photoURL: user?.photoURL || null,
-          role: 'super_admin',
-          addedBy: 'system',
-          addedAt: '2024-01-01',
-          lastLogin: new Date().toISOString()
-        }
-      ])
-      toast.error('Error cargando administradores, mostrando datos locales')
+      toast({
+        title: 'Error',
+        description: 'No se pudieron cargar los administradores',
+        variant: 'destructive',
+      })
     } finally {
-      setIsLoadingAdmins(false)
+      setLoading(false)
     }
   }
 
-  const handleAddAdmin = async () => {
-    if (!newAdminEmail.trim()) {
-      toast.error('Por favor ingresa un email válido')
-      return
-    }
+  useEffect(() => {
+    fetchAdmins()
+  }, [])
 
-    setIsAddingAdmin(true)
+  const handleAddAdmin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newAdminEmail.trim()) return
+
     try {
-      const response = await makeAuthenticatedRequest('/api/admin/administrators', {
+      setAdding(true)
+      const res = await fetch('/api/admin/administrators', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: newAdminEmail.trim() })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: newAdminEmail.trim(), role: newAdminRole }),
       })
-      
-      const data = await response.json()
-      
-      if (response.ok && data.success) {
-        toast.success(`Administrador ${newAdminEmail} agregado exitosamente`)
-        setNewAdminEmail('')
-        loadAdministrators() // Reload the list
-      } else {
-        toast.error(data.error || data.message || 'Error agregando administrador')
+
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error || 'Error al agregar administrador')
       }
+
+      toast({
+        title: 'Administrador agregado',
+        description: `${newAdminEmail} ahora es administrador`,
+      })
+
+      setNewAdminEmail('')
+      fetchAdmins()
     } catch (error) {
-      console.error('Error adding administrator:', error)
-      toast.error('Error de conexión al agregar administrador')
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Error al agregar administrador',
+        variant: 'destructive',
+      })
     } finally {
-      setIsAddingAdmin(false)
+      setAdding(false)
     }
   }
 
-  const handleRemoveAdmin = async (adminEmail: string) => {
-    if (adminEmail === user?.email) {
-      toast.error('No puedes removerte a ti mismo como administrador')
-      return
-    }
-
-    if (!confirm(`¿Estás seguro que deseas remover a ${adminEmail} como administrador?`)) {
-      return
-    }
+  const handleRemoveAdmin = async (admin: Admin) => {
+    if (!confirm(`¿Eliminar a ${admin.displayName || admin.email} como administrador?`)) return
 
     try {
-      const response = await makeAuthenticatedRequest(`/api/admin/administrators?email=${encodeURIComponent(adminEmail)}`, {
-        method: 'DELETE'
+      setRemoving(admin.uid)
+      const res = await fetch('/api/admin/administrators', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid: admin.uid }),
       })
-      
-      const data = await response.json()
-      
-      if (response.ok && data.success) {
-        toast.success(`Administrador ${adminEmail} removido exitosamente`)
-        loadAdministrators() // Reload the list
-      } else {
-        toast.error(data.error || data.message || 'Error removiendo administrador')
-      }
+
+      if (!res.ok) throw new Error('Error al eliminar administrador')
+
+      toast({
+        title: 'Administrador eliminado',
+        description: `${admin.email} ya no es administrador`,
+      })
+
+      fetchAdmins()
     } catch (error) {
-      console.error('Error removing administrator:', error)
-      toast.error('Error de conexión al remover administrador')
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Error al eliminar administrador',
+        variant: 'destructive',
+      })
+    } finally {
+      setRemoving(null)
     }
-  }
-
-  // Show loading while checking authentication
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="mx-auto mb-4 size-8 animate-spin rounded-full border-2 border-current border-t-transparent" />
-          <p>Verificando autenticación...</p>
-        </div>
-      </div>
-    )
-  }
-
-  // Don't render anything if not authenticated (will redirect)
-  if (!user || !isAdmin) {
-    return null
   }
 
   return (
-    <div className="container relative py-6 lg:py-10">
-      {/* Header */}
-      <div className="flex flex-col gap-4">
-        <div>
-        </div>
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold">Gestión de Administradores</h1>
-          <p className="text-muted-foreground">
-            Administra usuarios con acceso al panel de administración
-          </p>
-        </div>
+    <div className="space-y-6 p-6">
+      <div>
+        <h1 className="text-2xl font-bold">Administradores</h1>
+        <p className="text-muted-foreground">
+          Gestiona quiénes pueden acceder al panel administrativo
+        </p>
       </div>
 
-
-      {/* Add New Administrator */}
-      <Card className="mt-6">
+      <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <UserPlus className="size-5" />
-            Agregar Nuevo Administrador
-          </CardTitle>
+          <CardTitle>Agregar administrador</CardTitle>
           <CardDescription>
-            Otorga acceso administrativo a otros usuarios del sistema
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="adminEmail">Email del Usuario</Label>
-              <Input
-                id="adminEmail"
-                type="email"
-                placeholder="usuario@ejemplo.com"
-                value={newAdminEmail}
-                onChange={(e) => setNewAdminEmail(e.target.value)}
-              />
-            </div>
-            <div className="flex items-end">
-              <Button 
-                onClick={handleAddAdmin}
-                disabled={isAddingAdmin || !newAdminEmail.trim()}
-                className="w-full"
-              >
-                {isAddingAdmin ? (
-                  <>
-                    <div className="mr-2 size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                    Agregando...
-                  </>
-                ) : (
-                  <>
-                    <UserPlus className="mr-2 size-4" />
-                    Agregar
-                  </>
-                )}
-              </Button>
-            </div>
-          </div>
-          
-          <Alert>
-            <Shield className="size-4" />
-            <AlertDescription>
-              <strong>Importante:</strong> Los administradores tendrán acceso completo al sistema, 
-              incluyendo la creación, edición y eliminación de eventos, así como la gestión de otros administradores.
-            </AlertDescription>
-          </Alert>
-        </CardContent>
-      </Card>
-
-      {/* Current Administrators */}
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Shield className="size-5" />
-            Administradores Actuales
-          </CardTitle>
-          <CardDescription>
-            Lista de usuarios con acceso administrativo
+            Ingresa el correo electrónico del usuario que deseas agregar como administrador
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {isLoadingAdmins ? (
+          <form onSubmit={handleAddAdmin} className="flex flex-col gap-4 sm:flex-row">
+            <Input
+              type="email"
+              placeholder="correo@ejemplo.com"
+              value={newAdminEmail}
+              onChange={(e) => setNewAdminEmail(e.target.value)}
+              required
+              className="sm:flex-1"
+            />
+            <select
+              value={newAdminRole}
+              onChange={(e) => setNewAdminRole(e.target.value as 'admin' | 'super_admin')}
+              className="rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <option value="admin">Admin</option>
+              <option value="super_admin">Super Admin</option>
+            </select>
+            <Button type="submit" disabled={adding}>
+              {adding ? (
+                <>
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  Agregando...
+                </>
+              ) : (
+                'Agregar'
+              )}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Administradores actuales</CardTitle>
+          <CardDescription>
+            {admins.length} administrador{admins.length !== 1 ? 'es' : ''} registrado{admins.length !== 1 ? 's' : ''}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
             <div className="flex items-center justify-center py-8">
               <div className="mr-2 size-6 animate-spin rounded-full border-2 border-current border-t-transparent" />
               Cargando administradores...
@@ -262,11 +181,16 @@ export default function AdministratorsPage() {
                 <div key={admin.email} className="flex items-center justify-between rounded-lg border p-4">
                   <div className="flex items-center space-x-4">
                     {admin.photoURL ? (
-                      <img 
-                        src={admin.photoURL} 
-                        alt={admin.displayName || admin.email}
-                        className="size-10 rounded-full"
-                      />
+                      <div className="relative size-10 overflow-hidden rounded-full">
+                        <Image
+                          src={admin.photoURL}
+                          alt={admin.displayName || admin.email}
+                          fill
+                          sizes="40px"
+                          className="object-cover"
+                          unoptimized
+                        />
+                      </div>
                     ) : (
                       <div className="flex size-10 items-center justify-center rounded-full bg-muted">
                         <User className="size-5" />
@@ -278,50 +202,35 @@ export default function AdministratorsPage() {
                         <Badge variant={admin.role === 'super_admin' ? 'default' : 'secondary'}>
                           {admin.role === 'super_admin' ? 'Super Admin' : 'Admin'}
                         </Badge>
-                        {admin.email === user?.email && (
-                          <Badge variant="outline">Tú</Badge>
-                        )}
                       </div>
-                      <p className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <Mail className="size-3" />
-                        {admin.email}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Agregado por {admin.addedBy} el {new Date(admin.addedAt).toLocaleDateString('es-CO')}
-                      </p>
-                      {admin.lastLogin && (
-                        <p className="text-xs text-muted-foreground">
-                          Último acceso: {new Date(admin.lastLogin).toLocaleDateString('es-CO')}
-                        </p>
-                      )}
+                      <p className="text-sm text-muted-foreground">{admin.email}</p>
                     </div>
                   </div>
-                  
-                  <div className="flex items-center gap-2">
-                    {admin.email !== user?.email && admin.role !== 'super_admin' && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleRemoveAdmin(admin.email)}
-                        className="text-red-600 hover:border-red-300 hover:text-red-700"
-                      >
-                        <Trash2 className="size-4" />
-                      </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleRemoveAdmin(admin)}
+                    disabled={removing === admin.uid}
+                    className="text-destructive hover:text-destructive"
+                  >
+                    {removing === admin.uid ? (
+                      <Loader2 className="size-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="size-4" />
                     )}
-                  </div>
+                  </Button>
                 </div>
               ))}
-              
+
               {admins.length === 0 && (
-                <div className="py-8 text-center text-muted-foreground">
-                  No hay administradores configurados
-                </div>
+                <p className="py-8 text-center text-muted-foreground">
+                  No hay administradores registrados
+                </p>
               )}
             </div>
           )}
         </CardContent>
       </Card>
-
     </div>
   )
 }

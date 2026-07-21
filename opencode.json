@@ -1,26 +1,28 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "groq/llama-3.1-8b-instant",
-  "small_model": "groq/llama-3.1-8b-instant",
+  "model": "opencode/deepseek-v4-flash-free",
+  "small_model": "opencode/deepseek-v4-flash-free",
 
   "provider": {
-    "openrouter": {
+    "opencode-go": {
       "options": {
-        "apiKey": "{env:OPENROUTER_API_KEY}"
+        "apiKey": "{env:OPENCODE_GO_API_KEY}",
+        "baseURL": "https://opencode.ai/zen/go/v1"
       }
     },
-    "groq": {
+    "opencode": {
       "options": {
-        "apiKey": "{env:GROQ_API_KEY}"
+        "apiKey": "{env:OPENCODE_ZEN_API_KEY}",
+        "baseURL": "https://opencode.ai/zen/v1"
       }
     }
   },
 
   "agent": {
     "planner": {
-      "model": "openrouter/moonshotai/kimi-2-7-code-thinking",
+      "model": "opencode-go/kimi-k2.7-code",
       "mode": "subagent",
-      "description": "Descompone tareas complejas en pasos ejecutables usando Kimi 2.7 Code. Úsalo para planificar y analizar antes de ejecutar.",
+      "description": "Descompone tareas complejas en pasos ejecutables usando Kimi K2.7 Code vía OpenCode Go. Úsalo para planificar y analizar antes de ejecutar.",
       "temperature": 0.2,
       "permission": {
         "read": "allow",
@@ -30,9 +32,9 @@
       }
     },
     "worker": {
-      "model": "groq/llama-3.1-8b-instant",
+      "model": "opencode/deepseek-v4-flash-free",
       "mode": "subagent",
-      "description": "Ejecuta pasos individuales de un plan de forma rápida y eficiente. Ideal para tareas concretas y bien definidas.",
+      "description": "Ejecuta pasos individuales de un plan de forma rápida y eficiente usando DeepSeek V4 Flash Free en OpenCode Zen.",
       "temperature": 0.3,
       "permission": {
         "read": "allow",
@@ -42,9 +44,9 @@
       }
     },
     "worker-deepseek": {
-      "model": "groq/deepseek-r1-distill-llama-70b",
+      "model": "opencode/deepseek-v4-flash-free",
       "mode": "subagent",
-      "description": "Worker con DeepSeek R1 para tareas que requieren más razonamiento que el worker estándar.",
+      "description": "Worker con DeepSeek V4 Flash Free en OpenCode Zen para tareas que requieren más razonamiento que el worker estándar.",
       "temperature": 0.3,
       "permission": {
         "read": "allow",
@@ -57,14 +59,12 @@
 
   "command": {
     "harness": {
-      "description": "Ejecuta una tarea compleja usando el sistema multi-agente: Kimi 2.7 planifica, workers ejecutan.",
+      "description": "Ejecuta una tarea compleja usando el sistema multi-agente: Kimi K2.7 Code (OpenCode Go) planifica, workers gratuitos de OpenCode Zen ejecutan.",
       "agent": "build",
-      "model": "groq/llama-3.1-8b-instant",
-      "template": "Ejecuta el skill 'harness' para procesar la siguiente tarea usando el sistema multi-agente (Kimi 2.7 planifica, workers ejecutan).\n\nTarea: $ARGUMENTS"
+      "model": "opencode/deepseek-v4-flash-free",
+      "template": "Ejecuta el skill 'harness' para procesar la siguiente tarea usando el sistema multi-agente (Kimi K2.7 Code en OpenCode Go planifica, workers gratuitos de OpenCode Zen ejecutan).\n\nTarea: $ARGUMENTS"
     }
   },
-
-  "instructions": ["CLAUDE.md"],
 
   "skills": {
     "paths": [".opencode/skills"]

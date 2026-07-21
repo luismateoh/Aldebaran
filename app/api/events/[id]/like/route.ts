@@ -76,7 +76,7 @@ export const POST = requireAuth(async (request: NextRequest, authResult) => {
 })
 
 // Obtener estado de like y conteo para un evento
-export const GET = async (request: NextRequest, { params }: { params: { id: string } }) => {
+export const GET = async (request: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
   try {
     const { searchParams } = new URL(request.url)
     const userId = searchParams.get('userId')

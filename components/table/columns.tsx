@@ -75,8 +75,8 @@ export const columns: ColumnDef<EventData>[] = [
             .sort((a: any, b: any) => parseFloat(a.value) - parseFloat(b.value))
             .map((distance) => (
               <Badge
-                variant="small"
-                className="rounded-md font-bold"
+                variant="secondary"
+                className="rounded-md px-1.5 py-0.5 text-xs font-bold"
                 key={distance}
               >
                 {distance}

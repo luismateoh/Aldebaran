@@ -34,6 +34,7 @@ export default function ScrollToTopButton() {
   return (
     <Button
       variant="secondary"
+      aria-label="Volver arriba"
       className={`fixed bottom-4 right-4 rounded-md p-2 shadow outline-none transition-opacity duration-200 ${
         isVisible ? "opacity-100" : "opacity-0"
       }`}

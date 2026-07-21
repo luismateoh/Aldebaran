@@ -42,6 +42,9 @@ export async function POST(request: NextRequest) {
 
     if (existingEvent) {
       // Si ya existe un evento draft, actualizarlo a published
+      if (!existingEvent.id) {
+        return NextResponse.json({ error: 'Evento draft sin ID válido' }, { status: 500 })
+      }
       publishedEvent = await eventsServiceAdmin.updateEvent(existingEvent.id, {
         status: 'published',
         draft: false,
@@ -75,7 +78,11 @@ export async function POST(request: NextRequest) {
       }
 
       publishedEvent = await eventsServiceAdmin.createEvent(eventData)
-      console.log(`✅ Evento nuevo creado como published: ${publishedEvent.id}`)
+      console.log(`✅ Evento nuevo creado como published: ${publishedEvent?.id}`)
+    }
+
+    if (!publishedEvent) {
+      return NextResponse.json({ error: 'Error publicando el evento' }, { status: 500 })
     }
 
     // Si la propuesta tiene email del remitente, enviar notificación de publicación

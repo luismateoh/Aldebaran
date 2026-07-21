@@ -1,44 +1,149 @@
 import Link from "next/link"
 
-import { Icons } from "./icons"
+import { Icons } from "@/components/icons"
+import { NewsletterForm } from "@/components/newsletter-form"
+import { siteConfig } from "@/config/site"
 
 export default function Footer() {
-  return (
-    <footer className="mt-16 bg-secondary">
-      <div className="relative mx-auto max-w-screen-xl px-4 pb-2 pt-8 sm:px-6 lg:px-8 lg:pt-10">
-        <div className="lg:flex lg:items-end lg:justify-between">
-          <div>
-            <div className="flex justify-center lg:justify-start">
-              <Icons.logo className="h-20" />
-            </div>
+  const currentYear = new Date().getFullYear()
 
-            <p className="mx-auto max-w-full text-center text-xs font-light leading-relaxed text-gray-500 dark:text-gray-400 lg:text-left">
-              *Aldebaran es una plataforma dedicada a la promoción y divulgación
-              deportiva en Colombia. No somos organizadores ni responsables de
-              los eventos listados en este sitio. Nuestro objetivo es brindarte
-              información actualizada sobre las emocionantes carreras de
-              atletismo en todo el país, para que puedas participar y disfrutar
-              al máximo de tu pasión por el running. Recuerda siempre verificar
-              los detalles de cada evento directamente con los organizadores.
-              ¡Corre seguro, corre con pasión con Aldebaran!
+  return (
+    <footer className="border-t border-border bg-background">
+      <div className="content-container py-16 md:py-20">
+        {/* Grid: 1 col mobile, 2 col tablet, 4 col desktop */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
+          {/* Column 1: Logo + Description + Social */}
+          <div className="space-y-4">
+            <Link href="/" className="inline-block">
+              <Icons.logo className="h-12 w-auto" />
+            </Link>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {siteConfig.description} Aldebaran es tu guía de carreras de
+              atletismo en Colombia. Descubre, participa y disfruta del running
+              en todo el país.
             </p>
-          </div>
-        </div>
-        <div className="mt-6 border-t border-gray-300 sm:pb-4 md:mb-1">
-          <div className="text-center md:flex md:justify-between md:text-left">
-            <div className="mt-3 flex text-center text-sm text-gray-500 dark:text-gray-400 lg:text-right">
-              Aldebaran · Site by{" "}
+            <div className="flex items-center gap-3 pt-1">
               <Link
-                href="https://www.linkedin.com/in/luismateoh/"
-                className="flex items-center justify-center text-center"
+                href={siteConfig.links.twitter}
                 target="_blank"
                 rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Twitter"
               >
-                <div className="mx-1 w-5 rounded-sm bg-blue-900 py-1 align-middle text-[9px] text-white hover:animate-spin">
-                  <p className="-m-1 align-middle">LM</p>
-                </div>
+                <Icons.twitter className="h-5 w-5" />
+              </Link>
+              <Link
+                href={siteConfig.links.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="GitHub"
+              >
+                <Icons.gitHub className="h-5 w-5" />
               </Link>
             </div>
+          </div>
+
+          {/* Column 2: Navigation */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-foreground tracking-wide uppercase">
+              Navegación
+            </h3>
+            <nav>
+              <ul className="space-y-3" role="list">
+                <li>
+                  <Link
+                    href="/"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Inicio
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/events"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Eventos
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/map"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Mapa
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/resources"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Recursos
+                  </Link>
+                </li>
+              </ul>
+            </nav>
+          </div>
+
+          {/* Column 3: Legal */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-foreground tracking-wide uppercase">
+              Legal
+            </h3>
+            <nav>
+              <ul className="space-y-3" role="list">
+                <li>
+                  <Link
+                    href="/terms"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Términos y condiciones
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/privacy"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Política de privacidad
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/cookies"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Política de cookies
+                  </Link>
+                </li>
+              </ul>
+            </nav>
+          </div>
+
+          {/* Column 4: Newsletter */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-foreground tracking-wide uppercase">
+              Newsletter
+            </h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Recibe las últimas carreras y eventos directamente en tu correo.
+            </p>
+            <NewsletterForm />
+          </div>
+        </div>
+
+        {/* Bottom bar */}
+        <div className="mt-12 md:mt-16 pt-6 border-t border-border">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-xs text-muted-foreground">
+              &copy; {currentYear} {siteConfig.name}. Todos los derechos
+              reservados.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Hecho con pasión por el running en Colombia.
+            </p>
           </div>
         </div>
       </div>

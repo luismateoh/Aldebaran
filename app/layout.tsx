@@ -24,6 +24,8 @@ export const metadata: Metadata = {
   generator: "Next.js",
   manifest: "/manifest.json",
   description: siteConfig.description,
+  metadataBase: new URL(siteConfig.url),
+  keywords: siteConfig.keywords,
   icons: [
     {
       media: "(prefers-color-scheme: light)",
@@ -36,8 +38,48 @@ export const metadata: Metadata = {
       href: "/favicon-dark.svg",
     },
   ],
+  openGraph: {
+    type: "website",
+    locale: "es_CO",
+    siteName: siteConfig.name,
+    title: siteConfig.name,
+    description: siteConfig.description,
+    url: siteConfig.url,
+    images: [
+      {
+        url: siteConfig.ogImage,
+        width: 1200,
+        height: 630,
+        alt: "Aldebaran - Eventos de atletismo en Colombia",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@luismateoh",
+    creator: "@luismateoh",
+    title: siteConfig.name,
+    description: siteConfig.description,
+    images: [siteConfig.ogImage],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  alternates: {
+    canonical: siteConfig.url,
+  },
 }
 export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "white" },
     { media: "(prefers-color-scheme: dark)", color: "black" },

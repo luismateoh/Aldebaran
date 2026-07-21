@@ -1,10 +1,10 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { EventData } from "@/types"
+import type { EventData } from '@/types'
 
-const EventsMap = dynamic(
-  () => import("@/components/home/events-map").then((mod) => ({ default: mod.EventsMap })),
+const InteractiveMap = dynamic(
+  () => import('@/components/maps/interactive-map').then((mod) => ({ default: mod.InteractiveMap })),
   {
     ssr: false,
     loading: () => (
@@ -14,14 +14,38 @@ const EventsMap = dynamic(
           <p className="text-muted-foreground">Cargando mapa...</p>
         </div>
       </div>
-    )
+    ),
   }
 )
 
-interface EventsMapWrapperProps {
+export interface EventsMapWrapperProps {
   events: EventData[]
+  selectedEvent?: string
+  onSelectEvent?: (id: string) => void
+  height?: string
+  className?: string
+  showPopup?: boolean
 }
 
-export function EventsMapWrapper({ events }: EventsMapWrapperProps) {
-  return <EventsMap events={events} />
+export function EventsMapWrapper({
+  events,
+  selectedEvent,
+  onSelectEvent,
+  height,
+  className,
+  showPopup,
+}: EventsMapWrapperProps) {
+  return (
+    <InteractiveMap
+      events={events}
+      selectedEvent={selectedEvent}
+      onSelectEvent={onSelectEvent}
+      height={height}
+      className={className}
+      showPopup={showPopup}
+    />
+  )
 }
+
+// También exportamos el nombre anterior para compatibilidad
+export { InteractiveMap as EventsMap }

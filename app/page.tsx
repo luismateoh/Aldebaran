@@ -1,22 +1,43 @@
+import type { Metadata } from "next"
 import { siteConfig } from "@/config/site"
-import { Button } from "@/components/ui/button"
-import { Hero } from "@/components/home/hero"
-import { StatsBar } from "@/components/home/stats-bar"
-import { DistanceLevels } from "@/components/home/distance-levels"
-import { MotivationalBanner } from "@/components/home/motivational-banner"
-import { HowItWorks } from "@/components/home/how-it-works"
-import { UpcomingEventsAccordion } from "@/components/home/upcoming-events-accordion"
-import { EventsMapWrapper } from "@/components/home/events-map-wrapper"
-import { Features } from "@/components/home/features"
-import { Calendar, MapPin, Users, ArrowRight, Plus, Zap } from "lucide-react"
-import Link from "next/link"
-import Image from "next/image"
+import { HeroSection } from "@/components/home/hero-section"
+import { StatsSection } from "@/components/home/stats-section"
+import { ExploreCategories } from "@/components/home/explore-categories"
+import { MapSection } from "@/components/home/map-section"
+import { ResourcesSection } from "@/components/home/resources-section"
+import { FeaturedEventsSection } from "@/components/home/featured-events-section"
+import { HowItWorksSection } from "@/components/home/how-it-works-section"
+import { OrganizerCTA } from "@/components/cta/organizer-cta"
+import { NewsletterSection } from "@/components/home/newsletter-section"
 import { eventsServiceServer } from "@/lib/events-firebase-server"
 import type { EventData } from "@/types"
 
-export const metadata = {
-  title: siteConfig.title,
+export const metadata: Metadata = {
+  title: "Descubre carreras de atletismo y trail running en Colombia",
+  description:
+    "Encuentra tu próxima aventura. Explora cientos de carreras de running, trail y ultra en Colombia.",
   keywords: siteConfig.keywords,
+  openGraph: {
+    title: "Aldebaran — Descubre carreras de atletismo y trail running en Colombia",
+    description:
+      "Encuentra tu próxima aventura. Explora cientos de carreras de running, trail y ultra en Colombia.",
+    url: siteConfig.url,
+    images: [
+      {
+        url: "/images/hero/hero-home.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Aldebaran - Carreras de atletismo en Colombia",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Aldebaran — Descubre carreras de atletismo y trail running en Colombia",
+    description:
+      "Encuentra tu próxima aventura. Explora cientos de carreras de running, trail y ultra en Colombia.",
+    images: ["/images/hero/hero-home.jpg"],
+  },
 }
 
 function parseEventDateLocal(dateString: string): Date | null {
@@ -55,7 +76,7 @@ export default async function IndexPage() {
           snippet: "La carrera más importante del año en la capital colombiana.",
           website: "https://maratonbogota.com",
           price: "$80.000",
-          draft: false
+          draft: false,
         },
         {
           id: "sample-2",
@@ -69,7 +90,7 @@ export default async function IndexPage() {
           organizer: "Alcaldía de Medellín",
           snippet: "Celebra la cultura antioqueña corriendo por las calles de la ciudad de la eterna primavera.",
           price: "$50.000",
-          draft: false
+          draft: false,
         },
         {
           id: "sample-3",
@@ -83,8 +104,8 @@ export default async function IndexPage() {
           organizer: "Club Trail Cali",
           snippet: "Disfruta de los paisajes naturales del Valle del Cauca en una experiencia única.",
           price: "$60.000",
-          draft: false
-        }
+          draft: false,
+        },
       ] as EventData[]
       totalEventsCount = 3
       departmentsCount = 3
@@ -98,7 +119,7 @@ export default async function IndexPage() {
       threeMonthsFromToday.setMonth(threeMonthsFromToday.getMonth() + 3)
 
       upcomingEvents = allEvents
-        .filter(event => {
+        .filter((event) => {
           try {
             if (!event.eventDate) return false
             const eventDate = parseEventDateLocal(event.eventDate)
@@ -109,59 +130,25 @@ export default async function IndexPage() {
         })
         .slice(0, 12)
 
-      departmentsCount = new Set(allEvents.map(e => e.department).filter(Boolean)).size
+      departmentsCount = new Set(allEvents.map((e) => e.department).filter(Boolean)).size
     }
   } catch (error) {
-    console.error('Error loading events for homepage:', error)
+    console.error("Error loading events for homepage:", error)
     upcomingEvents = []
   }
 
   return (
     <>
-      {/* Hero */}
-      <Hero eventsCount={totalEventsCount} />
+      {/* 1. Hero */}
+      <HeroSection eventsCount={totalEventsCount} departmentsCount={departmentsCount} />
 
-      {/* Stats Bar */}
-      <StatsBar eventsCount={totalEventsCount} departmentsCount={departmentsCount} />
+      {/* 2. Stats */}
+      <StatsSection eventsCount={totalEventsCount} departmentsCount={departmentsCount} />
 
-      {/* Distance Levels - Elije tu desafío */}
-      <DistanceLevels events={upcomingEvents} />
+      {/* 3. Explore Categories */}
+      <ExploreCategories />
 
-      {/* Features Section */}
-      <Features />
-
-      {/* Motivational Banner */}
-      <MotivationalBanner />
-
-      {/* How It Works */}
-      <HowItWorks />
-
-      {/* Upcoming Events Carousel */}
-      <section className="container py-20 md:py-28">
-        <div className="mb-12 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
-          <div>
-            <span className="mb-3 inline-block rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
-              No te lo pierdas
-            </span>
-            <h2 className="text-3xl font-extrabold tracking-tight md:text-5xl">
-              Próximos Eventos
-            </h2>
-            <p className="mt-3 text-lg text-muted-foreground">
-              Las carreras más emocionantes que se acercan en Colombia
-            </p>
-          </div>
-          <Button asChild variant="outline" size="lg" className="group rounded-full">
-            <Link href="/events">
-              Ver todos
-              <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-          </Button>
-        </div>
-
-        <UpcomingEventsAccordion events={upcomingEvents} />
-      </section>
-
-      {/* Events Map */}
+      {/* 4. Interactive Map */}
       <section className="relative py-20 md:py-28">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-primary/5" />
         <div className="container relative">
@@ -179,56 +166,25 @@ export default async function IndexPage() {
           </div>
 
           <div className="overflow-hidden rounded-3xl border border-border shadow-2xl">
-            <EventsMapWrapper events={upcomingEvents} />
+            <MapSection events={upcomingEvents} />
           </div>
         </div>
       </section>
 
-      {/* Call to Action */}
-      <section className="container py-20 md:py-28">
-        <div className="relative overflow-hidden rounded-3xl p-12 text-center md:p-20">
-          {/* Background image */}
-          <div className="absolute inset-0 z-0">
-            <Image
-              src="/images/hero/cta-bg.jpg"
-              alt="Corredores celebrando"
-              fill
-              sizes="100vw"
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/95 to-red-600/90 mix-blend-multiply" />
-          </div>
+      {/* 5. Resources */}
+      <ResourcesSection />
 
-          {/* Decorative elements */}
-          <div className="pointer-events-none absolute -left-20 -top-20 z-10 h-60 w-60 rounded-full bg-white/10 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-20 -right-20 z-10 h-60 w-60 rounded-full bg-white/10 blur-3xl" />
+      {/* 6. Featured Events */}
+      <FeaturedEventsSection events={upcomingEvents} />
 
-          <div className="relative z-20 mx-auto max-w-2xl">
-            <div className="mb-6 flex justify-center">
-              <div className="flex size-16 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
-                <Zap className="size-8 text-white" />
-              </div>
-            </div>
-            <h2 className="mb-4 text-3xl font-extrabold text-white md:text-5xl">
-              ¿Organizas un evento?
-            </h2>
-            <p className="mb-8 text-lg text-white/90">
-              Comparte tu evento con miles de corredores en toda Colombia.
-              Es gratis y fácil de usar.
-            </p>
-            <Button
-              asChild
-              size="lg"
-              className="h-14 rounded-full bg-white px-10 text-base font-bold text-primary hover:bg-white/90"
-            >
-              <Link href="/propose-event">
-                <Plus className="mr-2 size-5" />
-                Proponer tu Evento
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </section>
+      {/* 7. How It Works */}
+      <HowItWorksSection />
+
+      {/* 8. Organizer CTA */}
+      <OrganizerCTA />
+
+      {/* 9. Newsletter */}
+      <NewsletterSection />
     </>
   )
 }

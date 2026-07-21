@@ -3,8 +3,8 @@ name: harness
 description: |
   Sistema multi-agente para tareas complejas. Use ONLY when the user needs to
   plan and execute a multi-step task using AI agents. Invokes the planner subagent
-  (Kimi 2.7 Code) to decompose the task, then delegates steps to worker subagents
-  (cheap/fast models). Use for:
+  (Kimi K2.7 Code via OpenCode Go) to decompose the task, then delegates steps to
+  worker subagents (free models on OpenCode Zen). Use for:
   - "planifica y ejecuta X"
   - "usando el sistema multi-agente"
   - "harness"
@@ -16,14 +16,17 @@ description: |
 # Harness Multi-Agente
 
 Este skill implementa un sistema de orquestación multi-agente donde un modelo
-**planificador** (Kimi 2.7 Code) descompone tareas complejas y modelos
-**workers** (rápidos/económicos) ejecutan cada paso.
+**planificador** (Kimi K2.7 Code vía OpenCode Go) descompone tareas complejas y
+modelos **workers** (DeepSeek V4 Flash Free vía OpenCode Zen) ejecutan cada paso.
+
+> Nota: no se utiliza OpenRouter. El planner usa OpenCode Go (Kimi K2.7 Code) y
+los workers usan los modelos gratuitos de OpenCode Zen.
 
 ## Flujo de trabajo
 
 Sigue estos pasos EN ORDEN cuando el usuario invoque este skill:
 
-### Paso 1: Planificar con Kimi 2.7
+### Paso 1: Planificar con DeepSeek R1
 
 Delega la planificación al subagente `@planner`:
 
@@ -75,9 +78,9 @@ Cuando todos los pasos estén completos, presenta un resumen con:
 
 ## Notas importantes
 
-- Usa `@planner` SOLO para la planificación inicial
-- Usa `@worker` para la mayoría de los pasos (rápido y económico)
-- Usa `@worker-deepseek` para pasos que requieren más razonamiento
+- Usa `@planner` SOLO para la planificación inicial (Kimi K2.7 Code en OpenCode Go)
+- Usa `@worker` para la mayoría de los pasos (DeepSeek V4 Flash Free en OpenCode Zen)
+- Usa `@worker-deepseek` para pasos que requieren más razonamiento (DeepSeek V4 Flash Free en OpenCode Zen)
 - Ejecuta pasos en paralelo cuando no tengan dependencias entre sí
 - Si un paso falla, notifica al usuario y pregunta cómo proceder
 - Mantén al usuario informado del progreso

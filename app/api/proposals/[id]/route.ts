@@ -7,7 +7,7 @@ import nodemailer from 'nodemailer'
 // GET - Obtener propuesta por ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     console.log('📡 API /api/proposals/[id] - Verificando autenticación...')
@@ -41,7 +41,7 @@ export async function GET(
 // PATCH - Actualizar estado de propuesta
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const resolvedParams = await params
@@ -134,7 +134,7 @@ export async function PATCH(
 // DELETE - Eliminar propuesta
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const resolvedParams = await params

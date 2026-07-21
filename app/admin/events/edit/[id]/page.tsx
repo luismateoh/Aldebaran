@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
+import { ImageWithFallback } from "@/components/ui/image-with-fallback"
 import { NaturalDatePicker } from '@/components/natural-date-picker'
 import { MunicipalityAutocomplete } from '@/components/municipality-autocomplete'
 import { getAltitude } from '@/lib/colombia-altitudes'
@@ -672,11 +673,15 @@ ${eventData.description}`
             {eventData.cover && (
               <div className="mt-2 rounded-md border p-2">
                 <p className="mb-1 text-xs text-muted-foreground">Vista previa de imagen:</p>
-                <img 
-                  src={eventData.cover} 
-                  alt="Vista previa de portada" 
-                  className="h-24 rounded object-cover"
-                  onError={(e) => (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x400?text=Error+cargando+imagen'}
+                <ImageWithFallback
+                  src={eventData.cover}
+                  alt="Vista previa de portada"
+                  width={200}
+                  height={100}
+                  fallbackVariant="default"
+                  wrapperClassName="h-24 w-auto rounded"
+                  className="h-24 w-auto rounded object-cover"
+                  unoptimized
                 />
               </div>
             )}

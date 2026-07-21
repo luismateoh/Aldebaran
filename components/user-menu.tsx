@@ -144,7 +144,7 @@ export function UserMenu({ className }: UserMenuProps) {
             {isLoggingOut ? 'Cerrando sesión...' : 'Cerrar sesión'}
           </span>
           {isLoggingOut && (
-            <div className="ml-auto size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+            <div className="ml-auto size-4 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden="true" />
           )}
         </DropdownMenuItem>
       </DropdownMenuContent>

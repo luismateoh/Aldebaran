@@ -2,7 +2,7 @@
 
 import { Search, MousePointerClick, Trophy } from "lucide-react"
 import Link from "next/link"
-import Image from "next/image"
+import { ImageWithFallback } from "@/components/ui/image-with-fallback"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -67,12 +67,13 @@ export function HowItWorks() {
               >
                 {/* Background image */}
                 <div className="relative h-64 overflow-hidden md:h-80">
-                  <Image
+                  <ImageWithFallback
                     src={step.image}
                     alt={step.title}
                     fill
                     sizes="(max-width: 768px) 100vw, 33vw"
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    fallbackVariant="default"
                   />
                   <div className={cn("absolute inset-0 opacity-80 mix-blend-multiply", step.gradient)} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
