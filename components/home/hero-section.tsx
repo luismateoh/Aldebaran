@@ -8,7 +8,7 @@ import { ArrowRight, MapPin } from "lucide-react"
 export interface HeroSectionProps {
   eventsCount: number
   departmentsCount: number
-  /** Override the hero images. Falls back to gradient if not found. */
+  /** Override the hero carousel images. Defaults to hero-home and hero-trail-running. */
   heroImages?: string[]
 }
 
